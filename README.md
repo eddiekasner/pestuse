@@ -4,7 +4,7 @@ This repo lists the rank and best available estimates of mass applied (kg) for t
 
 **CHECK FOR UPDATES TO DATA**
 
-Please carefully review the applications and limitations of these data, as described on [this USGS National Water-Quality Assessment (NAWQA) Project page](https://water.usgs.gov/nawqa/pnsp/usage/maps/about.php). NOTE: We report county-level estimates despite their intended use to generate state-level estimates...
+Please carefully review the applications and limitations of these data, as described on [this USGS National Water-Quality Assessment (NAWQA) Project page](https://water.usgs.gov/nawqa/pnsp/usage/maps/about.php). NOTE: We report county-level estimates despite their intended use to generate state-level estimates.
 
 Dependencies: knitr, knitr, bookdown, dplyr, kableExtra, pdf creator (TeX)
 
