@@ -1,100 +1,98 @@
 # pestuse
 
 Analyses of USGS Pesticide National Synthesis Project agricultural pesticide
-use estimates for Washington State. The repo currently contains three
-independent reports built from different USGS data products; each is
-self-contained (own input data, own R Markdown source, own rendered output).
+use estimates, organized by state. Each state folder is self-contained (own
+R Markdown source, own rendered output); shared inputs — the raw USGS
+county-level and crop-group files, and the organophosphate/carbamate
+classification — live at the repo root and are read by every state's
+reports via relative paths (`../estimates/...`, `../data/...`).
 
 **CHECK FOR UPDATES TO DATA.** Please carefully review the applications and
 limitations of these data, as described on [this USGS National
 Water-Quality Assessment (NAWQA) Project page](https://water.usgs.gov/nawqa/pnsp/usage/maps/about.php).
 
+## Shared inputs
+
+* `estimates/EPest.county.estimates.<year>.txt` (1992-2019) — USGS
+  [Estimated Annual Agricultural Pesticide
+  Use](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/),
+  county-level, EPest-low and EPest-high, all states. 2019 is a
+  partial/preliminary release (69 compounds nationwide vs. ~400 in every
+  other year) — see Chapter 3 caveats below.
+* `estimates/HighEstimate_AgPestUsebyCropGroup92to19.txt` (1992-2019) —
+  USGS Pesticide National Synthesis Project *EPest-high estimates by crop
+  group*, state-level, all states, from [ScienceBase item
+  6081ae7cd34e8564d6866222](https://www.sciencebase.gov/catalog/item/6081ae7cd34e8564d6866222).
+* `data/op_carbamate_classification.csv` — organophosphate/carbamate
+  classification for 36 compounds, compiled once in the Washington chapter
+  and reused unchanged by every state.
+
 ---
 
-## Chapter 1 — Yakima County top-pesticide ranking (2012-2016)
+## Washington (`washington/`)
 
-`pestuse.Rmd` → `pestuse.pdf` / `pestuse.md`
+Three chapters:
 
-Lists the rank and best available estimates of mass applied (kg) for the 80
-most common agricultural pesticides in Yakima County during 2016, as
-reported by [USGS Estimated Annual Agricultural Pesticide
-Use](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/)
-county-level data (`estimates/EPest.county.estimates.*.txt`). The table also
-ranks compounds by 3-year average (2014-2016) and 5-year average
-(2012-2016) mass applied. Rankings and estimates use the *EPest-high
-method* described by [Thelin and Stone
-(2013)](https://pubs.usgs.gov/sir/2013/5009/) and [Baker and Stone
-(2015)](https://pubs.usgs.gov/ds/0907/).
+1. **`pestuse.Rmd` → `pestuse.pdf` / `pestuse.md`** — Yakima County
+   top-pesticide ranking (2012-2016). Lists rank and EPest-high mass
+   applied for the 80 most common pesticides in Yakima County, by 1-year,
+   3-year average, and 5-year average. This chapter is county-specific and
+   has no direct equivalent in the other state folders.
+2. **`wa_op_carbamate_trends.Rmd` → `wa_op_carbamate_trends.html`** —
+   interactive dashboard (flexdashboard) of statewide organophosphate and
+   carbamate use, 1992-2019, overall and by USGS crop group.
+3. **`wa_statewide_top_pesticides.Rmd` → `wa_statewide_top_pesticides.pdf`**
+   — statewide top-80 pesticide ranking, 2014-2018, with OP/carbamate
+   classification and a comparison to Yakima County's own ranking.
 
-NOTE: this chapter reports county-level estimates despite their intended
-use to generate state-level estimates — see the USGS caveats page above.
+## Oregon (`oregon/`)
 
-Dependencies: knitr, bookdown, dplyr, kableExtra, a PDF engine (TeX).
+Two chapters, the state-parameterized ones from Washington (no Yakima-style
+single-county chapter — see "Scope" below):
 
-To render:
+1. **`or_op_carbamate_trends.Rmd` → `or_op_carbamate_trends.html`** —
+   same dashboard as Washington Chapter 2, FIPS 41.
+2. **`or_statewide_top_pesticides.Rmd` → `or_statewide_top_pesticides.pdf`**
+   — same ranking as Washington Chapter 3, FIPS 41 (no Yakima comparison
+   column, since that was Washington-specific).
 
-```r
-rmarkdown::render("pestuse.Rmd")
-```
+## Idaho (`idaho/`)
 
-## Chapter 2 — Washington organophosphate & carbamate use trends (1992-2019)
+Same two chapters as Oregon, FIPS 16:
+`id_op_carbamate_trends.Rmd` / `.html` and
+`id_statewide_top_pesticides.Rmd` / `.pdf`.
 
-`wa_op_carbamate_trends.Rmd` → `wa_op_carbamate_trends.html`
+## Alaska — not covered
 
-An interactive HTML dashboard (flexdashboard) summarizing annual
-organophosphate and carbamate pesticide use across all of Washington (FIPS
-53), 1992-2019, overall and by USGS crop group. It uses
-`estimates/HighEstimate_AgPestUsebyCropGroup92to19.txt` (USGS Pesticide
-National Synthesis Project *EPest-high estimates by crop group*, from
-[ScienceBase item
-6081ae7cd34e8564d6866222](https://www.sciencebase.gov/catalog/item/6081ae7cd34e8564d6866222))
-and the compound classification in `data/op_carbamate_classification.csv`.
+No `alaska/` folder: both source files
+(`estimates/EPest.county.estimates.*.txt` and
+`estimates/HighEstimate_AgPestUsebyCropGroup92to19.txt`) contain **zero**
+rows for Alaska (FIPS 02) in every year, 1992-2019. USGS's Pesticide
+National Synthesis Project does not cover Alaska or Hawaii — this isn't a
+gap in how these reports were built, there's no source data to report on.
 
-The dashboard includes an overview with headline trends, an interactive
-data portal (crosstalk-linked filters, plots, and tables by crop group and
-by compound), a page of static summary plots, and a methodology/data notes
-page. Unlike Chapter 1, this dataset provides EPest-high estimates only (no
-EPest-low range) and is state-level rather than county-level.
+## Scope note (why Oregon/Idaho only have 2 of Washington's 3 chapters)
 
-Dependencies: flexdashboard, plotly, DT, crosstalk, dplyr, tidyr, readr,
-forcats, stringr, scales, ggplot2, knitr, kableExtra.
+Washington's Chapter 1 (Yakima County) is anchored to one specific county
+chosen for its own reasons, not a "change the FIPS code" template like
+Chapters 2 and 3 are — there's no obviously equivalent county to pick for
+Oregon or Idaho. Chapters 2 and 3 are fully state-parameterized (set
+`state_fips`/`state_name` at the top of the file) and were reused as-is.
 
-To render:
+## Rendering any chapter
 
-```r
-rmarkdown::render("wa_op_carbamate_trends.Rmd")
-```
-
-## Chapter 3 — Washington statewide top-pesticide ranking (2014-2018)
-
-`wa_statewide_top_pesticides.Rmd` → `wa_statewide_top_pesticides.pdf`
-
-The statewide counterpart to Chapter 1: ranks the top 80 agricultural
-pesticides across all of Washington (summed over every county) using the
-same county-level source data and EPest-high method as Chapter 1
-(`estimates/EPest.county.estimates.*.txt`), by 1-year, 3-year average, and
-5-year average mass applied. Adds two things Chapter 1 doesn't have: each
-compound's organophosphate/carbamate classification (reusing
-`data/op_carbamate_classification.csv` from Chapter 2), and — for
-comparison — its rank within Yakima County alone, so you can see where
-Yakima's most-used pesticides fall statewide and vice versa.
-
-The ranking window is 2014-2018, not 2014-2019: the 2019 county-level file
-available at the time of writing is a partial/preliminary release covering
-only 69 compounds nationwide (vs. ~400 in every other year), so using it as
-the "most recent year" anchor would silently drop hundreds of real
-compounds from every table. Re-run once a complete 2019 release is
-available — see the in-file comment next to `window_years`.
-
-Dependencies: knitr, bookdown, dplyr, tidyr, readr, ggplot2, scales,
-kableExtra, a PDF engine (TeX, including the `longtable` and `ulem`
-packages).
-
-To render:
+Each `.Rmd` reads its inputs relative to its own folder, so render from
+inside that folder, e.g.:
 
 ```r
-rmarkdown::render("wa_statewide_top_pesticides.Rmd")
+setwd("oregon")
+rmarkdown::render("or_statewide_top_pesticides.Rmd")
 ```
+
+Dependencies: knitr, bookdown, dplyr, tidyr, readr, forcats, stringr,
+ggplot2, scales, kableExtra (all chapters); flexdashboard, plotly, DT,
+crosstalk (dashboard chapters only); a PDF engine — TeX including the
+`longtable` and `ulem` packages (ranking/PDF chapters only).
 
 ---
 

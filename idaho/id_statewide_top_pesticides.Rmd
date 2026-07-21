@@ -1,0 +1,244 @@
+---
+title: |
+  | Estimated Annual Agricultural Pesticide Use
+  | Idaho, Statewide Ranking 2014-2018
+date: '`r format(Sys.Date(), "%d %B %Y")`'
+output:
+  bookdown::pdf_document2:
+    number_sections: no
+    toc: no
+geometry: margin = 0.75in
+fontsize: 10pt
+link-citations: true
+linkcolor: blue
+urlcolor: blue
+---
+
+```{r knitr.global.options, include=F}
+knitr::opts_chunk$set(echo=F,
+                      warning=F,
+                      fig.align='center',
+                      fig.pos='H',
+                      fig.width=9,
+                      fig.height=6,
+                      out.width='100%',
+                      fig.path='Figs/',
+                      tidy.opts=list(width.cutoff=60),
+                      tidy=TRUE)
+
+options(scipen=999)
+```
+
+```{r load.packages, include=F}
+required_pkgs <- c("knitr", "bookdown", "dplyr", "tidyr", "readr", "ggplot2", "scales", "kableExtra")
+invisible(lapply(required_pkgs, function(pkg) library(pkg, character.only = TRUE)))
+```
+
+```{r constants}
+state_fips  <- "16"
+state_name  <- "Idaho"
+state_abbrev <- "ID"
+# 2019 is excluded: the county-level file available at the time of writing
+# is a partial/preliminary release covering only 69 compounds nationwide
+# (vs. ~400-410 in every other year, 1992-2018), so anchoring the "most
+# recent year" on it would silently drop hundreds of real compounds from
+# every ranking table. Re-run with 2015-2019 once a complete 2019 release
+# is available.
+window_years <- 2014:2018
+recent_year  <- max(window_years)
+
+cat_hex <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100",
+              "#e87ba4", "#008300", "#4a3aa7", "#e34948")
+class_colors <- c(Organophosphate = cat_hex[1], Carbamate = cat_hex[2], Other = "#898781")
+```
+
+```{r upload.and.clean.data, include=F}
+
+## Read 2014-2018 county-level estimates from ../estimates/EPest.county.estimates.<year>.txt
+
+read_year <- function(yr) {
+  read_delim(
+    sprintf("../estimates/EPest.county.estimates.%d.txt", yr),
+    delim = "\t",
+    col_types = cols(
+      COMPOUND = col_character(),
+      YEAR = col_integer(),
+      STATE_FIPS_CODE = col_character(),
+      COUNTY_FIPS_CODE = col_character(),
+      EPEST_LOW_KG = col_double(),
+      EPEST_HIGH_KG = col_double()
+    )
+  ) %>%
+    filter(STATE_FIPS_CODE == state_fips)
+}
+
+st_raw <- bind_rows(lapply(window_years, read_year))
+
+classification <- read_csv("../data/op_carbamate_classification.csv", col_types = cols())
+
+# Statewide totals: sum across all counties, per compound-year
+st_yearly <- st_raw %>%
+  group_by(COMPOUND, YEAR) %>%
+  summarize(EPEST_LOW_KG = sum(EPEST_LOW_KG, na.rm = TRUE),
+            EPEST_HIGH_KG = sum(EPEST_HIGH_KG, na.rm = TRUE), .groups = "drop")
+
+# Each window (1/3/5-yr) is ranked independently so a compound's presence
+# in the appendix tables never depends on whether it also happens to
+# appear in the *other* windows (e.g. a compound with real 2014-2018 use
+# but zero recorded use in the single most recent year must still show up
+# in the 5-yr appendix ranking).
+compute_windows <- function(yearly) {
+  one <- yearly %>%
+    filter(YEAR == recent_year) %>%
+    transmute(COMPOUND, EPEST_LOW_KG_1YR = EPEST_LOW_KG, EPEST_HIGH_KG_1YR = EPEST_HIGH_KG) %>%
+    arrange(desc(EPEST_HIGH_KG_1YR)) %>%
+    mutate(RANK_1YR = row_number())
+
+  three <- yearly %>%
+    filter(YEAR %in% tail(window_years, 3)) %>%
+    group_by(COMPOUND) %>%
+    summarize(EPEST_LOW_KG_3YR_AVG = mean(EPEST_LOW_KG), EPEST_HIGH_KG_3YR_AVG = mean(EPEST_HIGH_KG), .groups = "drop") %>%
+    arrange(desc(EPEST_HIGH_KG_3YR_AVG)) %>%
+    mutate(RANK_3YR = row_number())
+
+  five <- yearly %>%
+    group_by(COMPOUND) %>%
+    summarize(EPEST_LOW_KG_5YR_AVG = mean(EPEST_LOW_KG), EPEST_HIGH_KG_5YR_AVG = mean(EPEST_HIGH_KG), .groups = "drop") %>%
+    arrange(desc(EPEST_HIGH_KG_5YR_AVG)) %>%
+    mutate(RANK_5YR = row_number())
+
+  list(one = one, three = three, five = five)
+}
+
+st_w <- compute_windows(st_yearly)
+
+top_n <- 80
+
+# The main summary table (Table 1) intentionally requires a compound to
+# appear in all three windows at once, since it displays 1/3/5-yr figures
+# side by side for the same compound; the appendix tables below do not
+# use this joined version.
+st_ranked <- st_w$one %>%
+  inner_join(st_w$three, by = "COMPOUND") %>%
+  inner_join(st_w$five, by = "COMPOUND") %>%
+  mutate(across(where(is.numeric) & !starts_with("RANK"), ~round(.x)))
+
+st_top <- st_ranked %>%
+  arrange(RANK_1YR) %>%
+  slice(1:top_n) %>%
+  left_join(classification, by = "COMPOUND") %>%
+  mutate(CLASS = coalesce(CLASS, "Other")) %>%
+  select(RANK_1YR, COMPOUND, CLASS, EPEST_HIGH_KG_1YR, EPEST_HIGH_KG_3YR_AVG, EPEST_HIGH_KG_5YR_AVG)
+```
+
+# Summary
+
+Table \@ref(tab:merged-tables) lists the rank and best available estimates of
+mass applied (kg) for the top `r top_n` agricultural pesticides **statewide
+in `r state_name`** during `r recent_year`, as reported by [USGS Estimated
+Annual Agricultural Pesticide
+Use](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/) data,
+summed across all `r state_name` counties. The table also includes rank by
+3-year average (`r paste(range(tail(window_years,3)), collapse="-")`) and
+5-year average (`r paste(range(window_years), collapse="-")`) estimates of
+mass applied, and each compound's organophosphate/carbamate classification
+(see the Washington OP & carbamate trends chapter for the classification
+methodology, which is reused unchanged here). Rankings and estimates are
+based on the *EPest-high method* described by [Thelin and Stone
+(2013)](https://pubs.usgs.gov/sir/2013/5009/) and [Baker and Stone
+(2015)](https://pubs.usgs.gov/ds/0907/):
+
+> "EPest-low and EPest-high, are used to estimate a range of pesticide use.
+> Both EPest-low and EPest-high methods incorporate proprietary surveyed
+> rates for Crop Reporting Districts (CRDs), but EPest-low and EPest-high
+> estimates differ in how they treat situations when a CRD was surveyed and
+> pesticide use was not reported for a particular crop present in the CRD.
+> In these situations, EPest-low assumes zero use in the CRD for that
+> pesticide-by-crop combination. EPest-high, however, treats the unreported
+> use for that pesticide-by-crop combination in the CRD as missing data. In
+> this case, pesticide-by-crop use rates from neighboring CRDs or CRDs
+> within the same region are used to estimate the pesticide-by-crop
+> EPest-high rate for the CRD." [*-Pesticide National Synthesis Project
+> webpage*](https://water.usgs.gov/nawqa/pnsp/usage/maps/about.php)
+
+USGS lists several caveats of these data, in particular:
+
+* Reliability decreases with scale (e.g. "detailed interpretation of where
+  and how much use occurs within a county is not appropriate"); summing
+  county estimates to a statewide total inherits this caveat.
+* EPest-low estimates are more likely to reflect state-based restrictions
+  on pesticide use than EPest-high estimates.
+* A blank cell in the source file (no reported/estimated use for that
+  compound-year-county) is treated as zero in this chapter.
+* **2019 is excluded from this ranking.** The 2019 county-level file
+  available at the time of writing covers only 69 compounds nationwide,
+  versus roughly 400 compounds in every other year from 1992-2018 — a
+  partial/preliminary release, not a real drop in the number of pesticides
+  in use. Anchoring the ranking on it would silently omit hundreds of real
+  compounds. This chapter uses `r recent_year` (the most recent complete
+  year) as the 1-year snapshot instead; re-run with `r recent_year+1`
+  included once a complete 2019 release is available.
+
+```{r merged-tables, include=T}
+# NOTE: the 80-row table does not fit on one page. kableExtra's usual
+# "scale_down" (latex \resizebox) bundles the whole table into one atomic
+# box that cannot break across pages, which silently drops every row past
+# the page boundary instead of erroring. Use longtable (page-breaking)
+# with a smaller font and abbreviated class codes instead.
+display <- st_top %>%
+  mutate(CLASS = recode(CLASS, Organophosphate = "OP", Carbamate = "CB", Other = "-"))
+names(display) <- c(paste0("Rank (", state_abbrev, ")"), "Compound", "Class", "EPest-high 1yr",
+                     "EPest-high 3yr avg", "EPest-high 5yr avg")
+
+kable(display, "latex", booktabs = T, digits = 0, longtable = TRUE,
+      caption = paste0("Top ", top_n, " EPest-high Estimates Statewide (", state_abbrev, "), 1-Yr (", recent_year,
+                        "), 3-Yr Avg, 5-Yr Avg, with OP/Carbamate Classification (OP = organophosphate, ",
+                        "CB = carbamate, - = neither)")) %>%
+  kable_styling(latex_options = c("striped", "repeat_header", "HOLD_position"), font_size = 8)
+
+write.csv(st_top, paste0(tolower(state_abbrev), ".statewide.pesticide.use.2014-2018.csv"), row.names = FALSE)
+```
+
+```{r top-chart, include=T, fig.cap="Top 25 compounds statewide by EPest-high mass applied, most recent year, colored by chemical class."}
+top_chart <- st_top %>%
+  slice(1:25) %>%
+  mutate(COMPOUND = forcats::fct_reorder(COMPOUND, EPEST_HIGH_KG_1YR))
+
+ggplot(top_chart, aes(x = COMPOUND, y = EPEST_HIGH_KG_1YR, fill = CLASS)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = class_colors, name = "Class") +
+  scale_y_continuous(labels = comma) +
+  labs(title = paste0(state_name, " statewide top 25 pesticides, ", recent_year),
+       x = NULL, y = "EPest-high estimate (kg)") +
+  theme_minimal(base_size = 11) +
+  theme(legend.position = "bottom", panel.grid.minor = element_blank())
+```
+
+# Appendices
+
+```{r table-1yr, include=T}
+kable(head(st_w$one %>% arrange(RANK_1YR) %>%
+             select(RANK_1YR, COMPOUND, EPEST_LOW_KG_1YR, EPEST_HIGH_KG_1YR), n = 50),
+      "latex", booktabs = T, digits = 0,
+      caption = paste0("Top 50 Statewide Estimates, Range (EPest-low and EPest-high), 1-Yr, ", recent_year)) %>%
+  kable_styling(latex_options = c("striped", "scale_down"))
+```
+
+```{r table-3yr, include=T}
+kable(head(st_w$three %>% arrange(RANK_3YR) %>%
+             select(RANK_3YR, COMPOUND, EPEST_LOW_KG_3YR_AVG, EPEST_HIGH_KG_3YR_AVG), n = 50),
+      "latex", booktabs = T, digits = 0,
+      caption = paste0("Top 50 Statewide Estimates, Range (EPest-low and EPest-high), 3-Yr Avg, ",
+                        paste(range(tail(window_years,3)), collapse="-"))) %>%
+  kable_styling(latex_options = c("striped", "scale_down"))
+```
+
+```{r table-5yr, include=T}
+kable(head(st_w$five %>% arrange(RANK_5YR) %>%
+             select(RANK_5YR, COMPOUND, EPEST_LOW_KG_5YR_AVG, EPEST_HIGH_KG_5YR_AVG), n = 50),
+      "latex", booktabs = T, digits = 0,
+      caption = paste0("Top 50 Statewide Estimates, Range (EPest-low and EPest-high), 5-Yr Avg, ",
+                        paste(range(window_years), collapse="-"))) %>%
+  kable_styling(latex_options = c("striped", "scale_down"))
+```
