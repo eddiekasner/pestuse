@@ -43,7 +43,7 @@ applied, not necessarily more intensive use.
 
 ## Washington (`washington/`)
 
-Three chapters:
+Four chapters:
 
 1. **`pestuse.Rmd` → `pestuse.pdf` / `pestuse.md`** — Yakima County
    top-pesticide ranking (2012-2016). Lists rank and EPest-high mass
@@ -63,23 +63,40 @@ Three chapters:
    — statewide top-80 pesticide ranking, 2014-2018, with each compound's
    chemical class (abbreviated, with a key table) and a comparison to
    Yakima County's own ranking.
+4. **`wa_county_pesticide_use.Rmd` → `wa_county_pesticide_use.html`** —
+   interactive dashboard (flexdashboard) of the county-level detail behind
+   Chapters 2-3's statewide totals, 2014-2018 (same window as the ranking
+   chapter). Overview and Static Plots pages show choropleth maps of county
+   totals (offline, via the `maps`/`sf` packages) plus a top-10/top-15
+   county bar chart; County Ranking mirrors the statewide ranking chapter's
+   1yr/3yr-avg/5yr-avg format but for all 39 Washington counties; County
+   Explorer and Compound Explorer are crosstalk portals for browsing by
+   county, type, class, and compound. USGS's own documentation cautions
+   that these county-level figures are intended to be aggregated into
+   state totals rather than read as precise county-by-county figures — the
+   Overview and Methodology pages repeat this caveat prominently.
 
 ## Oregon (`oregon/`)
 
-Two chapters, the state-parameterized ones from Washington (no Yakima-style
-single-county chapter — see "Scope" below):
+Three chapters, the state-parameterized ones from Washington (no
+Yakima-style single-county chapter — see "Scope" below):
 
 1. **`or_pesticide_class_trends.Rmd` → `or_pesticide_class_trends.html`**
    — same dashboard as Washington Chapter 2, FIPS 41.
 2. **`or_statewide_top_pesticides.Rmd` → `or_statewide_top_pesticides.pdf`**
    — same ranking as Washington Chapter 3, FIPS 41 (no Yakima comparison
    column, since that was Washington-specific).
+3. **`or_county_pesticide_use.Rmd` → `or_county_pesticide_use.html`** —
+   same county-level dashboard as Washington Chapter 4, FIPS 41 (36 of 36
+   Oregon counties reported use in the 2014-2018 window).
 
 ## Idaho (`idaho/`)
 
-Same two chapters as Oregon, FIPS 16:
-`id_pesticide_class_trends.Rmd` / `.html` and
-`id_statewide_top_pesticides.Rmd` / `.pdf`.
+Same three chapters as Oregon, FIPS 16:
+`id_pesticide_class_trends.Rmd` / `.html`,
+`id_statewide_top_pesticides.Rmd` / `.pdf`, and
+`id_county_pesticide_use.Rmd` / `.html` (44 of 44 Idaho counties reported
+use in the 2014-2018 window).
 
 ## Pacific Northwest (`pacific_northwest/`)
 
@@ -112,12 +129,12 @@ rows for Alaska (FIPS 02) in every year, 1992-2019. USGS's Pesticide
 National Synthesis Project does not cover Alaska or Hawaii — this isn't a
 gap in how these reports were built, there's no source data to report on.
 
-## Scope note (why Oregon/Idaho only have 2 of Washington's 3 chapters)
+## Scope note (why Oregon/Idaho only have 3 of Washington's 4 chapters)
 
 Washington's Chapter 1 (Yakima County) is anchored to one specific county
 chosen for its own reasons, not a "change the FIPS code" template like
-Chapters 2 and 3 are — there's no obviously equivalent county to pick for
-Oregon or Idaho. Chapters 2 and 3 are fully state-parameterized (set
+Chapters 2-4 are — there's no obviously equivalent county to pick for
+Oregon or Idaho. Chapters 2-4 are fully state-parameterized (set
 `state_fips`/`state_name` at the top of the file) and were reused as-is.
 
 ## Rendering any chapter
@@ -132,8 +149,9 @@ rmarkdown::render("or_statewide_top_pesticides.Rmd")
 
 Dependencies: knitr, bookdown, dplyr, tidyr, readr, forcats, stringr,
 ggplot2, scales, kableExtra (all chapters); flexdashboard, plotly, DT,
-crosstalk (dashboard chapters only); a PDF engine — TeX including the
-`longtable` and `ulem` packages (ranking/PDF chapters only), plus
+crosstalk (dashboard chapters only); maps, sf (county-level dashboard
+chapters only, for offline choropleth maps); a PDF engine — TeX including
+the `longtable` and `ulem` packages (ranking/PDF chapters only), plus
 `pdflscape`/`lscape` (Pacific Northwest ranking chapter only, for its one
 landscape table).
 
