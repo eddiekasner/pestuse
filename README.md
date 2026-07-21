@@ -33,6 +33,12 @@ Water-Quality Assessment (NAWQA) Project page](https://water.usgs.gov/nawqa/pnsp
   Compiled once in the Washington chapter and reused unchanged by every
   state.
 
+**Note on comparing states/regions.** Washington, Oregon, and Idaho farm
+very different total acreages and crop mixes. Every raw-mass comparison in
+this repo (state vs. state, or state vs. the Pacific Northwest chapter) is
+absolute kg, not normalized by farmland — a higher number means more mass
+applied, not necessarily more intensive use.
+
 ---
 
 ## Washington (`washington/`)
@@ -75,6 +81,28 @@ Same two chapters as Oregon, FIPS 16:
 `id_pesticide_class_trends.Rmd` / `.html` and
 `id_statewide_top_pesticides.Rmd` / `.pdf`.
 
+## Pacific Northwest (`pacific_northwest/`)
+
+The region-wide counterpart to the three state folders: Washington, Oregon,
+and Idaho summed together, plus genuine state-vs-state comparisons that no
+single-state chapter can show on its own.
+
+1. **`pnw_pesticide_class_trends.Rmd` → `pnw_pesticide_class_trends.html`**
+   — same dashboard as each state's Chapter 2, but combining all three
+   states (FIPS 53/41/16). Overview, Interactive Portal, Compound Explorer,
+   and most of Static Plots show WA+OR+ID **summed together**. A dedicated
+   **State Comparison** page adds `STATE` as a third chart dimension (only
+   3 values, safe to color directly, unlike the 30-value `CLASS`): an
+   interactive combined trend line by state, plus a static "annual use by
+   state, faceted by type" chart repeated on the Static Plots page.
+2. **`pnw_regional_top_pesticides.Rmd` → `pnw_regional_top_pesticides.pdf`**
+   — top-80 ranking summed across every WA+OR+ID county, 2014-2018, with
+   **three** per-state rank columns (Rank WA / Rank OR / Rank ID) instead
+   of Washington's single Yakima-comparison column — showing where each
+   top compound concentrates, not just its regional total. The main table
+   is 9 columns wide and doesn't fit a portrait page even at a small font,
+   so it's the one table in this repo set in landscape.
+
 ## Alaska — not covered
 
 No `alaska/` folder: both source files
@@ -105,7 +133,9 @@ rmarkdown::render("or_statewide_top_pesticides.Rmd")
 Dependencies: knitr, bookdown, dplyr, tidyr, readr, forcats, stringr,
 ggplot2, scales, kableExtra (all chapters); flexdashboard, plotly, DT,
 crosstalk (dashboard chapters only); a PDF engine — TeX including the
-`longtable` and `ulem` packages (ranking/PDF chapters only).
+`longtable` and `ulem` packages (ranking/PDF chapters only), plus
+`pdflscape`/`lscape` (Pacific Northwest ranking chapter only, for its one
+landscape table).
 
 ---
 

@@ -1,0 +1,680 @@
+---
+title: "Pacific Northwest Pesticide Class Use Trends, 1992-2018"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    theme: bootstrap
+    source_code: embed
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+required_pkgs <- c("flexdashboard", "dplyr", "tidyr", "readr", "forcats", "stringr",
+                    "ggplot2", "plotly", "DT", "crosstalk", "scales", "knitr", "kableExtra")
+invisible(lapply(required_pkgs, function(pkg) {
+  library(pkg, character.only = TRUE)
+}))
+
+options(scipen = 999)
+```
+
+```{r constants}
+# ---- Report scope -----------------------------------------------------
+# Washington, Oregon, Idaho -- the region this chapter summarizes. Order
+# here fixes the order everywhere else (palette, legends, tables).
+region_fips  <- c("53", "41", "16")
+region_names <- c("53" = "Washington", "41" = "Oregon", "16" = "Idaho")
+state_levels <- unname(region_names[region_fips])
+region_label <- "Pacific Northwest (WA/OR/ID)"
+
+crop_cols <- c("Corn", "Soybeans", "Wheat", "Cotton", "Vegetables_and_fruit",
+                "Rice", "Orchards_and_grapes", "Alfalfa", "Pasture_and_hay",
+                "Other_crops")
+
+# ---- Palette (validated categorical order; see dataviz skill) ---------
+cat_hex <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100",
+              "#e87ba4", "#008300", "#4a3aa7", "#e34948")
+muted_grey <- "#898781"
+
+# TYPE is the broad, ~7-value grouping used for headline charts (fixed
+# categorical color per type, "Other" folded to neutral grey). CLASS is
+# the ~30-value chemical-family grouping (organophosphate, pyrethrin/pyrethroid,
+# triazine, ...) used for filtering/drilldown, not as a simultaneous
+# multi-series color encoding. STATE is a third, region-specific dimension
+# (only 3 values, so it's safe to use as a chart color too -- see the State
+# Comparison page).
+type_levels <- c("Insecticide", "Herbicide", "Fungicide", "Fumigant",
+                  "Plant Growth Regulator", "Biological", "Other")
+type_colors <- setNames(c(cat_hex[1:6], muted_grey), type_levels)
+state_colors <- setNames(cat_hex[seq_along(state_levels)], state_levels)
+
+seq_blue <- c("#cde2fb", "#9ec5f4", "#5598e7", "#2a78d6", "#184f95")
+```
+
+```{r load-data}
+raw <- read_delim(
+  "../estimates/HighEstimate_AgPestUsebyCropGroup92to19.txt",
+  delim = "\t",
+  col_types = cols(
+    State_FIPS_code = col_character(),
+    State           = col_character(),
+    Compound        = col_character(),
+    Year            = col_integer(),
+    Units           = col_character(),
+    .default        = col_double()
+  )
+)
+
+classification <- read_csv("../data/pesticide_classification.csv", col_types = cols())
+
+# 2019 is excluded: this file's 2019 slice is a partial/preliminary release
+# covering only 69 compounds nationwide (vs. ~400-410 in every other year),
+# and that shortfall hits WA, OR, and ID alike. Including 2019 would draw a
+# sharp artificial cliff at the end of every trend line. See the regional
+# ranking chapter for the same exclusion.
+pnw <- raw %>%
+  filter(State_FIPS_code %in% region_fips, Year <= 2018) %>%
+  inner_join(classification, by = c("Compound" = "COMPOUND")) %>%
+  mutate(
+    TYPE = factor(TYPE, levels = type_levels),
+    STATE = factor(region_names[State_FIPS_code], levels = state_levels)
+  )
+
+pnw_long <- pnw %>%
+  pivot_longer(cols = all_of(crop_cols), names_to = "CROP_GROUP", values_to = "EPEST_HIGH_KG") %>%
+  mutate(
+    EPEST_HIGH_KG = replace_na(EPEST_HIGH_KG, 0),
+    CROP_GROUP = str_replace_all(CROP_GROUP, "_", " ")
+  ) %>%
+  filter(!is.na(Year)) %>%
+  select(Year, STATE, Compound, CLASS, TYPE, CROP_GROUP, EPEST_HIGH_KG)
+
+# Fixed, stable crop-group order (by total 1992-2018 mass, region-wide) so
+# a given crop group keeps the same color everywhere in the dashboard.
+# Crop groups with zero recorded use across the whole region and period
+# are dropped rather than shown as empty series.
+crop_group_totals <- pnw_long %>%
+  group_by(CROP_GROUP) %>%
+  summarize(TOTAL_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  filter(TOTAL_KG > 0) %>%
+  arrange(desc(TOTAL_KG))
+
+crop_group_levels <- crop_group_totals$CROP_GROUP
+crop_group_colors <- setNames(cat_hex[seq_along(crop_group_levels)], crop_group_levels)
+
+pnw_long <- pnw_long %>%
+  filter(CROP_GROUP %in% crop_group_levels) %>%
+  mutate(CROP_GROUP = factor(CROP_GROUP, levels = crop_group_levels))
+
+# Types with zero recorded use are dropped from TYPE-faceted charts the
+# same way crop groups are.
+type_totals <- pnw_long %>%
+  group_by(TYPE) %>%
+  summarize(TOTAL_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  filter(TOTAL_KG > 0) %>%
+  arrange(match(TYPE, type_levels))
+active_types <- as.character(type_totals$TYPE)
+
+year_range <- range(pnw_long$Year)
+latest_year <- max(pnw_long$Year)
+first_year <- min(pnw_long$Year)
+
+# ---- Pre-aggregated summaries used throughout the dashboard -----------
+annual_by_type <- pnw_long %>%
+  group_by(Year, TYPE) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
+
+annual_by_type_crop <- pnw_long %>%
+  filter(TYPE %in% active_types) %>%
+  group_by(Year, TYPE, CROP_GROUP) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  mutate(TYPE = factor(TYPE, levels = active_types))
+
+annual_by_compound <- pnw_long %>%
+  group_by(Year, TYPE, CLASS, Compound) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
+
+annual_overall <- pnw_long %>%
+  group_by(Year) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
+
+# ---- State-comparison summaries (this chapter's reason to exist) ------
+annual_by_state <- pnw_long %>%
+  group_by(Year, STATE) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
+
+annual_by_state_type <- pnw_long %>%
+  filter(TYPE %in% active_types) %>%
+  group_by(Year, STATE, TYPE) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  mutate(TYPE = factor(TYPE, levels = active_types))
+```
+
+```{r overview-stats}
+total_latest <- annual_overall %>% filter(Year == latest_year) %>% pull(EPEST_HIGH_KG)
+total_first  <- annual_overall %>% filter(Year == first_year)  %>% pull(EPEST_HIGH_KG)
+total_pct_change <- 100 * (total_latest - total_first) / total_first
+
+top_type_latest <- annual_by_type %>%
+  filter(Year == latest_year) %>%
+  arrange(desc(EPEST_HIGH_KG)) %>%
+  slice(1)
+
+top_crop_latest <- annual_by_type_crop %>%
+  filter(Year == latest_year) %>%
+  group_by(CROP_GROUP) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  arrange(desc(EPEST_HIGH_KG)) %>%
+  slice(1)
+
+top_state_latest <- annual_by_state %>%
+  filter(Year == latest_year) %>%
+  arrange(desc(EPEST_HIGH_KG)) %>%
+  slice(1)
+```
+
+Overview
+=======================================================================
+
+Row {data-height=140}
+-----------------------------------------------------------------------
+
+### Total pesticide use, `r latest_year` {.value-box}
+
+```{r}
+valueBox(paste0(comma(round(total_latest)), " kg"),
+         caption = paste0("All classified compounds, ", latest_year, " (EPest-high)"),
+         icon = "fa-flask", color = cat_hex[1])
+```
+
+### Top type, `r latest_year` {.value-box}
+
+```{r}
+valueBox(paste0(as.character(top_type_latest$TYPE), ": ", comma(round(top_type_latest$EPEST_HIGH_KG)), " kg"),
+         caption = paste0("Largest pesticide type by mass, ", latest_year),
+         icon = "fa-layer-group", color = cat_hex[2])
+```
+
+### Change since `r first_year` {.value-box}
+
+```{r}
+valueBox(paste0(ifelse(total_pct_change >= 0, "+", ""), round(total_pct_change), "%"),
+         caption = paste0("Total classified pesticide use, ", first_year, "-", latest_year),
+         icon = ifelse(total_pct_change >= 0, "fa-arrow-up", "fa-arrow-down"),
+         # Explicit hex, not the "warning" keyword: flexdashboard's default
+         # theme pairs "warning" with white value-box text on a pale yellow
+         # background, which is nearly unreadable.
+         color = ifelse(total_pct_change >= 0, cat_hex[2], "success"))
+```
+
+### Top state, `r latest_year` {.value-box}
+
+```{r}
+valueBox(paste0(as.character(top_state_latest$STATE), ": ", comma(round(top_state_latest$EPEST_HIGH_KG)), " kg"),
+         caption = paste0("Largest pesticide use by state, ", latest_year),
+         icon = "fa-map", color = "primary")
+```
+
+### Top crop group, `r latest_year` {.value-box}
+
+```{r}
+valueBox(as.character(top_crop_latest$CROP_GROUP),
+         caption = paste0("Largest combined use across all classes, ", latest_year),
+         icon = "fa-seedling", color = "primary")
+```
+
+Row {data-height=430}
+-----------------------------------------------------------------------
+
+### Overall annual use — all classified pesticides combined, `r first_year`-`r latest_year`
+
+```{r}
+p <- plot_ly(annual_overall, x = ~Year, y = ~EPEST_HIGH_KG, type = "scatter", mode = "lines",
+             fill = "tozeroy", fillcolor = "rgba(42,120,214,0.15)",
+             line = list(color = cat_hex[1], width = 2),
+             hovertemplate = "%{x}: %{y:,.0f} kg<extra></extra>") %>%
+  layout(
+    yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+    xaxis = list(title = "Year", dtick = 2),
+    hovermode = "x unified"
+  )
+p
+```
+
+Row {data-height=430}
+-----------------------------------------------------------------------
+
+### Annual use by pesticide type, `r first_year`-`r latest_year`
+
+```{r}
+plot_ly(annual_by_type, x = ~Year, y = ~EPEST_HIGH_KG, color = ~TYPE,
+        colors = type_colors, type = "scatter", mode = "lines+markers",
+        line = list(width = 2), marker = list(size = 5),
+        hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
+  layout(
+    yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+    xaxis = list(title = "Year", dtick = 2),
+    legend = list(title = list(text = "Type"), orientation = "h", y = -0.2),
+    hovermode = "x unified"
+  )
+```
+
+State Comparison
+=======================================================================
+
+Row {data-height=480}
+-----------------------------------------------------------------------
+
+### Annual use by state, `r first_year`-`r latest_year`
+
+```{r}
+plot_ly(annual_by_state, x = ~Year, y = ~EPEST_HIGH_KG, color = ~STATE,
+        colors = state_colors, type = "scatter", mode = "lines+markers",
+        line = list(width = 2), marker = list(size = 5),
+        hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
+  layout(
+    yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+    xaxis = list(title = "Year", dtick = 2),
+    legend = list(title = list(text = "State"), orientation = "h", y = -0.2),
+    hovermode = "x unified"
+  )
+```
+
+Row {data-height=400}
+-----------------------------------------------------------------------
+
+### Underlying data (state x type view)
+
+Tip: none of the mass totals below are shares of the regional total, and
+the three states farm very different total acreages, so raw kg is not a
+fair "which state uses more" comparison on its own (see the caveat on the
+Methodology page). A faceted per-state-by-type static chart is on the
+Static Plots page.
+
+```{r}
+datatable(
+  annual_by_state_type,
+  extensions = "Scroller",
+  colnames = c("Year", "State", "Type", "EPest-high (kg)"),
+  options = list(deferRender = TRUE, scrollY = 260, scroller = TRUE, dom = "ftip"),
+  rownames = FALSE
+) %>%
+  formatRound("EPEST_HIGH_KG", 0)
+```
+
+Interactive Portal
+=======================================================================
+
+Row {data-height=700}
+-----------------------------------------------------------------------
+
+### Explore by crop group
+
+Tip: lines are colored by crop group and dashed by type, **summed across
+all three states** (see the State Comparison page to split by state
+instead). Class-level filtering (30 chemical classes) is on the Compound
+Explorer page instead — plotting crop-group trends split by all 30
+classes at once would make the lines and legend unreadable, so this view
+stops at type (7 categories).
+
+```{r portal-crop-setup}
+# Grain matches exactly what's plotted (Year x Type x Crop group): unlike
+# a compound-level chart, a crop-group line has no compound identity to
+# split on, so if the shared data still had a Class (or State) dimension
+# underneath, multiple values' rows for the same year/crop-group would
+# connect into one jagged, meaningless line. Aggregating away Class and
+# State here (State Comparison and Compound Explorer cover those levels)
+# keeps every plotted line a true 1-row-per-year series regardless of
+# which Type boxes are checked.
+type_crop_active <- pnw_long %>%
+  filter(TYPE %in% active_types) %>%
+  group_by(TYPE, CROP_GROUP) %>%
+  mutate(PAIR_TOTAL = sum(EPEST_HIGH_KG)) %>%
+  ungroup() %>%
+  filter(PAIR_TOTAL > 0) %>%
+  group_by(Year, TYPE, CROP_GROUP) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
+
+crop_shared <- SharedData$new(type_crop_active, ~paste(Year, TYPE, CROP_GROUP), group = "crop_portal")
+```
+
+```{r}
+htmltools::div(
+  style = "padding: 8px 8px 8px 22px;",
+  bscols(
+    widths = c(3, 9),
+    list(
+      filter_checkbox("type_crop", "Type", crop_shared, ~TYPE, inline = TRUE),
+      filter_select("crop_sel", "Crop group", crop_shared, ~CROP_GROUP, multiple = TRUE),
+      filter_slider("year_crop", "Year", crop_shared, ~Year, step = 1, sep = "", width = "100%")
+    ),
+    plot_ly(crop_shared, x = ~Year, y = ~EPEST_HIGH_KG, color = ~CROP_GROUP,
+            colors = crop_group_colors, linetype = ~TYPE,
+            type = "scatter", mode = "lines+markers", height = 600,
+            line = list(width = 2), marker = list(size = 5),
+            hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
+      layout(
+        yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+        xaxis = list(title = "Year"),
+        legend = list(title = list(text = "Crop group / type"), font = list(size = 9))
+      )
+  )
+)
+```
+
+Row {data-height=400}
+-----------------------------------------------------------------------
+
+### Underlying data (crop group view)
+
+```{r}
+datatable(
+  crop_shared,
+  extensions = "Scroller",
+  colnames = c("Year", "Type", "Crop group", "EPest-high (kg)"),
+  options = list(deferRender = TRUE, scrollY = 260, scroller = TRUE, dom = "ftip"),
+  rownames = FALSE
+) %>%
+  formatRound("EPEST_HIGH_KG", 0)
+```
+
+Compound Explorer
+=======================================================================
+
+Row {data-height=700}
+-----------------------------------------------------------------------
+
+### Explore by compound
+
+Each line is one compound (color and hover label identify it), **summed
+across all three states**. Narrow the Compound filter (or the Type/Class
+filters) to a handful of active ingredients for the clearest view.
+
+```{r portal-compound-setup}
+compound_shared <- SharedData$new(annual_by_compound, ~paste(Year, TYPE, CLASS, Compound), group = "compound_portal")
+```
+
+```{r}
+htmltools::div(
+  style = "padding: 8px 8px 8px 22px;",
+  bscols(
+    widths = c(3, 9),
+    list(
+      filter_checkbox("type_cmp", "Type", compound_shared, ~TYPE, inline = TRUE),
+      filter_select("class_cmp", "Class", compound_shared, ~CLASS, multiple = TRUE),
+      filter_select("compound_sel", "Compound", compound_shared, ~Compound, multiple = TRUE),
+      filter_slider("year_cmp", "Year", compound_shared, ~Year, step = 1, sep = "", width = "100%")
+    ),
+    plot_ly(compound_shared, x = ~Year, y = ~EPEST_HIGH_KG, color = ~Compound,
+            text = ~paste0(TYPE, " / ", CLASS), height = 600,
+            type = "scatter", mode = "lines+markers",
+            line = list(width = 1.5), marker = list(size = 4),
+            hovertemplate = "%{fullData.name} (%{text}), %{x}: %{y:,.0f} kg<extra></extra>") %>%
+      layout(
+        yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+        xaxis = list(title = "Year"),
+        legend = list(title = list(text = "Compound"), font = list(size = 9))
+      )
+  )
+)
+```
+
+Row {data-height=400}
+-----------------------------------------------------------------------
+
+### Underlying data (compound view)
+
+```{r}
+datatable(
+  compound_shared,
+  extensions = "Scroller",
+  colnames = c("Year", "Type", "Class", "Compound", "EPest-high (kg)"),
+  options = list(deferRender = TRUE, scrollY = 260, scroller = TRUE, dom = "ftip"),
+  rownames = FALSE
+) %>%
+  formatRound("EPEST_HIGH_KG", 0)
+```
+
+Static Plots
+=======================================================================
+
+Row {data-height=500}
+-----------------------------------------------------------------------
+
+### Overall annual use by type
+
+```{r static-type-trend, fig.width=10, fig.height=5}
+ggplot(annual_by_type, aes(x = Year, y = EPEST_HIGH_KG, color = TYPE)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.8) +
+  scale_color_manual(values = type_colors, name = "Type") +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(first_year, latest_year, by = 2)) +
+  labs(
+    title = paste0(region_label, ": Annual pesticide use by type, ", first_year, "-", latest_year),
+    subtitle = "USGS EPest-high estimates, summed across WA + OR + ID and all reported crop groups",
+    x = NULL, y = "Mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+
+### Annual use by state
+
+```{r static-state-trend, fig.width=10, fig.height=5}
+ggplot(annual_by_state, aes(x = Year, y = EPEST_HIGH_KG, color = STATE)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.8) +
+  scale_color_manual(values = state_colors, name = "State") +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(first_year, latest_year, by = 2)) +
+  labs(
+    title = paste0(region_label, ": Annual pesticide use by state, ", first_year, "-", latest_year),
+    subtitle = "USGS EPest-high estimates, all classified compounds and crop groups",
+    x = NULL, y = "Mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+
+Row {data-height=500}
+-----------------------------------------------------------------------
+
+### Top 20 compounds by cumulative use, `r first_year`-`r latest_year`
+
+```{r static-top-compounds, fig.width=10, fig.height=5}
+top_compounds <- annual_by_compound %>%
+  group_by(TYPE, CLASS, Compound) %>%
+  summarize(TOTAL_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  arrange(desc(TOTAL_KG)) %>%
+  slice(1:20) %>%
+  mutate(Compound = fct_reorder(Compound, TOTAL_KG))
+
+ggplot(top_compounds, aes(x = Compound, y = TOTAL_KG, fill = TYPE)) +
+  geom_col() +
+  coord_flip() +
+  scale_fill_manual(values = type_colors, name = "Type") +
+  scale_y_continuous(labels = comma) +
+  labs(
+    title = paste0("Top 20 compounds region-wide by cumulative mass applied, ", first_year, "-", latest_year),
+    x = NULL, y = "Cumulative mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(legend.position = "bottom", panel.grid.minor = element_blank(), plot.title = element_text(face = "bold"))
+```
+
+### Annual use by state, faceted by type
+
+```{r static-state-by-type, fig.width=10, fig.height=5}
+ggplot(annual_by_state_type, aes(x = Year, y = EPEST_HIGH_KG, color = STATE)) +
+  geom_line(linewidth = 1) +
+  facet_wrap(~TYPE, ncol = 2, scales = "free_y") +
+  scale_color_manual(values = state_colors, name = "State") +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(first_year, latest_year, by = 6)) +
+  labs(
+    title = "Annual use by state, faceted by type",
+    x = NULL, y = "Mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+Row {data-height=650}
+-----------------------------------------------------------------------
+
+### Annual use by crop group, faceted by type (region-wide)
+
+```{r static-crop-area, fig.width=10, fig.height=7}
+ggplot(annual_by_type_crop, aes(x = Year, y = EPEST_HIGH_KG, fill = CROP_GROUP)) +
+  geom_area(position = "stack") +
+  facet_wrap(~TYPE, ncol = 2, scales = "free_y") +
+  scale_fill_manual(values = crop_group_colors, name = "Crop group") +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(first_year, latest_year, by = 6)) +
+  labs(
+    title = "Annual use by crop group, faceted by type",
+    subtitle = "Stacked EPest-high estimates, summed across WA + OR + ID; crop group order fixed by total 1992-2018 mass",
+    x = NULL, y = "Mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+Row {data-height=650}
+-----------------------------------------------------------------------
+
+### Use intensity by year and crop group (region-wide)
+
+```{r static-heatmap, fig.width=10, fig.height=7}
+kg_breaks <- c(0, 10, 100, 1000, 10000, 100000, 1000000)
+kg_breaks <- kg_breaks[kg_breaks <= max(annual_by_type_crop$EPEST_HIGH_KG)]
+
+ggplot(annual_by_type_crop, aes(x = Year, y = CROP_GROUP, fill = log1p(EPEST_HIGH_KG))) +
+  geom_tile(color = "white", linewidth = 0.3) +
+  facet_wrap(~TYPE, ncol = 2) +
+  scale_fill_gradientn(colors = seq_blue, name = "kg",
+                        breaks = log1p(kg_breaks), labels = comma(kg_breaks)) +
+  scale_x_continuous(breaks = seq(first_year, latest_year, by = 6), expand = c(0, 0)) +
+  labs(
+    title = "Use intensity by year and crop group (log scale)",
+    x = NULL, y = NULL
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid = element_blank(),
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold")
+  )
+```
+
+Methodology & Data
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### About this dashboard
+
+Data source: USGS Pesticide National Synthesis Project, *Estimated Annual
+Agricultural Pesticide Use for Counties/States, by Crop Group* (1992-2019),
+file `HighEstimate_AgPestUsebyCropGroup92to19.txt`, downloaded from
+[ScienceBase item 6081ae7cd34e8564d6866222](https://www.sciencebase.gov/catalog/item/6081ae7cd34e8564d6866222).
+**This dashboard uses 1992-2018 only** — the file's 2019 slice is a
+partial/preliminary release covering just 69 compounds nationwide versus
+roughly 400 in every other year, for all three states alike. With the
+full classification in play, most compounds have no 2019 row at all, which
+would draw a sharp artificial drop at the end of every trend line if
+included. Re-run once a complete 2019 release is available.
+
+This dashboard covers **`r region_label`** — Washington (FIPS 53), Oregon
+(FIPS 41), and Idaho (FIPS 16) summed together, plus a dedicated State
+Comparison page for the three states side by side. It's built from the
+same `r nrow(classification)`-compound classification
+(`data/pesticide_classification.csv`) as each state's own chapter.
+
+**Comparing states by raw mass is not apples to apples.** Washington,
+Oregon, and Idaho farm very different total acreages and crop mixes, so a
+higher kg total for one state does not by itself mean heavier *use
+intensity* — it may just mean more farmland. This chapter reports absolute
+mass only; it does not normalize by acreage, and none of the charts here
+should be read as "State X is dirtier than State Y" without that context.
+
+**Three grouping columns.** `TYPE` is the broad functional category
+(Insecticide, Herbicide, Fungicide, Fumigant, Plant Growth Regulator,
+Biological, Other) used for the headline charts on the Overview and Static
+Plots pages. `CLASS` is the specific chemical family (organophosphate,
+pyrethrin/pyrethroid, triazine, DMI fungicide, ...) used for filtering on
+the Interactive Portal and Compound Explorer pages — there are too many
+classes to plot as simultaneous colored series, so they're a filter
+dimension rather than a chart aesthetic. `STATE` (only 3 values) is safe
+to use as a direct chart color and appears on the State Comparison and
+Static Plots pages.
+
+**EPest-high method.** Values are the *EPest-high* estimates described by
+Baker and Stone (2015) and Thelin and Stone (2013): where a Crop Reporting
+District (CRD) was surveyed but use of a given pesticide-by-crop combination
+was not reported, EPest-high treats that as missing data and imputes a rate
+from neighboring/regional CRDs, rather than assuming zero use (EPest-low).
+This dataset provides EPest-high only — EPest-low is not available in this
+crop-group product.
+
+**Crop groups.** USGS aggregates crop-specific use into 10 groups: Corn,
+Soybeans, Wheat, Cotton, Vegetables & fruit, Rice, Orchards & grapes, Alfalfa,
+Pasture & hay, and Other crops. Groups with zero recorded region-wide use
+across 1992-2018 for the classified compounds are omitted from the charts
+above.
+
+**Caveats (per USGS):**
+
+* Reliability decreases with scale (e.g. "detailed interpretation of where
+  and how much use occurs within a county is not appropriate"); summing
+  three states together inherits this caveat at an even larger scale.
+* Recent years use projected county/state crop acreage from the most recent
+  Census of Agriculture at time of estimation and are revised as new Census
+  data become available.
+* A blank cell in the source file (no reported/estimated use for that
+  compound-year-crop-group) is treated as zero in this dashboard.
+* Classification into chemical classes is necessarily a simplification —
+  a handful of compounds have real claims to more than one class (e.g.
+  fenoxycarb is a carbamate insect growth regulator; propamocarb is a
+  carbamic-acid-ester fungicide, not grouped with the insecticide/herbicide
+  carbamates). Each compound is assigned to the single class judged most
+  useful for a chemical-class trends view.
+
+### Pesticide classification
+
+`r nrow(classification)` compounds classified into `r n_distinct(classification$CLASS)`
+chemical classes and `r n_distinct(classification$TYPE)` broad types.
+Compounds reported per state: `r knitr::combine_words(paste0(state_levels, " (", sapply(state_levels, function(s) n_distinct(pnw$Compound[pnw$STATE == s])), ")"))`.
+
+```{r classification-table}
+classification %>%
+  arrange(TYPE, CLASS, COMPOUND) %>%
+  select(COMPOUND, CLASS, TYPE) %>%
+  datatable(
+    colnames = c("Compound", "Class", "Type"),
+    options = list(pageLength = 15, dom = "ftip"),
+    rownames = FALSE
+  )
+```

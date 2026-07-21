@@ -54,7 +54,7 @@
 53,"CAPTAN","Other Fungicide","FUN","Fungicide",7743,15295,22238
 54,"BOSCALID","SDHI","SDH","Fungicide",7279,6215,7401
 55,"ETHOFUMESATE","Other Herbicide","HRB","Herbicide",6735,10641,8341
-56,"CYHALOTHRIN-LAMBDA","Pyrethroid","PYR","Insecticide",6440,4684,3966
+56,"CYHALOTHRIN-LAMBDA","Pyrethrin/Pyrethroid","PYR","Insecticide",6440,4684,3966
 57,"PINOXADEN","Other Herbicide","HRB","Herbicide",6154,3176,2928
 58,"TERBACIL","Other Herbicide","HRB","Herbicide",6151,3077,3000
 59,"CLETHODIM","Other Herbicide","HRB","Herbicide",5586,6163,5476
@@ -71,7 +71,7 @@
 70,"FLUMIOXAZIN","Other Herbicide","HRB","Herbicide",3836,2183,1982
 71,"MCPB","Phenoxy","PHX","Herbicide",3768,1471,1231
 72,"BENZOVINDIFLUPYR","SDHI","SDH","Fungicide",3722,1368,1368
-73,"ALPHA CYPERMETHRIN","Pyrethroid","PYR","Insecticide",3679,1921,1921
+73,"ALPHA CYPERMETHRIN","Pyrethrin/Pyrethroid","PYR","Insecticide",3679,1921,1921
 74,"SPIROTETRAMAT","Other Insecticide/Miticide","INS","Insecticide",3638,3940,3858
 75,"PYRIMETHANIL","Other Fungicide","FUN","Fungicide",3625,2858,2617
 76,"MEFENOXAM","Other Fungicide","FUN","Fungicide",3552,4376,3751

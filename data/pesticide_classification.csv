@@ -11,7 +11,7 @@ ACETOCHLOR,Chloroacetanilide,CAA,Herbicide
 ACIBENZOLAR,Other Fungicide,FUN,Fungicide
 ALACHLOR,Chloroacetanilide,CAA,Herbicide
 ALDICARB,Carbamate,CB,Insecticide
-ALPHA CYPERMETHRIN,Pyrethroid,PYR,Insecticide
+ALPHA CYPERMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
 ALUMINUM PHOSPHIDE,Fumigant,FUM,Fumigant
 AMETOCTRADIN,Other Fungicide,FUN,Fungicide
 AMINOPYRALID,Other Herbicide,HRB,Herbicide
@@ -40,7 +40,7 @@ BENTAZONE,Other Herbicide,HRB,Herbicide
 BENZOVINDIFLUPYR,SDHI,SDH,Fungicide
 BICYCLOPYRONE,Other Herbicide,HRB,Herbicide
 BIFENAZATE,Other Insecticide/Miticide,INS,Insecticide
-BIFENTHRIN,Pyrethroid,PYR,Insecticide
+BIFENTHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
 BORDEAUX MIXTURE,Inorganic/Mineral,INO,Fungicide
 BOSCALID,SDHI,SDH,Fungicide
 BROMACIL,Other Herbicide,HRB,Herbicide
@@ -94,11 +94,11 @@ CYCLOATE,Thiocarbamate,TC,Herbicide
 CYDIA POMONELLA,Biological/Microbial,BIO,Biological
 CYFLUFENAMID,Other Fungicide,FUN,Fungicide
 CYFLUMETOFEN,Other Insecticide/Miticide,INS,Insecticide
-CYFLUTHRIN,Pyrethroid,PYR,Insecticide
-CYHALOTHRIN-GAMMA,Pyrethroid,PYR,Insecticide
-CYHALOTHRIN-LAMBDA,Pyrethroid,PYR,Insecticide
+CYFLUTHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
+CYHALOTHRIN-GAMMA,Pyrethrin/Pyrethroid,PYR,Insecticide
+CYHALOTHRIN-LAMBDA,Pyrethrin/Pyrethroid,PYR,Insecticide
 CYMOXANIL,Other Fungicide,FUN,Fungicide
-CYPERMETHRIN,Pyrethroid,PYR,Insecticide
+CYPERMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
 CYPROCONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
 CYPRODINIL,Other Fungicide,FUN,Fungicide
 CYTOKININ,Plant Growth Regulator,PGR,Plant Growth Regulator
@@ -106,7 +106,7 @@ DALAPON,Other Herbicide,HRB,Herbicide
 DAMINOZIDE,Plant Growth Regulator,PGR,Plant Growth Regulator
 DCPA,Other Herbicide,HRB,Herbicide
 DECAN-1-OL,Plant Growth Regulator,PGR,Plant Growth Regulator
-DELTAMETHRIN,Pyrethroid,PYR,Insecticide
+DELTAMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
 DEMETON,Organophosphate,OP,Insecticide
 DESMEDIPHAM,Carbamate,CB,Herbicide
 DIALLATE,Thiocarbamate,TC,Herbicide
@@ -140,7 +140,7 @@ EMAMECTIN,Avermectin,AVM,Insecticide
 ENDOSULFAN,Organochlorine,OC,Insecticide
 ENDOTHAL,Other Herbicide,HRB,Herbicide
 EPTC,Thiocarbamate,TC,Herbicide
-ESFENVALERATE,Pyrethroid,PYR,Insecticide
+ESFENVALERATE,Pyrethrin/Pyrethroid,PYR,Insecticide
 ETHALFLURALIN,Dinitroaniline,DNA,Herbicide
 ETHEPHON,Plant Growth Regulator,PGR,Plant Growth Regulator
 ETHION,Organophosphate,OP,Insecticide
@@ -158,10 +158,10 @@ FENBUTATIN OXIDE,Other Insecticide/Miticide,INS,Insecticide
 FENHEXAMID,Other Fungicide,FUN,Fungicide
 FENOXAPROP,Other Herbicide,HRB,Herbicide
 FENOXYCARB,Carbamate,CB,Insecticide
-FENPROPATHRIN,Pyrethroid,PYR,Insecticide
+FENPROPATHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
 FENPYROXIMATE,Other Insecticide/Miticide,INS,Insecticide
 FENTIN,Other Fungicide,FUN,Fungicide
-FENVALERATE,Pyrethroid,PYR,Insecticide
+FENVALERATE,Pyrethrin/Pyrethroid,PYR,Insecticide
 FERBAM,Dithiocarbamate,DTC,Fungicide
 FIPRONIL,Phenylpyrazole,PHP,Insecticide
 FLAZASULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
@@ -171,7 +171,7 @@ FLUAZIFOP,Other Herbicide,HRB,Herbicide
 FLUAZINAM,Other Fungicide,FUN,Fungicide
 FLUBENDIAMIDE,Diamide,DIA,Insecticide
 FLUCARBAZONE,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-FLUCYTHRINATE,Pyrethroid,PYR,Insecticide
+FLUCYTHRINATE,Pyrethrin/Pyrethroid,PYR,Insecticide
 FLUDIOXONIL,Other Fungicide,FUN,Fungicide
 FLUFENACET,Chloroacetanilide,CAA,Herbicide
 FLUMETSULAM,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
@@ -287,7 +287,7 @@ PEBULATE,Thiocarbamate,TC,Herbicide
 PELARGONIC ACID,Other Herbicide,HRB,Herbicide
 PENDIMETHALIN,Dinitroaniline,DNA,Herbicide
 PENTHIOPYRAD,SDHI,SDH,Fungicide
-PERMETHRIN,Pyrethroid,PYR,Insecticide
+PERMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
 PETROLEUM DISTILLATE,Other Insecticide/Miticide,INS,Insecticide
 PETROLEUM OIL,Other Insecticide/Miticide,INS,Insecticide
 PHENMEDIPHAM,Carbamate,CB,Herbicide
@@ -322,7 +322,7 @@ PYMETROZINE,Other Insecticide/Miticide,INS,Insecticide
 PYRACLOSTROBIN,Strobilurin (QoI),QOI,Fungicide
 PYRAFLUFEN ETHYL,Other Herbicide,HRB,Herbicide
 PYRASULFOTOLE,Other Herbicide,HRB,Herbicide
-PYRETHRINS,Other Insecticide/Miticide,INS,Insecticide
+PYRETHRINS,Pyrethrin/Pyrethroid,PYR,Insecticide
 PYRIDABEN,Other Insecticide/Miticide,INS,Insecticide
 PYRIDATE,Other Herbicide,HRB,Herbicide
 PYRIMETHANIL,Other Fungicide,FUN,Fungicide
@@ -364,7 +364,7 @@ TEBUCONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
 TEBUFENOZIDE,Insect Growth Regulator,IGR,Insecticide
 TEBUPIRIMPHOS,Organophosphate,OP,Insecticide
 TEBUTHIURON,Other Herbicide,HRB,Herbicide
-TEFLUTHRIN,Pyrethroid,PYR,Insecticide
+TEFLUTHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
 TEMBOTRIONE,Other Herbicide,HRB,Herbicide
 TERBACIL,Other Herbicide,HRB,Herbicide
 TERBUFOS,Organophosphate,OP,Insecticide
@@ -397,7 +397,7 @@ TRIFORINE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
 TRITICONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
 VERNOLATE,Thiocarbamate,TC,Herbicide
 VINCLOZOLIN,Other Fungicide,FUN,Fungicide
-ZETA-CYPERMETHRIN,Pyrethroid,PYR,Insecticide
+ZETA-CYPERMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
 ZINC,Inorganic/Mineral,INO,Other
 ZIRAM,Dithiocarbamate,DTC,Fungicide
 ZOXAMIDE,Other Fungicide,FUN,Fungicide
