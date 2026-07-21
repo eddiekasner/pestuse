@@ -1,7 +1,7 @@
 # pestuse
 
 Analyses of USGS Pesticide National Synthesis Project agricultural pesticide
-use estimates for Washington State. The repo currently contains two
+use estimates for Washington State. The repo currently contains three
 independent reports built from different USGS data products; each is
 self-contained (own input data, own R Markdown source, own rendered output).
 
@@ -63,6 +63,37 @@ To render:
 
 ```r
 rmarkdown::render("wa_op_carbamate_trends.Rmd")
+```
+
+## Chapter 3 — Washington statewide top-pesticide ranking (2014-2018)
+
+`wa_statewide_top_pesticides.Rmd` → `wa_statewide_top_pesticides.pdf`
+
+The statewide counterpart to Chapter 1: ranks the top 80 agricultural
+pesticides across all of Washington (summed over every county) using the
+same county-level source data and EPest-high method as Chapter 1
+(`estimates/EPest.county.estimates.*.txt`), by 1-year, 3-year average, and
+5-year average mass applied. Adds two things Chapter 1 doesn't have: each
+compound's organophosphate/carbamate classification (reusing
+`data/op_carbamate_classification.csv` from Chapter 2), and — for
+comparison — its rank within Yakima County alone, so you can see where
+Yakima's most-used pesticides fall statewide and vice versa.
+
+The ranking window is 2014-2018, not 2014-2019: the 2019 county-level file
+available at the time of writing is a partial/preliminary release covering
+only 69 compounds nationwide (vs. ~400 in every other year), so using it as
+the "most recent year" anchor would silently drop hundreds of real
+compounds from every table. Re-run once a complete 2019 release is
+available — see the in-file comment next to `window_years`.
+
+Dependencies: knitr, bookdown, dplyr, tidyr, readr, ggplot2, scales,
+kableExtra, a PDF engine (TeX, including the `longtable` and `ulem`
+packages).
+
+To render:
+
+```r
+rmarkdown::render("wa_statewide_top_pesticides.Rmd")
 ```
 
 ---
