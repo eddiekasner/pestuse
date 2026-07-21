@@ -3,7 +3,7 @@ title: "WA Organophosphate & Carbamate Pesticide Use, 1992-2019"
 output:
   flexdashboard::flex_dashboard:
     orientation: rows
-    vertical_layout: fill
+    vertical_layout: scroll
     theme: bootstrap
     source_code: embed
 ---
@@ -11,9 +11,11 @@ output:
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
-if (!require("pacman")) install.packages("pacman", repos = "https://cran.r-project.org")
-pacman::p_load(flexdashboard, dplyr, tidyr, readr, forcats, stringr,
-                ggplot2, plotly, DT, crosstalk, scales, knitr, kableExtra)
+required_pkgs <- c("flexdashboard", "dplyr", "tidyr", "readr", "forcats", "stringr",
+                    "ggplot2", "plotly", "DT", "crosstalk", "scales", "knitr", "kableExtra")
+invisible(lapply(required_pkgs, function(pkg) {
+  library(pkg, character.only = TRUE)
+}))
 
 options(scipen = 999)
 ```
@@ -199,37 +201,44 @@ plot_ly(annual_by_class, x = ~Year, y = ~EPEST_HIGH_KG, color = ~CLASS,
 Interactive Portal
 =======================================================================
 
-Row {data-height=550}
+Row {data-height=700}
 -----------------------------------------------------------------------
 
 ### Explore by crop group
+
+Tip: the same crop group plots in the same color for both classes (shape
+distinguishes class) — use the Class filter to isolate one class if
+overlapping lines are hard to read.
 
 ```{r portal-crop-setup}
 crop_shared <- SharedData$new(annual_by_class_crop, ~paste(Year, CLASS, CROP_GROUP), group = "crop_portal")
 ```
 
 ```{r}
-bscols(
-  widths = c(3, 9),
-  list(
-    filter_checkbox("class_crop", "Class", crop_shared, ~CLASS, inline = TRUE),
-    filter_select("crop_sel", "Crop group", crop_shared, ~CROP_GROUP, multiple = TRUE),
-    filter_slider("year_crop", "Year", crop_shared, ~Year, step = 1, sep = "", width = "100%")
-  ),
-  plot_ly(crop_shared, x = ~Year, y = ~EPEST_HIGH_KG, color = ~CROP_GROUP,
-          colors = crop_group_colors, symbol = ~CLASS,
-          type = "scatter", mode = "lines+markers",
-          line = list(width = 2), marker = list(size = 5),
-          hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
-    layout(
-      yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
-      xaxis = list(title = "Year"),
-      legend = list(title = list(text = "Crop group / class"))
-    )
+htmltools::div(
+  style = "padding: 8px 8px 8px 22px;",
+  bscols(
+    widths = c(3, 9),
+    list(
+      filter_checkbox("class_crop", "Class", crop_shared, ~CLASS, inline = TRUE),
+      filter_select("crop_sel", "Crop group", crop_shared, ~CROP_GROUP, multiple = TRUE),
+      filter_slider("year_crop", "Year", crop_shared, ~Year, step = 1, sep = "", width = "100%")
+    ),
+    plot_ly(crop_shared, x = ~Year, y = ~EPEST_HIGH_KG, color = ~CROP_GROUP,
+            colors = crop_group_colors, symbol = ~CLASS,
+            type = "scatter", mode = "lines+markers", height = 600,
+            line = list(width = 2), marker = list(size = 5),
+            hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
+      layout(
+        yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+        xaxis = list(title = "Year"),
+        legend = list(title = list(text = "Crop group / class"), font = list(size = 10))
+      )
+  )
 )
 ```
 
-Row {data-height=350}
+Row {data-height=400}
 -----------------------------------------------------------------------
 
 ### Underlying data (crop group view)
@@ -248,37 +257,43 @@ datatable(
 Compound Explorer
 =======================================================================
 
-Row {data-height=550}
+Row {data-height=700}
 -----------------------------------------------------------------------
 
 ### Explore by compound
+
+Each line is one compound (color and hover label identify it). Narrow the
+Compound filter to a handful of active ingredients for the clearest view.
 
 ```{r portal-compound-setup}
 compound_shared <- SharedData$new(annual_by_compound, ~paste(Year, CLASS, Compound), group = "compound_portal")
 ```
 
 ```{r}
-bscols(
-  widths = c(3, 9),
-  list(
-    filter_checkbox("class_cmp", "Class", compound_shared, ~CLASS, inline = TRUE),
-    filter_select("compound_sel", "Compound", compound_shared, ~Compound, multiple = TRUE),
-    filter_slider("year_cmp", "Year", compound_shared, ~Year, step = 1, sep = "", width = "100%")
-  ),
-  plot_ly(compound_shared, x = ~Year, y = ~EPEST_HIGH_KG, color = ~CLASS,
-          colors = class_colors, text = ~Compound,
-          type = "scatter", mode = "lines+markers",
-          line = list(width = 1.5), marker = list(size = 4),
-          hovertemplate = "%{text}, %{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
-    layout(
-      yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
-      xaxis = list(title = "Year"),
-      legend = list(title = list(text = "Class"))
-    )
+htmltools::div(
+  style = "padding: 8px 8px 8px 22px;",
+  bscols(
+    widths = c(3, 9),
+    list(
+      filter_checkbox("class_cmp", "Class", compound_shared, ~CLASS, inline = TRUE),
+      filter_select("compound_sel", "Compound", compound_shared, ~Compound, multiple = TRUE),
+      filter_slider("year_cmp", "Year", compound_shared, ~Year, step = 1, sep = "", width = "100%")
+    ),
+    plot_ly(compound_shared, x = ~Year, y = ~EPEST_HIGH_KG, color = ~Compound,
+            text = ~CLASS, height = 600,
+            type = "scatter", mode = "lines+markers",
+            line = list(width = 1.5), marker = list(size = 4),
+            hovertemplate = "%{fullData.name} (%{text}), %{x}: %{y:,.0f} kg<extra></extra>") %>%
+      layout(
+        yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+        xaxis = list(title = "Year"),
+        legend = list(title = list(text = "Compound"), font = list(size = 9))
+      )
+  )
 )
 ```
 
-Row {data-height=350}
+Row {data-height=400}
 -----------------------------------------------------------------------
 
 ### Underlying data (compound view)
@@ -376,11 +391,14 @@ ggplot(annual_by_class_crop, aes(x = Year, y = EPEST_HIGH_KG, fill = CROP_GROUP)
 ### Use intensity by year and crop group
 
 ```{r static-heatmap, fig.width=10, fig.height=5}
-ggplot(annual_by_class_crop, aes(x = Year, y = CROP_GROUP, fill = EPEST_HIGH_KG)) +
+kg_breaks <- c(0, 10, 100, 1000, 10000, 100000, 1000000)
+kg_breaks <- kg_breaks[kg_breaks <= max(annual_by_class_crop$EPEST_HIGH_KG)]
+
+ggplot(annual_by_class_crop, aes(x = Year, y = CROP_GROUP, fill = log1p(EPEST_HIGH_KG))) +
   geom_tile(color = "white", linewidth = 0.3) +
   facet_wrap(~CLASS, ncol = 1) +
-  scale_fill_gradientn(colors = seq_blue, labels = comma, name = "kg",
-                        trans = "log1p", breaks = scales::log_breaks(n = 5)) +
+  scale_fill_gradientn(colors = seq_blue, name = "kg",
+                        breaks = log1p(kg_breaks), labels = comma(kg_breaks)) +
   scale_x_continuous(breaks = seq(first_year, latest_year, by = 4), expand = c(0, 0)) +
   labs(
     title = "Use intensity by year and crop group (log scale)",
