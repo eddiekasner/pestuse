@@ -48,7 +48,10 @@ recent_year  <- max(window_years)
 
 cat_hex <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100",
               "#e87ba4", "#008300", "#4a3aa7", "#e34948")
-class_colors <- c(Organophosphate = cat_hex[1], Carbamate = cat_hex[2], Other = "#898781")
+muted_grey <- "#898781"
+type_levels <- c("Insecticide", "Herbicide", "Fungicide", "Fumigant",
+                  "Plant Growth Regulator", "Biological", "Other")
+type_colors <- setNames(c(cat_hex[1:6], muted_grey), type_levels)
 ```
 
 ```{r upload.and.clean.data, include=F}
@@ -74,7 +77,7 @@ read_year <- function(yr) {
 
 wa_raw <- bind_rows(lapply(window_years, read_year))
 
-classification <- read_csv("../data/op_carbamate_classification.csv", col_types = cols())
+classification <- read_csv("../data/pesticide_classification.csv", col_types = cols())
 
 # Statewide totals: sum across all WA counties, per compound-year
 wa_yearly <- wa_raw %>%
@@ -135,9 +138,12 @@ wa_top <- wa_ranked %>%
   arrange(RANK_1YR) %>%
   slice(1:top_n) %>%
   left_join(classification, by = "COMPOUND") %>%
-  mutate(CLASS = coalesce(CLASS, "Other")) %>%
+  mutate(CLASS = coalesce(CLASS, "Other/Unclassified"),
+         ABBREV = coalesce(ABBREV, "OTH"),
+         TYPE = coalesce(TYPE, "Other"),
+         TYPE = factor(TYPE, levels = type_levels)) %>%
   left_join(yak_w$one %>% select(COMPOUND, YAKIMA_RANK_1YR = RANK_1YR), by = "COMPOUND") %>%
-  select(RANK_1YR, COMPOUND, CLASS, EPEST_HIGH_KG_1YR, EPEST_HIGH_KG_3YR_AVG, EPEST_HIGH_KG_5YR_AVG, YAKIMA_RANK_1YR)
+  select(RANK_1YR, COMPOUND, CLASS, ABBREV, TYPE, EPEST_HIGH_KG_1YR, EPEST_HIGH_KG_3YR_AVG, EPEST_HIGH_KG_5YR_AVG, YAKIMA_RANK_1YR)
 ```
 
 # Summary
@@ -150,9 +156,11 @@ Use](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/) data,
 summed across all Washington counties. The table also includes rank by
 3-year average (`r paste(range(tail(window_years,3)), collapse="-")`) and
 5-year average (`r paste(range(window_years), collapse="-")`) estimates of
-mass applied, each compound's organophosphate/carbamate classification (see
-the Washington OP & carbamate trends chapter), and — for comparison — its
-`r recent_year` rank within Yakima County alone. Rankings and estimates are
+mass applied, each compound's chemical class (abbreviated; see the key in
+Table \@ref(tab:class-key) and the full classification in
+`data/pesticide_classification.csv`, shared with the Washington pesticide
+class trends chapter), and — for comparison — its `r recent_year` rank
+within Yakima County alone. Rankings and estimates are
 based on the *EPest-high method* described by [Thelin and Stone
 (2013)](https://pubs.usgs.gov/sir/2013/5009/) and [Baker and Stone
 (2015)](https://pubs.usgs.gov/ds/0907/):
@@ -195,35 +203,46 @@ counties but sparingly in Yakima's orchards will rank higher statewide than
 in Yakima, and vice versa. `NA` in the Yakima rank column means the
 compound was not among Yakima County's top `r top_n` for `r recent_year`.
 
+```{r class-key, include=T}
+# ABBREV -> CLASS is a clean 1:1 mapping (each of the 30 classes has one
+# code); ABBREV -> TYPE is not (e.g. Organophosphate spans both Insecticide
+# and Herbicide, since bensulide and tribufos are OP herbicides), so the key
+# only shows Code/Class -- adding Type would print each code multiple times.
+kable(classification %>% distinct(ABBREV, CLASS) %>% arrange(CLASS),
+      "latex", booktabs = T, longtable = TRUE,
+      col.names = c("Code", "Chemical class"),
+      caption = "Chemical class abbreviation key (used in the Class column of Table 2)") %>%
+  kable_styling(latex_options = c("striped", "repeat_header", "HOLD_position"), font_size = 8)
+```
+
 ```{r merged-tables, include=T}
 # NOTE: the 80-row table does not fit on one page. kableExtra's usual
 # "scale_down" (latex \resizebox) bundles the whole table into one atomic
 # box that cannot break across pages, which silently drops every row past
 # the page boundary instead of erroring. Use longtable (page-breaking)
 # with a smaller font and abbreviated class codes instead.
-display <- wa_top %>%
-  mutate(CLASS = recode(CLASS, Organophosphate = "OP", Carbamate = "CB", Other = "-"))
+display <- wa_top %>% select(-CLASS, -TYPE)
 names(display) <- c("Rank (WA)", "Compound", "Class", "EPest-high 1yr",
                      "EPest-high 3yr avg", "EPest-high 5yr avg", "Rank (Yakima)")
 
 kable(display, "latex", booktabs = T, digits = 0, longtable = TRUE,
       caption = paste0("Top ", top_n, " EPest-high Estimates Statewide (WA), 1-Yr (", recent_year,
-                        "), 3-Yr Avg, 5-Yr Avg, with OP/Carbamate Classification (OP = organophosphate, ",
-                        "CB = carbamate, - = neither) and Yakima County Rank")) %>%
+                        "), 3-Yr Avg, 5-Yr Avg, with Chemical Class (abbreviated; see the ",
+                        "classification key table above) and Yakima County Rank")) %>%
   kable_styling(latex_options = c("striped", "repeat_header", "HOLD_position"), font_size = 8)
 
 write.csv(wa_top, "wa.statewide.pesticide.use.2014-2018.csv", row.names = FALSE)
 ```
 
-```{r top-chart, include=T, fig.cap="Top 25 compounds statewide by EPest-high mass applied, most recent year, colored by chemical class."}
+```{r top-chart, include=T, fig.cap="Top 25 compounds statewide by EPest-high mass applied, most recent year, colored by pesticide type."}
 top_chart <- wa_top %>%
   slice(1:25) %>%
   mutate(COMPOUND = forcats::fct_reorder(COMPOUND, EPEST_HIGH_KG_1YR))
 
-ggplot(top_chart, aes(x = COMPOUND, y = EPEST_HIGH_KG_1YR, fill = CLASS)) +
+ggplot(top_chart, aes(x = COMPOUND, y = EPEST_HIGH_KG_1YR, fill = TYPE)) +
   geom_col() +
   coord_flip() +
-  scale_fill_manual(values = class_colors, name = "Class") +
+  scale_fill_manual(values = type_colors, name = "Type", drop = FALSE) +
   scale_y_continuous(labels = comma) +
   labs(title = paste0("Washington statewide top 25 pesticides, ", recent_year),
        x = NULL, y = "EPest-high estimate (kg)") +
