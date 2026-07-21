@@ -8,4 +8,28 @@ Please carefully review the applications and limitations of these data, as descr
 
 Dependencies: knitr, knitr, bookdown, dplyr, kableExtra, pdf creator (TeX)
 
+## Washington organophosphate & carbamate use trends dashboard
+
+`wa_op_carbamate_trends.Rmd` renders an interactive HTML dashboard
+(flexdashboard) summarizing annual organophosphate and carbamate pesticide
+use in Washington (FIPS 53), 1992-2019, overall and by USGS crop group. It
+uses `estimates/HighEstimate_AgPestUsebyCropGroup92to19.txt` (USGS Pesticide
+National Synthesis Project *EPest-high estimates by crop group*, from
+[ScienceBase item 6081ae7cd34e8564d6866222](https://www.sciencebase.gov/catalog/item/6081ae7cd34e8564d6866222))
+and the compound classification in `data/op_carbamate_classification.csv`.
+
+The dashboard includes an overview with headline trends, an interactive
+data portal (crosstalk-linked filters, plots, and tables by crop group and
+by compound), a page of static summary plots, and a methodology/data notes
+page.
+
+To render:
+
+```r
+rmarkdown::render("wa_op_carbamate_trends.Rmd")
+```
+
+Additional dependencies: flexdashboard, plotly, DT, crosstalk, tidyr,
+readr, forcats, stringr, scales.
+
 [License](https://github.com/eddiekasner/pestuse/blob/master/LICENSE)
