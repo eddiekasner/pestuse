@@ -1,0 +1,605 @@
+---
+title: "WA County-Level Pesticide Use, 2014-2018"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: scroll
+    theme: bootstrap
+    source_code: embed
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
+
+required_pkgs <- c("flexdashboard", "dplyr", "tidyr", "readr", "forcats", "stringr",
+                    "ggplot2", "plotly", "DT", "crosstalk", "scales", "knitr", "kableExtra",
+                    "maps", "sf")
+invisible(lapply(required_pkgs, function(pkg) {
+  library(pkg, character.only = TRUE)
+}))
+
+options(scipen = 999)
+```
+
+```{r constants}
+# ---- Report scope -----------------------------------------------------
+state_fips  <- "53"
+state_name  <- "Washington"
+class_trends_file <- "wa_pesticide_class_trends.html"
+
+# Same 2014-2018 window as the statewide ranking chapter (not the full
+# 1992-2018 sweep the trends dashboard uses): the county-level source is
+# split one file per year, so reading all 27 years for a chapter that
+# exists to complement the ranking chapter isn't worth the render time.
+window_years <- 2014:2018
+recent_year  <- max(window_years)
+
+cat_hex <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100",
+              "#e87ba4", "#008300", "#4a3aa7", "#e34948",
+              "#8c564b", "#c25aab")
+muted_grey <- "#898781"
+functional_levels <- c("Herbicide/algicide", "Fungicide", "Insecticide",
+                        "Plant Growth Regulator", "Acaricide", "Fumigant",
+                        "Insect Growth Regulator", "Other Bactericides",
+                        "Nematicides", "Insect Repellent", "Other")
+functional_colors <- setNames(c(cat_hex[1:10], muted_grey), functional_levels)
+seq_blue <- c("#cde2fb", "#9ec5f4", "#5598e7", "#2a78d6", "#184f95")
+```
+
+```{r load-data}
+read_year <- function(yr) {
+  read_delim(
+    sprintf("../estimates/EPest.county.estimates.%d.txt", yr),
+    delim = "\t",
+    col_types = cols(
+      COMPOUND = col_character(),
+      YEAR = col_integer(),
+      STATE_FIPS_CODE = col_character(),
+      COUNTY_FIPS_CODE = col_character(),
+      EPEST_LOW_KG = col_double(),
+      EPEST_HIGH_KG = col_double()
+    )
+  ) %>%
+    filter(STATE_FIPS_CODE == state_fips)
+}
+
+county_raw <- bind_rows(lapply(window_years, read_year))
+
+classification <- read_csv("../data/pesticide_classification.csv", col_types = cols())
+
+# ---- County name / geometry lookup (offline, from the "maps" package) -
+# county.fips maps a 5-digit FIPS to a "state,county" name, but splits
+# multi-part counties (islands, etc.) into several rows per FIPS with a
+# ":subregion" suffix (e.g. Washington's San Juan county becomes
+# "washington,san juan:lopez island", "washington,san juan:orcas island",
+# etc.) -- the drawn polygons merge those back into one shape per county,
+# so the ":..." suffix has to be stripped before joining to get back to
+# one row per FIPS.
+data(county.fips, envir = environment())
+fips_lookup <- county.fips %>%
+  mutate(FIPS = sprintf("%05d", fips), polyname = sub(":.*$", "", polyname)) %>%
+  distinct(FIPS, polyname) %>%
+  filter(startsWith(polyname, paste0(tolower(state_name), ","))) %>%
+  mutate(COUNTY_NAME = tools::toTitleCase(sub("^[^,]+,", "", polyname)))
+
+state_map <- st_as_sf(map("county", region = tolower(state_name), plot = FALSE, fill = TRUE)) %>%
+  rename(polyname = ID)
+
+county_long <- county_raw %>%
+  inner_join(classification, by = c("COMPOUND" = "COMPOUND")) %>%
+  mutate(
+    FUNCTIONAL_CLASS = factor(FUNCTIONAL_CLASS, levels = functional_levels),
+    FIPS = paste0(STATE_FIPS_CODE, COUNTY_FIPS_CODE)
+  ) %>%
+  left_join(fips_lookup, by = "FIPS") %>%
+  select(YEAR, FIPS, COUNTY_NAME, polyname, CHEMICAL_CLASS, FUNCTIONAL_CLASS, COMPOUND, EPEST_HIGH_KG)
+
+n_unmatched_fips <- county_long %>% filter(is.na(COUNTY_NAME)) %>% distinct(FIPS) %>% nrow()
+
+# ---- Pre-aggregated summaries ------------------------------------------
+annual_by_county <- county_long %>%
+  filter(!is.na(COUNTY_NAME)) %>%
+  group_by(YEAR, FIPS, COUNTY_NAME, polyname) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG, na.rm = TRUE), .groups = "drop")
+
+annual_by_county_functional <- county_long %>%
+  filter(!is.na(COUNTY_NAME)) %>%
+  group_by(YEAR, FIPS, COUNTY_NAME, FUNCTIONAL_CLASS) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG, na.rm = TRUE), .groups = "drop")
+
+by_compound_county <- county_long %>%
+  filter(!is.na(COUNTY_NAME)) %>%
+  group_by(YEAR, FIPS, COUNTY_NAME, FUNCTIONAL_CLASS, CHEMICAL_CLASS, COMPOUND) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG, na.rm = TRUE), .groups = "drop")
+
+annual_state_total <- annual_by_county %>%
+  group_by(YEAR) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
+
+# Fixed, stable county order (by total mass across the window) so a given
+# county keeps the same rank position and the "top N" charts are stable.
+county_totals_window <- annual_by_county %>%
+  group_by(FIPS, COUNTY_NAME) %>%
+  summarize(TOTAL_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  arrange(desc(TOTAL_KG))
+
+# 1/3/5-yr county ranking, same independent-per-window approach as the
+# statewide pesticide ranking chapter (a county's presence in one window's
+# ranking doesn't depend on its presence in the others).
+rank_window <- function(yrs) {
+  annual_by_county %>%
+    filter(YEAR %in% yrs) %>%
+    group_by(FIPS, COUNTY_NAME) %>%
+    summarize(EPEST_HIGH_KG = mean(EPEST_HIGH_KG), .groups = "drop") %>%
+    arrange(desc(EPEST_HIGH_KG)) %>%
+    mutate(RANK = row_number())
+}
+
+rank_1yr <- rank_window(recent_year) %>% rename(EPEST_HIGH_KG_1YR = EPEST_HIGH_KG, RANK_1YR = RANK)
+rank_3yr <- rank_window(tail(window_years, 3)) %>% rename(EPEST_HIGH_KG_3YR_AVG = EPEST_HIGH_KG, RANK_3YR = RANK)
+rank_5yr <- rank_window(window_years) %>% rename(EPEST_HIGH_KG_5YR_AVG = EPEST_HIGH_KG, RANK_5YR = RANK)
+
+county_ranked <- rank_1yr %>%
+  full_join(rank_3yr %>% select(FIPS, EPEST_HIGH_KG_3YR_AVG, RANK_3YR), by = "FIPS") %>%
+  full_join(rank_5yr %>% select(FIPS, EPEST_HIGH_KG_5YR_AVG, RANK_5YR), by = "FIPS") %>%
+  arrange(RANK_1YR)
+
+n_counties_total <- nrow(fips_lookup)
+n_counties_active <- n_distinct(annual_by_county$FIPS)
+```
+
+```{r overview-stats}
+top_county_latest <- annual_by_county %>%
+  filter(YEAR == recent_year) %>%
+  arrange(desc(EPEST_HIGH_KG)) %>%
+  slice(1)
+
+state_total_latest <- annual_state_total %>% filter(YEAR == recent_year) %>% pull(EPEST_HIGH_KG)
+top_county_share <- 100 * top_county_latest$EPEST_HIGH_KG / state_total_latest
+
+top5_share <- 100 * sum(county_totals_window$TOTAL_KG[1:5]) / sum(county_totals_window$TOTAL_KG)
+```
+
+Overview
+=======================================================================
+
+Row {data-height=90}
+-----------------------------------------------------------------------
+
+### About this page {.no-title}
+
+<div style="padding: 10px 16px; background:#f9f9f7; border-left: 4px solid #898781; font-size: 0.9em;">
+<strong>Read this before the map.</strong> USGS's own documentation notes
+these are <strong>county-level estimates whose primary intended use is to
+be aggregated into state-level totals</strong> — not necessarily precise,
+independently reliable figures for any one county. Neighboring counties
+can differ in these numbers partly because of how use was modeled and
+allocated across Crop Reporting Districts, not only because of real
+differences in what growers applied. Use this page to see what's
+<em>driving</em> `r state_name`'s statewide totals (Chapters 2-3), not as a
+precise county-by-county scoreboard. See the Methodology page for the
+full caveat.
+</div>
+
+Row {data-height=140}
+-----------------------------------------------------------------------
+
+### Top county, `r recent_year` {.value-box}
+
+```{r}
+valueBox(paste0(top_county_latest$COUNTY_NAME, ": ", comma(round(top_county_latest$EPEST_HIGH_KG)), " kg"),
+         caption = paste0("Largest classified pesticide use by county, ", recent_year),
+         icon = "fa-map-marker-alt", color = cat_hex[1])
+```
+
+### Top county's share {.value-box}
+
+```{r}
+valueBox(paste0(round(top_county_share), "%"),
+         caption = paste0("Share of statewide ", recent_year, " total in the top county alone"),
+         icon = "fa-percent", color = cat_hex[2])
+```
+
+### Top 5 counties' share {.value-box}
+
+```{r}
+valueBox(paste0(round(top5_share), "%"),
+         caption = paste0("Share of ", first(window_years), "-", recent_year, " total mass in the top 5 counties"),
+         icon = "fa-layer-group", color = "primary")
+```
+
+### Counties with recorded use {.value-box}
+
+```{r}
+valueBox(paste0(n_counties_active, " / ", n_counties_total),
+         caption = paste0(state_name, " counties reporting classified pesticide use, ", first(window_years), "-", recent_year),
+         icon = "fa-map", color = muted_grey)
+```
+
+Row {data-height=600}
+-----------------------------------------------------------------------
+
+### `r recent_year` county totals (EPest-high, log scale)
+
+```{r static-map-overview, fig.width=8, fig.height=6.5}
+map_data_latest <- state_map %>%
+  left_join(annual_by_county %>% filter(YEAR == recent_year), by = "polyname")
+
+ggplot(map_data_latest) +
+  geom_sf(aes(fill = EPEST_HIGH_KG), color = "white", linewidth = 0.2) +
+  scale_fill_gradientn(colors = seq_blue, name = "kg", trans = "log1p",
+                        breaks = scales::breaks_log(n = 5),
+                        labels = comma, na.value = "grey90") +
+  labs(title = paste0(state_name, " county totals, ", recent_year),
+       subtitle = "All classified compounds, EPest-high; grey = no recorded use") +
+  theme_void(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"), legend.position = "right")
+```
+
+### Top 10 counties, `r recent_year`
+
+```{r}
+top10 <- annual_by_county %>%
+  filter(YEAR == recent_year) %>%
+  arrange(desc(EPEST_HIGH_KG)) %>%
+  slice(1:10) %>%
+  mutate(COUNTY_NAME = fct_reorder(COUNTY_NAME, EPEST_HIGH_KG))
+
+plot_ly(top10, x = ~EPEST_HIGH_KG, y = ~COUNTY_NAME, type = "bar", orientation = "h",
+        marker = list(color = cat_hex[1]),
+        hovertemplate = "%{y}: %{x:,.0f} kg<extra></extra>") %>%
+  layout(
+    xaxis = list(title = "EPest-high estimate (kg)", tickformat = ","),
+    yaxis = list(title = "")
+  )
+```
+
+County Ranking
+=======================================================================
+
+Row {data-height=600}
+-----------------------------------------------------------------------
+
+### Full county ranking
+
+```{r}
+display_rank <- county_ranked %>%
+  mutate(across(starts_with("EPEST"), ~round(.x))) %>%
+  select(RANK_1YR, COUNTY_NAME, EPEST_HIGH_KG_1YR, RANK_3YR, EPEST_HIGH_KG_3YR_AVG, RANK_5YR, EPEST_HIGH_KG_5YR_AVG)
+
+datatable(
+  display_rank,
+  colnames = c(paste0("Rank (", recent_year, ")"), "County", paste0("EPest-high ", recent_year, " (kg)"),
+               "Rank (3yr)", "EPest-high 3yr avg (kg)", "Rank (5yr)", "EPest-high 5yr avg (kg)"),
+  options = list(pageLength = 15, dom = "ftip", order = list(list(0, "asc"))),
+  rownames = FALSE
+) %>%
+  formatRound(c("EPEST_HIGH_KG_1YR", "EPEST_HIGH_KG_3YR_AVG", "EPEST_HIGH_KG_5YR_AVG"), 0)
+```
+
+Row {data-height=500}
+-----------------------------------------------------------------------
+
+### Top 15 counties by cumulative use, `r first(window_years)`-`r recent_year`
+
+```{r static-top-counties, fig.width=10, fig.height=5}
+top15_cum <- county_totals_window %>%
+  slice(1:15) %>%
+  mutate(COUNTY_NAME = fct_reorder(COUNTY_NAME, TOTAL_KG))
+
+ggplot(top15_cum, aes(x = COUNTY_NAME, y = TOTAL_KG)) +
+  geom_col(fill = cat_hex[1]) +
+  coord_flip() +
+  scale_y_continuous(labels = comma) +
+  labs(
+    title = paste0("Top 15 counties by cumulative mass applied, ", first(window_years), "-", recent_year),
+    x = NULL, y = "Cumulative EPest-high mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(panel.grid.minor = element_blank(), plot.title = element_text(face = "bold"))
+```
+
+### Trend for the top 6 counties
+
+```{r}
+top6_fips <- county_totals_window$FIPS[1:6]
+
+trend_top6 <- annual_by_county %>%
+  filter(FIPS %in% top6_fips) %>%
+  mutate(COUNTY_NAME = factor(COUNTY_NAME, levels = county_totals_window$COUNTY_NAME[1:6]))
+
+plot_ly(trend_top6, x = ~YEAR, y = ~EPEST_HIGH_KG, color = ~COUNTY_NAME, colors = cat_hex[1:6],
+        type = "scatter", mode = "lines+markers", line = list(width = 2), marker = list(size = 5),
+        hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
+  layout(
+    yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+    xaxis = list(title = "Year", dtick = 1),
+    legend = list(title = list(text = "County"))
+  )
+```
+
+County Explorer
+=======================================================================
+
+Row {data-height=700}
+-----------------------------------------------------------------------
+
+### Explore by county
+
+Each line is one county, dashed by functional class (color identifies the
+county, hover label gives the exact functional class). With
+`r n_counties_active` counties reporting use across 11 functional classes,
+narrow the County and/or Functional class filters to a handful for the
+clearest view — lines are always split by county x functional class under
+the hood, so no combination of filters connects mismatched points into a
+jagged line.
+
+```{r portal-county-setup}
+# Grain matches exactly what's plotted (Year x FIPS x Functional class): a
+# line is only ever one county's one functional class, so leaving either
+# filter unfiltered can't connect mismatched points the way it would if
+# functional class were aggregated away.
+county_shared <- SharedData$new(annual_by_county_functional, ~paste(YEAR, FIPS, FUNCTIONAL_CLASS), group = "county_portal")
+```
+
+```{r}
+htmltools::div(
+  style = "padding: 8px 8px 8px 22px;",
+  bscols(
+    widths = c(3, 9),
+    list(
+      filter_checkbox("func_county", "Functional class", county_shared, ~FUNCTIONAL_CLASS, inline = TRUE),
+      filter_select("county_sel", "County", county_shared, ~COUNTY_NAME, multiple = TRUE),
+      filter_slider("year_county", "Year", county_shared, ~YEAR, step = 1, sep = "", width = "100%")
+    ),
+    plot_ly(county_shared, x = ~YEAR, y = ~EPEST_HIGH_KG, color = ~COUNTY_NAME, linetype = ~FUNCTIONAL_CLASS,
+            height = 600, type = "scatter", mode = "lines+markers",
+            line = list(width = 1.5), marker = list(size = 4),
+            hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
+      layout(
+        yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+        xaxis = list(title = "Year", dtick = 1),
+        legend = list(title = list(text = "County / functional class"), font = list(size = 9))
+      )
+  )
+)
+```
+
+Row {data-height=400}
+-----------------------------------------------------------------------
+
+### Underlying data (county view)
+
+```{r}
+datatable(
+  county_shared,
+  colnames = c("Year", "FIPS", "County", "Functional class", "EPest-high (kg)"),
+  options = list(pageLength = 10, dom = "ftip"),
+  rownames = FALSE
+) %>%
+  formatRound("EPEST_HIGH_KG", 0)
+```
+
+Compound Explorer
+=======================================================================
+
+Row {data-height=700}
+-----------------------------------------------------------------------
+
+### Explore by compound, within a county
+
+**Pick a county first.** Each line is one compound, but the underlying data
+has a row per county — with no county selected (or several selected at
+once), a single compound's line connects every county's separate value
+year to year, which is *not* a statewide total and will look like a
+meaningless jagged zig-zag. Narrowing County to one (or a couple, for
+direct comparison) keeps every line a true single-place series. For an
+already-aggregated statewide-combined view by compound, see the [Pesticide
+Class Trends](`r class_trends_file`) chapter's own Compound
+Explorer instead.
+
+```{r portal-compound-setup}
+compound_shared <- SharedData$new(by_compound_county, ~paste(YEAR, FIPS, FUNCTIONAL_CLASS, CHEMICAL_CLASS, COMPOUND), group = "compound_portal")
+```
+
+```{r}
+htmltools::div(
+  style = "padding: 8px 8px 8px 22px;",
+  bscols(
+    widths = c(3, 9),
+    list(
+      filter_select("county_cmp", "County", compound_shared, ~COUNTY_NAME, multiple = TRUE),
+      filter_checkbox("func_cmp", "Functional class", compound_shared, ~FUNCTIONAL_CLASS, inline = TRUE),
+      filter_select("class_cmp", "Chemical class", compound_shared, ~CHEMICAL_CLASS, multiple = TRUE),
+      filter_select("compound_sel", "Compound", compound_shared, ~COMPOUND, multiple = TRUE),
+      filter_slider("year_cmp", "Year", compound_shared, ~YEAR, step = 1, sep = "", width = "100%")
+    ),
+    plot_ly(compound_shared, x = ~YEAR, y = ~EPEST_HIGH_KG, color = ~COMPOUND, height = 650,
+            text = ~paste0(COUNTY_NAME, ": ", FUNCTIONAL_CLASS, " / ", CHEMICAL_CLASS),
+            type = "scatter", mode = "lines+markers",
+            line = list(width = 1.5), marker = list(size = 4),
+            hovertemplate = "%{fullData.name} (%{text}), %{x}: %{y:,.0f} kg<extra></extra>") %>%
+      layout(
+        yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+        xaxis = list(title = "Year", dtick = 1),
+        legend = list(title = list(text = "Compound"), font = list(size = 9))
+      )
+  )
+)
+```
+
+Row {data-height=400}
+-----------------------------------------------------------------------
+
+### Underlying data (compound x county view)
+
+```{r}
+datatable(
+  compound_shared,
+  colnames = c("Year", "FIPS", "County", "Functional class", "Chemical class", "Compound", "EPest-high (kg)"),
+  options = list(pageLength = 10, dom = "ftip"),
+  rownames = FALSE
+) %>%
+  formatRound("EPEST_HIGH_KG", 0)
+```
+
+Static Plots
+=======================================================================
+
+Row {data-height=600}
+-----------------------------------------------------------------------
+
+### `r first(window_years)` county totals (EPest-high, log scale)
+
+```{r static-map-first, fig.width=8, fig.height=6.5}
+map_data_first <- state_map %>%
+  left_join(annual_by_county %>% filter(YEAR == first(window_years)), by = "polyname")
+
+ggplot(map_data_first) +
+  geom_sf(aes(fill = EPEST_HIGH_KG), color = "white", linewidth = 0.2) +
+  scale_fill_gradientn(colors = seq_blue, name = "kg", trans = "log1p",
+                        breaks = scales::breaks_log(n = 5),
+                        labels = comma, na.value = "grey90") +
+  labs(title = paste0(state_name, " county totals, ", first(window_years)),
+       subtitle = "All classified compounds, EPest-high; grey = no recorded use") +
+  theme_void(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"), legend.position = "right")
+```
+
+### Change in county totals, `r first(window_years)`-`r recent_year`
+
+```{r static-map-change, fig.width=8, fig.height=6.5}
+change_data <- annual_by_county %>%
+  filter(YEAR %in% c(first(window_years), recent_year)) %>%
+  select(FIPS, COUNTY_NAME, polyname, YEAR, EPEST_HIGH_KG) %>%
+  pivot_wider(names_from = YEAR, values_from = EPEST_HIGH_KG, names_prefix = "Y") %>%
+  mutate(PCT_CHANGE = 100 * (.data[[paste0("Y", recent_year)]] - .data[[paste0("Y", first(window_years))]]) /
+           .data[[paste0("Y", first(window_years))]])
+
+map_data_change <- state_map %>% left_join(change_data, by = "polyname")
+
+lim <- max(abs(map_data_change$PCT_CHANGE), na.rm = TRUE)
+ggplot(map_data_change) +
+  geom_sf(aes(fill = PCT_CHANGE), color = "white", linewidth = 0.2) +
+  scale_fill_gradient2(low = "#2a78d6", mid = "#f0efec", high = "#e34948", midpoint = 0,
+                        limits = c(-lim, lim), name = "% change", labels = comma, na.value = "grey90") +
+  labs(title = paste0("Change in county totals, ", first(window_years), " to ", recent_year),
+       subtitle = "Percent change, EPest-high; grey = no use in one or both years") +
+  theme_void(base_size = 12) +
+  theme(plot.title = element_text(face = "bold"), legend.position = "right")
+```
+
+Row {data-height=500}
+-----------------------------------------------------------------------
+
+### Annual use by county, top 8 counties, by functional class
+
+```{r static-county-type, fig.width=10, fig.height=5}
+top8_fips <- county_totals_window$FIPS[1:8]
+
+annual_by_county_functional %>%
+  filter(FIPS %in% top8_fips) %>%
+  mutate(COUNTY_NAME = factor(COUNTY_NAME, levels = county_totals_window$COUNTY_NAME[1:8])) %>%
+  ggplot(aes(x = YEAR, y = EPEST_HIGH_KG, fill = FUNCTIONAL_CLASS)) +
+  geom_col(position = "stack") +
+  facet_wrap(~COUNTY_NAME, ncol = 4) +
+  scale_fill_manual(values = functional_colors, name = "Functional class") +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = window_years) +
+  guides(fill = guide_legend(nrow = 3, byrow = TRUE)) +
+  labs(
+    title = "Annual use by functional class, top 8 counties",
+    x = NULL, y = "Mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 11) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold"),
+    strip.text = element_text(face = "bold", size = 8),
+    axis.text.x = element_text(angle = 90, size = 7)
+  )
+```
+
+Methodology & Data
+=======================================================================
+
+Row
+-----------------------------------------------------------------------
+
+### About this dashboard
+
+Data source: USGS Pesticide National Synthesis Project, *Estimated Annual
+Agricultural Pesticide Use for Counties* (`estimates/EPest.county.estimates.<year>.txt`),
+the same county-level files summed to a state total in the
+`r state_name` statewide top-pesticide ranking chapter — this dashboard
+shows the county-level detail *behind* those state totals rather than
+re-deriving them.
+
+**Read the caveat, seriously.** USGS's own documentation for this product
+says: *"we report county-level estimates despite their intended use to
+generate state-level estimates."* In plain terms: these numbers were
+designed and validated as inputs to a state-level total, not as
+precise, independently reliable figures for any one county. Two specific
+consequences for this dashboard:
+
+* Differences between neighboring counties can reflect how the
+  proprietary Crop Reporting District (CRD) survey rates were allocated
+  across the counties within a CRD, rather than a real difference in what
+  growers applied.
+* "Detailed interpretation of where and how much use occurs within a
+  county is not appropriate" (the same caution given in every other
+  chapter in this repo) applies doubly once county is itself the unit of
+  analysis.
+
+Use this chapter to see *what's driving* `r state_name`'s statewide totals
+(which counties, which pesticide functional classes) — not as a precise
+county-by-county scoreboard, and not to draw conclusions about specific
+farms or fields.
+
+This dashboard covers **`r state_name` (FIPS `r state_fips`)**,
+`r first(window_years)`-`r recent_year` (same window as the statewide
+ranking chapter, for direct comparability), filtered to the
+`r nrow(classification)` compounds classified in
+`data/pesticide_classification.csv`. `r n_counties_active` of
+`r n_counties_total` `r state_name` counties reported at least one
+classified compound in this window.
+
+**County geometry.** County boundaries and names come from R's `maps`
+package (`maps::county.fips`, offline, no county-level crop-group data is
+available from USGS at this granularity — the crop-group breakdown used
+in the pesticide class trends chapter is only published at the state
+level). `r ifelse(n_unmatched_fips == 0, "Every county-FIPS code in the source data matched a boundary.", paste(n_unmatched_fips, "county-FIPS code(s) in the source data did not match a known boundary and are excluded from the maps."))`
+
+**EPest-high method.** Values are the *EPest-high* estimates described by
+Baker and Stone (2015) and Thelin and Stone (2013) — see the statewide
+ranking chapter for the full description. This chapter does not use
+EPest-low.
+
+**Caveats (per USGS), in addition to the one above:**
+
+* Recent years use projected county crop acreage from the most recent
+  Census of Agriculture at time of estimation and are revised as new
+  Census data become available.
+* A blank cell in the source file (no reported/estimated use for that
+  compound-year-county) is treated as zero in this dashboard.
+* 2019 is not included in this chapter's window for the same reason it's
+  excluded from the other chapters: that year's file is a
+  partial/preliminary release covering far fewer compounds than 2014-2018.
+
+### Pesticide classification
+
+`r nrow(classification)` compounds classified into `r n_distinct(classification$CHEMICAL_CLASS)`
+chemical classes and `r n_distinct(classification$FUNCTIONAL_CLASS)` functional
+classes; see the [Pesticide Class Trends](`r class_trends_file`) chapter for the full table.
+
+```{r classification-table}
+classification %>%
+  arrange(FUNCTIONAL_CLASS, CHEMICAL_CLASS, COMPOUND) %>%
+  select(COMPOUND, CHEMICAL_CLASS, FUNCTIONAL_CLASS) %>%
+  datatable(
+    colnames = c("Compound", "Chemical class", "Functional class"),
+    options = list(pageLength = 10, dom = "ftip"),
+    rownames = FALSE
+  )
+```
