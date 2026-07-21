@@ -62,20 +62,20 @@
 61,"CALCIUM POLYSULFIDE","Inorganic/Mineral","INO","Fungicide",8134,4560,3639
 62,"MEFENOXAM","Other Fungicide","FUN","Fungicide",6993,6887,6558
 63,"PICOXYSTROBIN","Strobilurin (QoI)","QOI","Fungicide",5981,3057,2902
-64,"BIFENTHRIN","Pyrethroid","PYR","Insecticide",5649,4266,5015
+64,"BIFENTHRIN","Pyrethrin/Pyrethroid","PYR","Insecticide",5649,4266,5015
 65,"PROTHIOCONAZOLE","DMI Fungicide (Triazole/Imidazole)","DMI","Fungicide",5623,2631,1760
 66,"TEBUCONAZOLE","DMI Fungicide (Triazole/Imidazole)","DMI","Fungicide",5446,6264,4453
 67,"DIFENOCONAZOLE","DMI Fungicide (Triazole/Imidazole)","DMI","Fungicide",4847,4345,5988
 68,"SAFLUFENACIL","Other Herbicide","HRB","Herbicide",4226,3811,4145
 69,"FLUTOLANIL","SDHI","SDH","Fungicide",4172,14248,14531
 70,"SPIROTETRAMAT","Other Insecticide/Miticide","INS","Insecticide",3855,3258,2514
-71,"CYHALOTHRIN-LAMBDA","Pyrethroid","PYR","Insecticide",3721,4569,4146
+71,"CYHALOTHRIN-LAMBDA","Pyrethrin/Pyrethroid","PYR","Insecticide",3721,4569,4146
 72,"CARFENTRAZONE-ETHYL","Other Herbicide","HRB","Herbicide",3669,2491,1803
 73,"FLUAZINAM","Other Fungicide","FUN","Fungicide",3602,3904,6008
 74,"MCPB","Phenoxy","PHX","Herbicide",3600,1821,1943
 75,"MANDIPROPAMID","Other Fungicide","FUN","Fungicide",3448,2696,3099
 76,"METIRAM","Dithiocarbamate","DTC","Fungicide",3411,3411,7878
-77,"CYFLUTHRIN","Pyrethroid","PYR","Insecticide",3361,1997,1445
+77,"CYFLUTHRIN","Pyrethrin/Pyrethroid","PYR","Insecticide",3361,1997,1445
 78,"THIFENSULFURON","ALS-Inhibitor (Sulfonylurea & Related)","ALS","Herbicide",3334,3263,2771
-79,"ALPHA CYPERMETHRIN","Pyrethroid","PYR","Insecticide",3324,2690,1799
+79,"ALPHA CYPERMETHRIN","Pyrethrin/Pyrethroid","PYR","Insecticide",3324,2690,1799
 80,"MALATHION","Organophosphate","OP","Insecticide",3162,7436,8486

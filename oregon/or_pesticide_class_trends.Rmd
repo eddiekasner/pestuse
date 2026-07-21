@@ -36,7 +36,7 @@ muted_grey <- "#898781"
 
 # TYPE is the broad, ~7-value grouping used for headline charts (fixed
 # categorical color per type, "Other" folded to neutral grey). CLASS is
-# the ~30-value chemical-family grouping (organophosphate, pyrethroid,
+# the ~30-value chemical-family grouping (organophosphate, pyrethrin/pyrethroid,
 # triazine, ...) used for filtering/drilldown, not as a simultaneous
 # multi-series color encoding.
 type_levels <- c("Insecticide", "Herbicide", "Fungicide", "Fumigant",
@@ -497,7 +497,7 @@ recognized pesticide class.
 (Insecticide, Herbicide, Fungicide, Fumigant, Plant Growth Regulator,
 Biological, Other) used for the headline charts on the Overview and Static
 Plots pages. `CLASS` is the specific chemical family (organophosphate,
-pyrethroid, triazine, DMI fungicide, ...) used for filtering on the
+pyrethrin/pyrethroid, triazine, DMI fungicide, ...) used for filtering on the
 Interactive Portal and Compound Explorer pages — there are too many
 classes to plot as simultaneous colored series, so they're a filter
 dimension rather than a chart aesthetic.
