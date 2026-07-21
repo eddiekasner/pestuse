@@ -24,14 +24,36 @@ Water-Quality Assessment (NAWQA) Project page](https://water.usgs.gov/nawqa/pnsp
   group*, state-level, all states, from [ScienceBase item
   6081ae7cd34e8564d6866222](https://www.sciencebase.gov/catalog/item/6081ae7cd34e8564d6866222).
 * `data/pesticide_classification.csv` — all 402 compounds reported for
-  WA/OR/ID classified into 30 chemical classes (`CLASS`, plus a compact
-  `ABBREV` code used in the ranking-chapter tables) and 7 broad types
-  (`TYPE`: Insecticide, Herbicide, Fungicide, Fumigant, Plant Growth
-  Regulator, Biological, Other). `CLASS` and `TYPE` are not strictly 1:1 —
-  a handful of classes span more than one type (e.g. Organophosphate
-  includes both insecticides and the herbicides bensulide/tribufos).
-  Compiled once in the Washington chapter and reused unchanged by every
-  state.
+  WA/OR/ID classified into two independent dimensions: **`CHEMICAL_CLASS`**
+  (13 named structural families — Organophosphorous compound,
+  Pyrethrins/Pyrethroids, Triazines, Dithiocarbamates, and so on — plus a
+  compact `CHEM_ABBREV` code used in the ranking-chapter tables, and an
+  `Other` catch-all for chemistries outside those 13) and **`FUNCTIONAL_CLASS`**
+  (what the compound is used for — Insecticide, Herbicide/algicide,
+  Fungicide, Fumigant, Acaricide, Plant Growth Regulator, and others).
+  Splitting these into two columns (rather than one column doing both jobs)
+  fixed a real distortion in the first version of this repo: a handful of
+  fumigants (metam, metam potassium, dichloropropene, chloropicrin) used to
+  share a single "Fumigant" bucket that behaved like a *chemical* class,
+  when fumigants are actually chemically diverse and applied at far higher
+  per-acre rates than herbicides or insecticides — that made raw-mass
+  comparisons across the old classes misleading. `FUNCTIONAL_CLASS` still
+  correctly shows fumigants' true (large) total mass; `CHEMICAL_CLASS` now
+  distributes that mass into the compounds' real chemistry instead of an
+  artificial catch-all. Neither column comes from USGS metadata — USGS's
+  data-release documentation for these files covers only structural columns
+  (compound name, year, FIPS codes, crop-group amounts), not a
+  compound-level chemical/functional crosswalk — so every compound was
+  checked individually against pesticide chemistry/mode-of-action
+  references. The requested `CHEMICAL_CLASS` taxonomy is a fairly classical
+  one that predates several chemistries now in wide use (sulfonylurea and
+  other ALS-inhibiting herbicides, DMI/SDHI/strobilurin fungicides,
+  chloroacetanilide and dinitroaniline herbicides, neonicotinoid and diamide
+  insecticides, and more), so roughly two-thirds of compounds land in
+  `Other` for that column rather than an ill-fitting named family; see the
+  Washington pesticide class trends chapter's Methodology page for the full
+  rationale and worked examples. Compiled once in the Washington chapter
+  and reused unchanged by every state.
 
 **Note on comparing states/regions.** Washington, Oregon, and Idaho farm
 very different total acreages and crop mixes. Every raw-mass comparison in
@@ -52,13 +74,15 @@ Four chapters:
    has no direct equivalent in the other state folders.
 2. **`wa_pesticide_class_trends.Rmd` → `wa_pesticide_class_trends.html`** —
    interactive dashboard (flexdashboard) of statewide pesticide use by
-   chemical class and type, 1992-2018, overall and by USGS crop group.
-   Covers all 30 classes/7 types, not just organophosphates and
-   carbamates — an Overview and Static Plots page use `TYPE` as the chart
-   color (only 7 values, tractable as simultaneous series); the
-   Interactive Portal and Compound Explorer pages use `TYPE`/`CLASS` as
-   filters instead, since 30 classes can't be plotted as legible
-   simultaneous series. 2019 is excluded (see caveats below).
+   chemical class and functional class, 1992-2018, overall and by USGS
+   crop group. Covers all 402 classified compounds, not just
+   organophosphates and carbamates — an Overview and Static Plots page use
+   `FUNCTIONAL_CLASS` as the chart color (11 categories, tractable as
+   simultaneous series); the Interactive Portal and Compound Explorer pages
+   use `FUNCTIONAL_CLASS`/`CHEMICAL_CLASS` as filters instead, since
+   `CHEMICAL_CLASS` can't be plotted as a legible simultaneous series
+   (most compounds fall into its `Other` bucket). 2019 is excluded (see
+   caveats below).
 3. **`wa_statewide_top_pesticides.Rmd` → `wa_statewide_top_pesticides.pdf`**
    — statewide top-80 pesticide ranking, 2014-2018, with each compound's
    chemical class (abbreviated, with a key table) and a comparison to
@@ -71,10 +95,11 @@ Four chapters:
    county bar chart; County Ranking mirrors the statewide ranking chapter's
    1yr/3yr-avg/5yr-avg format but for all 39 Washington counties; County
    Explorer and Compound Explorer are crosstalk portals for browsing by
-   county, type, class, and compound. USGS's own documentation cautions
-   that these county-level figures are intended to be aggregated into
-   state totals rather than read as precise county-by-county figures — the
-   Overview and Methodology pages repeat this caveat prominently.
+   county, functional class, chemical class, and compound. USGS's own
+   documentation cautions that these county-level figures are intended to
+   be aggregated into state totals rather than read as precise
+   county-by-county figures — the Overview and Methodology pages repeat
+   this caveat prominently.
 
 ## Oregon (`oregon/`)
 
@@ -109,9 +134,10 @@ single-state chapter can show on its own.
    states (FIPS 53/41/16). Overview, Interactive Portal, Compound Explorer,
    and most of Static Plots show WA+OR+ID **summed together**. A dedicated
    **State Comparison** page adds `STATE` as a third chart dimension (only
-   3 values, safe to color directly, unlike the 30-value `CLASS`): an
-   interactive combined trend line by state, plus a static "annual use by
-   state, faceted by type" chart repeated on the Static Plots page.
+   3 values, safe to color directly, unlike the 13-value `CHEMICAL_CLASS`):
+   an interactive combined trend line by state, plus a static "annual use
+   by state, faceted by functional class" chart repeated on the Static
+   Plots page.
 2. **`pnw_regional_top_pesticides.Rmd` → `pnw_regional_top_pesticides.pdf`**
    — top-80 ranking summed across every WA+OR+ID county, 2014-2018, with
    **three** per-state rank columns (Rank WA / Rank OR / Rank ID) instead

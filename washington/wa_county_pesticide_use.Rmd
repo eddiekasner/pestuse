@@ -35,11 +35,14 @@ window_years <- 2014:2018
 recent_year  <- max(window_years)
 
 cat_hex <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100",
-              "#e87ba4", "#008300", "#4a3aa7", "#e34948")
+              "#e87ba4", "#008300", "#4a3aa7", "#e34948",
+              "#8c564b", "#c25aab")
 muted_grey <- "#898781"
-type_levels <- c("Insecticide", "Herbicide", "Fungicide", "Fumigant",
-                  "Plant Growth Regulator", "Biological", "Other")
-type_colors <- setNames(c(cat_hex[1:6], muted_grey), type_levels)
+functional_levels <- c("Herbicide/algicide", "Fungicide", "Insecticide",
+                        "Plant Growth Regulator", "Acaricide", "Fumigant",
+                        "Insect Growth Regulator", "Other Bactericides",
+                        "Nematicides", "Insect Repellent", "Other")
+functional_colors <- setNames(c(cat_hex[1:10], muted_grey), functional_levels)
 seq_blue <- c("#cde2fb", "#9ec5f4", "#5598e7", "#2a78d6", "#184f95")
 ```
 
@@ -85,11 +88,11 @@ state_map <- st_as_sf(map("county", region = tolower(state_name), plot = FALSE, 
 county_long <- county_raw %>%
   inner_join(classification, by = c("COMPOUND" = "COMPOUND")) %>%
   mutate(
-    TYPE = factor(TYPE, levels = type_levels),
+    FUNCTIONAL_CLASS = factor(FUNCTIONAL_CLASS, levels = functional_levels),
     FIPS = paste0(STATE_FIPS_CODE, COUNTY_FIPS_CODE)
   ) %>%
   left_join(fips_lookup, by = "FIPS") %>%
-  select(YEAR, FIPS, COUNTY_NAME, polyname, CLASS, TYPE, COMPOUND, EPEST_HIGH_KG)
+  select(YEAR, FIPS, COUNTY_NAME, polyname, CHEMICAL_CLASS, FUNCTIONAL_CLASS, COMPOUND, EPEST_HIGH_KG)
 
 n_unmatched_fips <- county_long %>% filter(is.na(COUNTY_NAME)) %>% distinct(FIPS) %>% nrow()
 
@@ -99,14 +102,14 @@ annual_by_county <- county_long %>%
   group_by(YEAR, FIPS, COUNTY_NAME, polyname) %>%
   summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG, na.rm = TRUE), .groups = "drop")
 
-annual_by_county_type <- county_long %>%
+annual_by_county_functional <- county_long %>%
   filter(!is.na(COUNTY_NAME)) %>%
-  group_by(YEAR, FIPS, COUNTY_NAME, TYPE) %>%
+  group_by(YEAR, FIPS, COUNTY_NAME, FUNCTIONAL_CLASS) %>%
   summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG, na.rm = TRUE), .groups = "drop")
 
 by_compound_county <- county_long %>%
   filter(!is.na(COUNTY_NAME)) %>%
-  group_by(YEAR, FIPS, COUNTY_NAME, TYPE, CLASS, COMPOUND) %>%
+  group_by(YEAR, FIPS, COUNTY_NAME, FUNCTIONAL_CLASS, CHEMICAL_CLASS, COMPOUND) %>%
   summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG, na.rm = TRUE), .groups = "drop")
 
 annual_state_total <- annual_by_county %>%
@@ -323,17 +326,20 @@ Row {data-height=700}
 
 ### Explore by county
 
-Each line is one county, dashed by type (color identifies the county, hover
-label gives the exact type). With `r n_counties_active` counties reporting
-use across 7 types, narrow the County and/or Type filters to a handful for
-the clearest view — lines are always split by county x type under the hood,
-so no combination of filters connects mismatched points into a jagged line.
+Each line is one county, dashed by functional class (color identifies the
+county, hover label gives the exact functional class). With
+`r n_counties_active` counties reporting use across 11 functional classes,
+narrow the County and/or Functional class filters to a handful for the
+clearest view — lines are always split by county x functional class under
+the hood, so no combination of filters connects mismatched points into a
+jagged line.
 
 ```{r portal-county-setup}
-# Grain matches exactly what's plotted (Year x FIPS x Type): a line is only
-# ever one county's one type, so leaving either filter unfiltered can't
-# connect mismatched points the way it would if Type were aggregated away.
-county_shared <- SharedData$new(annual_by_county_type, ~paste(YEAR, FIPS, TYPE), group = "county_portal")
+# Grain matches exactly what's plotted (Year x FIPS x Functional class): a
+# line is only ever one county's one functional class, so leaving either
+# filter unfiltered can't connect mismatched points the way it would if
+# functional class were aggregated away.
+county_shared <- SharedData$new(annual_by_county_functional, ~paste(YEAR, FIPS, FUNCTIONAL_CLASS), group = "county_portal")
 ```
 
 ```{r}
@@ -342,18 +348,18 @@ htmltools::div(
   bscols(
     widths = c(3, 9),
     list(
-      filter_checkbox("type_county", "Type", county_shared, ~TYPE, inline = TRUE),
+      filter_checkbox("func_county", "Functional class", county_shared, ~FUNCTIONAL_CLASS, inline = TRUE),
       filter_select("county_sel", "County", county_shared, ~COUNTY_NAME, multiple = TRUE),
       filter_slider("year_county", "Year", county_shared, ~YEAR, step = 1, sep = "", width = "100%")
     ),
-    plot_ly(county_shared, x = ~YEAR, y = ~EPEST_HIGH_KG, color = ~COUNTY_NAME, linetype = ~TYPE,
+    plot_ly(county_shared, x = ~YEAR, y = ~EPEST_HIGH_KG, color = ~COUNTY_NAME, linetype = ~FUNCTIONAL_CLASS,
             height = 600, type = "scatter", mode = "lines+markers",
             line = list(width = 1.5), marker = list(size = 4),
             hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
       layout(
         yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
         xaxis = list(title = "Year", dtick = 1),
-        legend = list(title = list(text = "County / type"), font = list(size = 9))
+        legend = list(title = list(text = "County / functional class"), font = list(size = 9))
       )
   )
 )
@@ -367,7 +373,7 @@ Row {data-height=400}
 ```{r}
 datatable(
   county_shared,
-  colnames = c("Year", "FIPS", "County", "Type", "EPest-high (kg)"),
+  colnames = c("Year", "FIPS", "County", "Functional class", "EPest-high (kg)"),
   options = list(pageLength = 10, dom = "ftip"),
   rownames = FALSE
 ) %>%
@@ -393,7 +399,7 @@ Class Trends](`r class_trends_file`) chapter's own Compound
 Explorer instead.
 
 ```{r portal-compound-setup}
-compound_shared <- SharedData$new(by_compound_county, ~paste(YEAR, FIPS, TYPE, CLASS, COMPOUND), group = "compound_portal")
+compound_shared <- SharedData$new(by_compound_county, ~paste(YEAR, FIPS, FUNCTIONAL_CLASS, CHEMICAL_CLASS, COMPOUND), group = "compound_portal")
 ```
 
 ```{r}
@@ -403,13 +409,13 @@ htmltools::div(
     widths = c(3, 9),
     list(
       filter_select("county_cmp", "County", compound_shared, ~COUNTY_NAME, multiple = TRUE),
-      filter_checkbox("type_cmp", "Type", compound_shared, ~TYPE, inline = TRUE),
-      filter_select("class_cmp", "Class", compound_shared, ~CLASS, multiple = TRUE),
+      filter_checkbox("func_cmp", "Functional class", compound_shared, ~FUNCTIONAL_CLASS, inline = TRUE),
+      filter_select("class_cmp", "Chemical class", compound_shared, ~CHEMICAL_CLASS, multiple = TRUE),
       filter_select("compound_sel", "Compound", compound_shared, ~COMPOUND, multiple = TRUE),
       filter_slider("year_cmp", "Year", compound_shared, ~YEAR, step = 1, sep = "", width = "100%")
     ),
     plot_ly(compound_shared, x = ~YEAR, y = ~EPEST_HIGH_KG, color = ~COMPOUND, height = 650,
-            text = ~paste0(COUNTY_NAME, ": ", TYPE, " / ", CLASS),
+            text = ~paste0(COUNTY_NAME, ": ", FUNCTIONAL_CLASS, " / ", CHEMICAL_CLASS),
             type = "scatter", mode = "lines+markers",
             line = list(width = 1.5), marker = list(size = 4),
             hovertemplate = "%{fullData.name} (%{text}), %{x}: %{y:,.0f} kg<extra></extra>") %>%
@@ -430,7 +436,7 @@ Row {data-height=400}
 ```{r}
 datatable(
   compound_shared,
-  colnames = c("Year", "FIPS", "County", "Type", "Class", "Compound", "EPest-high (kg)"),
+  colnames = c("Year", "FIPS", "County", "Functional class", "Chemical class", "Compound", "EPest-high (kg)"),
   options = list(pageLength = 10, dom = "ftip"),
   rownames = FALSE
 ) %>%
@@ -486,22 +492,23 @@ ggplot(map_data_change) +
 Row {data-height=500}
 -----------------------------------------------------------------------
 
-### Annual use by county, top 8 counties, by type
+### Annual use by county, top 8 counties, by functional class
 
 ```{r static-county-type, fig.width=10, fig.height=5}
 top8_fips <- county_totals_window$FIPS[1:8]
 
-annual_by_county_type %>%
+annual_by_county_functional %>%
   filter(FIPS %in% top8_fips) %>%
   mutate(COUNTY_NAME = factor(COUNTY_NAME, levels = county_totals_window$COUNTY_NAME[1:8])) %>%
-  ggplot(aes(x = YEAR, y = EPEST_HIGH_KG, fill = TYPE)) +
+  ggplot(aes(x = YEAR, y = EPEST_HIGH_KG, fill = FUNCTIONAL_CLASS)) +
   geom_col(position = "stack") +
   facet_wrap(~COUNTY_NAME, ncol = 4) +
-  scale_fill_manual(values = type_colors, name = "Type") +
+  scale_fill_manual(values = functional_colors, name = "Functional class") +
   scale_y_continuous(labels = comma) +
   scale_x_continuous(breaks = window_years) +
+  guides(fill = guide_legend(nrow = 3, byrow = TRUE)) +
   labs(
-    title = "Annual use by type, top 8 counties",
+    title = "Annual use by functional class, top 8 counties",
     x = NULL, y = "Mass applied (kg)"
   ) +
   theme_minimal(base_size = 11) +
@@ -546,7 +553,7 @@ consequences for this dashboard:
   analysis.
 
 Use this chapter to see *what's driving* `r state_name`'s statewide totals
-(which counties, which pesticide types) — not as a precise
+(which counties, which pesticide functional classes) — not as a precise
 county-by-county scoreboard, and not to draw conclusions about specific
 farms or fields.
 
@@ -582,16 +589,16 @@ EPest-low.
 
 ### Pesticide classification
 
-`r nrow(classification)` compounds classified into `r n_distinct(classification$CLASS)`
-chemical classes and `r n_distinct(classification$TYPE)` broad types; see
-the [Pesticide Class Trends](`r class_trends_file`) chapter for the full table.
+`r nrow(classification)` compounds classified into `r n_distinct(classification$CHEMICAL_CLASS)`
+chemical classes and `r n_distinct(classification$FUNCTIONAL_CLASS)` functional
+classes; see the [Pesticide Class Trends](`r class_trends_file`) chapter for the full table.
 
 ```{r classification-table}
 classification %>%
-  arrange(TYPE, CLASS, COMPOUND) %>%
-  select(COMPOUND, CLASS, TYPE) %>%
+  arrange(FUNCTIONAL_CLASS, CHEMICAL_CLASS, COMPOUND) %>%
+  select(COMPOUND, CHEMICAL_CLASS, FUNCTIONAL_CLASS) %>%
   datatable(
-    colnames = c("Compound", "Class", "Type"),
+    colnames = c("Compound", "Chemical class", "Functional class"),
     options = list(pageLength = 10, dom = "ftip"),
     rownames = FALSE
   )

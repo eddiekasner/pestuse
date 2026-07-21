@@ -47,11 +47,14 @@ window_years <- 2014:2018
 recent_year  <- max(window_years)
 
 cat_hex <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100",
-              "#e87ba4", "#008300", "#4a3aa7", "#e34948")
+              "#e87ba4", "#008300", "#4a3aa7", "#e34948",
+              "#8c564b", "#c25aab")
 muted_grey <- "#898781"
-type_levels <- c("Insecticide", "Herbicide", "Fungicide", "Fumigant",
-                  "Plant Growth Regulator", "Biological", "Other")
-type_colors <- setNames(c(cat_hex[1:6], muted_grey), type_levels)
+functional_levels <- c("Herbicide/algicide", "Fungicide", "Insecticide",
+                        "Plant Growth Regulator", "Acaricide", "Fumigant",
+                        "Insect Growth Regulator", "Other Bactericides",
+                        "Nematicides", "Insect Repellent", "Other")
+functional_colors <- setNames(c(cat_hex[1:10], muted_grey), functional_levels)
 ```
 
 ```{r upload.and.clean.data, include=F}
@@ -138,12 +141,12 @@ wa_top <- wa_ranked %>%
   arrange(RANK_1YR) %>%
   slice(1:top_n) %>%
   left_join(classification, by = "COMPOUND") %>%
-  mutate(CLASS = coalesce(CLASS, "Other/Unclassified"),
-         ABBREV = coalesce(ABBREV, "OTH"),
-         TYPE = coalesce(TYPE, "Other"),
-         TYPE = factor(TYPE, levels = type_levels)) %>%
+  mutate(CHEMICAL_CLASS = coalesce(CHEMICAL_CLASS, "Other"),
+         CHEM_ABBREV = coalesce(CHEM_ABBREV, "OTH"),
+         FUNCTIONAL_CLASS = coalesce(FUNCTIONAL_CLASS, "Other"),
+         FUNCTIONAL_CLASS = factor(FUNCTIONAL_CLASS, levels = functional_levels)) %>%
   left_join(yak_w$one %>% select(COMPOUND, YAKIMA_RANK_1YR = RANK_1YR), by = "COMPOUND") %>%
-  select(RANK_1YR, COMPOUND, CLASS, ABBREV, TYPE, EPEST_HIGH_KG_1YR, EPEST_HIGH_KG_3YR_AVG, EPEST_HIGH_KG_5YR_AVG, YAKIMA_RANK_1YR)
+  select(RANK_1YR, COMPOUND, CHEMICAL_CLASS, CHEM_ABBREV, FUNCTIONAL_CLASS, EPEST_HIGH_KG_1YR, EPEST_HIGH_KG_3YR_AVG, EPEST_HIGH_KG_5YR_AVG, YAKIMA_RANK_1YR)
 ```
 
 # Summary
@@ -157,10 +160,11 @@ summed across all Washington counties. The table also includes rank by
 3-year average (`r paste(range(tail(window_years,3)), collapse="-")`) and
 5-year average (`r paste(range(window_years), collapse="-")`) estimates of
 mass applied, each compound's chemical class (abbreviated; see the key in
-Table \@ref(tab:class-key) and the full classification in
-`data/pesticide_classification.csv`, shared with the Washington pesticide
-class trends chapter), and — for comparison — its `r recent_year` rank
-within Yakima County alone. Rankings and estimates are
+Table \@ref(tab:class-key) and the full classification, with a separate
+functional class column, in `data/pesticide_classification.csv`, shared
+with the Washington pesticide class trends chapter), and — for comparison —
+its `r recent_year` rank within Yakima County alone. Rankings and estimates
+are
 based on the *EPest-high method* described by [Thelin and Stone
 (2013)](https://pubs.usgs.gov/sir/2013/5009/) and [Baker and Stone
 (2015)](https://pubs.usgs.gov/ds/0907/):
@@ -204,11 +208,13 @@ in Yakima, and vice versa. `NA` in the Yakima rank column means the
 compound was not among Yakima County's top `r top_n` for `r recent_year`.
 
 ```{r class-key, include=T}
-# ABBREV -> CLASS is a clean 1:1 mapping (each of the 30 classes has one
-# code); ABBREV -> TYPE is not (e.g. Organophosphate spans both Insecticide
-# and Herbicide, since bensulide and tribufos are OP herbicides), so the key
-# only shows Code/Class -- adding Type would print each code multiple times.
-kable(classification %>% distinct(ABBREV, CLASS) %>% arrange(CLASS),
+# CHEM_ABBREV -> CHEMICAL_CLASS is a clean 1:1 mapping (each of the 13 named
+# families plus "Other" has one code); CHEM_ABBREV -> FUNCTIONAL_CLASS is
+# not (e.g. Organophosphorous compound spans both Insecticide and
+# Herbicide/algicide, since bensulide and tribufos are OP herbicides), so
+# the key only shows Code/Chemical class -- adding Functional class would
+# print each code multiple times.
+kable(classification %>% distinct(CHEM_ABBREV, CHEMICAL_CLASS) %>% arrange(CHEMICAL_CLASS),
       "latex", booktabs = T, longtable = TRUE,
       col.names = c("Code", "Chemical class"),
       caption = "Chemical class abbreviation key (used in the Class column of Table 2)") %>%
@@ -221,7 +227,7 @@ kable(classification %>% distinct(ABBREV, CLASS) %>% arrange(CLASS),
 # box that cannot break across pages, which silently drops every row past
 # the page boundary instead of erroring. Use longtable (page-breaking)
 # with a smaller font and abbreviated class codes instead.
-display <- wa_top %>% select(-CLASS, -TYPE)
+display <- wa_top %>% select(-CHEMICAL_CLASS, -FUNCTIONAL_CLASS)
 names(display) <- c("Rank (WA)", "Compound", "Class", "EPest-high 1yr",
                      "EPest-high 3yr avg", "EPest-high 5yr avg", "Rank (Yakima)")
 
@@ -234,16 +240,17 @@ kable(display, "latex", booktabs = T, digits = 0, longtable = TRUE,
 write.csv(wa_top, "wa.statewide.pesticide.use.2014-2018.csv", row.names = FALSE)
 ```
 
-```{r top-chart, include=T, fig.cap="Top 25 compounds statewide by EPest-high mass applied, most recent year, colored by pesticide type."}
+```{r top-chart, include=T, fig.cap="Top 25 compounds statewide by EPest-high mass applied, most recent year, colored by pesticide functional class."}
 top_chart <- wa_top %>%
   slice(1:25) %>%
   mutate(COMPOUND = forcats::fct_reorder(COMPOUND, EPEST_HIGH_KG_1YR))
 
-ggplot(top_chart, aes(x = COMPOUND, y = EPEST_HIGH_KG_1YR, fill = TYPE)) +
+ggplot(top_chart, aes(x = COMPOUND, y = EPEST_HIGH_KG_1YR, fill = FUNCTIONAL_CLASS)) +
   geom_col() +
   coord_flip() +
-  scale_fill_manual(values = type_colors, name = "Type", drop = FALSE) +
+  scale_fill_manual(values = functional_colors, name = "Functional class", drop = FALSE) +
   scale_y_continuous(labels = comma) +
+  guides(fill = guide_legend(nrow = 4, byrow = TRUE)) +
   labs(title = paste0("Washington statewide top 25 pesticides, ", recent_year),
        x = NULL, y = "EPest-high estimate (kg)") +
   theme_minimal(base_size = 11) +

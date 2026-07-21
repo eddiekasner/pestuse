@@ -31,17 +31,24 @@ crop_cols <- c("Corn", "Soybeans", "Wheat", "Cotton", "Vegetables_and_fruit",
 
 # ---- Palette (validated categorical order; see dataviz skill) ---------
 cat_hex <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100",
-              "#e87ba4", "#008300", "#4a3aa7", "#e34948")
+              "#e87ba4", "#008300", "#4a3aa7", "#e34948",
+              "#8c564b", "#c25aab")
 muted_grey <- "#898781"
 
-# TYPE is the broad, ~7-value grouping used for headline charts (fixed
-# categorical color per type, "Other" folded to neutral grey). CLASS is
-# the ~30-value chemical-family grouping (organophosphate, pyrethrin/pyrethroid,
-# triazine, ...) used for filtering/drilldown, not as a simultaneous
-# multi-series color encoding.
-type_levels <- c("Insecticide", "Herbicide", "Fungicide", "Fumigant",
-                  "Plant Growth Regulator", "Biological", "Other")
-type_colors <- setNames(c(cat_hex[1:6], muted_grey), type_levels)
+# FUNCTIONAL_CLASS is the broad, use-based grouping (what a compound is used
+# for: Insecticide, Herbicide/algicide, Fungicide, Fumigant, ...) used for
+# headline charts (fixed categorical color per class, "Other" folded to
+# neutral grey). CHEMICAL_CLASS is the structural/chemical-family grouping
+# (Organophosphorous compound, Pyrethrins/Pyrethroids, Triazines, ...) used
+# for filtering/drilldown, not as a simultaneous multi-series color
+# encoding -- most compounds' chemistry falls outside this taxonomy's named
+# families and lands in "Other", so it isn't tractable as a chart color
+# either. See the Methodology page for how each was assigned.
+functional_levels <- c("Herbicide/algicide", "Fungicide", "Insecticide",
+                        "Plant Growth Regulator", "Acaricide", "Fumigant",
+                        "Insect Growth Regulator", "Other Bactericides",
+                        "Nematicides", "Insect Repellent", "Other")
+functional_colors <- setNames(c(cat_hex[1:10], muted_grey), functional_levels)
 
 seq_blue <- c("#cde2fb", "#9ec5f4", "#5598e7", "#2a78d6", "#184f95")
 ```
@@ -72,7 +79,7 @@ classification <- read_csv("../data/pesticide_classification.csv", col_types = c
 wa <- raw %>%
   filter(State_FIPS_code == state_fips, Year <= 2018) %>%
   inner_join(classification, by = c("Compound" = "COMPOUND")) %>%
-  mutate(TYPE = factor(TYPE, levels = type_levels))
+  mutate(FUNCTIONAL_CLASS = factor(FUNCTIONAL_CLASS, levels = functional_levels))
 
 wa_long <- wa %>%
   pivot_longer(cols = all_of(crop_cols), names_to = "CROP_GROUP", values_to = "EPEST_HIGH_KG") %>%
@@ -81,7 +88,7 @@ wa_long <- wa %>%
     CROP_GROUP = str_replace_all(CROP_GROUP, "_", " ")
   ) %>%
   filter(!is.na(Year)) %>%
-  select(Year, Compound, CLASS, TYPE, CROP_GROUP, EPEST_HIGH_KG)
+  select(Year, Compound, CHEMICAL_CLASS, FUNCTIONAL_CLASS, CROP_GROUP, EPEST_HIGH_KG)
 
 # Fixed, stable crop-group order (by total 1992-2018 mass) so a given crop
 # group keeps the same color everywhere in the dashboard. Crop groups with
@@ -100,32 +107,32 @@ wa_long <- wa_long %>%
   filter(CROP_GROUP %in% crop_group_levels) %>%
   mutate(CROP_GROUP = factor(CROP_GROUP, levels = crop_group_levels))
 
-# Types with zero recorded use are dropped from TYPE-faceted charts the
-# same way crop groups are.
-type_totals <- wa_long %>%
-  group_by(TYPE) %>%
+# Functional classes with zero recorded use are dropped from
+# FUNCTIONAL_CLASS-faceted charts the same way crop groups are.
+functional_totals <- wa_long %>%
+  group_by(FUNCTIONAL_CLASS) %>%
   summarize(TOTAL_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
   filter(TOTAL_KG > 0) %>%
-  arrange(match(TYPE, type_levels))
-active_types <- as.character(type_totals$TYPE)
+  arrange(match(FUNCTIONAL_CLASS, functional_levels))
+active_functional_classes <- as.character(functional_totals$FUNCTIONAL_CLASS)
 
 year_range <- range(wa_long$Year)
 latest_year <- max(wa_long$Year)
 first_year <- min(wa_long$Year)
 
 # ---- Pre-aggregated summaries used throughout the dashboard -----------
-annual_by_type <- wa_long %>%
-  group_by(Year, TYPE) %>%
+annual_by_functional <- wa_long %>%
+  group_by(Year, FUNCTIONAL_CLASS) %>%
   summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
 
-annual_by_type_crop <- wa_long %>%
-  filter(TYPE %in% active_types) %>%
-  group_by(Year, TYPE, CROP_GROUP) %>%
+annual_by_functional_crop <- wa_long %>%
+  filter(FUNCTIONAL_CLASS %in% active_functional_classes) %>%
+  group_by(Year, FUNCTIONAL_CLASS, CROP_GROUP) %>%
   summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
-  mutate(TYPE = factor(TYPE, levels = active_types))
+  mutate(FUNCTIONAL_CLASS = factor(FUNCTIONAL_CLASS, levels = active_functional_classes))
 
 annual_by_compound <- wa_long %>%
-  group_by(Year, TYPE, CLASS, Compound) %>%
+  group_by(Year, FUNCTIONAL_CLASS, CHEMICAL_CLASS, Compound) %>%
   summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
 
 annual_overall <- wa_long %>%
@@ -138,12 +145,12 @@ total_latest <- annual_overall %>% filter(Year == latest_year) %>% pull(EPEST_HI
 total_first  <- annual_overall %>% filter(Year == first_year)  %>% pull(EPEST_HIGH_KG)
 total_pct_change <- 100 * (total_latest - total_first) / total_first
 
-top_type_latest <- annual_by_type %>%
+top_functional_latest <- annual_by_functional %>%
   filter(Year == latest_year) %>%
   arrange(desc(EPEST_HIGH_KG)) %>%
   slice(1)
 
-top_crop_latest <- annual_by_type_crop %>%
+top_crop_latest <- annual_by_functional_crop %>%
   filter(Year == latest_year) %>%
   group_by(CROP_GROUP) %>%
   summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
@@ -165,11 +172,11 @@ valueBox(paste0(comma(round(total_latest)), " kg"),
          icon = "fa-flask", color = cat_hex[1])
 ```
 
-### Top type, `r latest_year` {.value-box}
+### Top functional class, `r latest_year` {.value-box}
 
 ```{r}
-valueBox(paste0(as.character(top_type_latest$TYPE), ": ", comma(round(top_type_latest$EPEST_HIGH_KG)), " kg"),
-         caption = paste0("Largest pesticide type by mass, ", latest_year),
+valueBox(paste0(as.character(top_functional_latest$FUNCTIONAL_CLASS), ": ", comma(round(top_functional_latest$EPEST_HIGH_KG)), " kg"),
+         caption = paste0("Largest pesticide functional class by mass, ", latest_year),
          icon = "fa-layer-group", color = cat_hex[2])
 ```
 
@@ -216,17 +223,17 @@ p
 Row {data-height=430}
 -----------------------------------------------------------------------
 
-### Annual use by pesticide type, `r first_year`-`r latest_year`
+### Annual use by functional class, `r first_year`-`r latest_year`
 
 ```{r}
-plot_ly(annual_by_type, x = ~Year, y = ~EPEST_HIGH_KG, color = ~TYPE,
-        colors = type_colors, type = "scatter", mode = "lines+markers",
+plot_ly(annual_by_functional, x = ~Year, y = ~EPEST_HIGH_KG, color = ~FUNCTIONAL_CLASS,
+        colors = functional_colors, type = "scatter", mode = "lines+markers",
         line = list(width = 2), marker = list(size = 5),
         hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
   layout(
     yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
     xaxis = list(title = "Year", dtick = 2),
-    legend = list(title = list(text = "Type"), orientation = "h", y = -0.2),
+    legend = list(title = list(text = "Functional class"), orientation = "h", y = -0.2),
     hovermode = "x unified"
   )
 ```
@@ -239,29 +246,32 @@ Row {data-height=700}
 
 ### Explore by crop group
 
-Tip: lines are colored by crop group and dashed by type. Class-level
-filtering (30 chemical classes) is on the Compound Explorer page instead —
-plotting crop-group trends split by all 30 classes at once would make the
-lines and legend unreadable, so this view stops at type (7 categories).
+Tip: lines are colored by crop group and dashed by functional class.
+Chemical-class filtering (13 named families, most compounds falling
+outside them into "Other") is on the Compound Explorer page instead —
+plotting crop-group trends split by chemical class at once would make the
+lines and legend unreadable, so this view stops at functional class (11
+categories).
 
 ```{r portal-crop-setup}
-# Grain matches exactly what's plotted (Year x Type x Crop group): unlike
-# a compound-level chart, a crop-group line has no compound identity to
-# split on, so if the shared data still had a Class dimension underneath,
-# multiple classes' values for the same year/crop-group would connect into
-# one jagged, meaningless line. Aggregating away Class here (Compound
-# Explorer covers that level) keeps every plotted line a true 1-row-per-year
-# series regardless of which Type boxes are checked.
-type_crop_active <- wa_long %>%
-  filter(TYPE %in% active_types) %>%
-  group_by(TYPE, CROP_GROUP) %>%
+# Grain matches exactly what's plotted (Year x Functional class x Crop
+# group): unlike a compound-level chart, a crop-group line has no compound
+# identity to split on, so if the shared data still had a chemical-class
+# dimension underneath, multiple classes' values for the same
+# year/crop-group would connect into one jagged, meaningless line.
+# Aggregating away chemical class here (Compound Explorer covers that
+# level) keeps every plotted line a true 1-row-per-year series regardless
+# of which functional-class boxes are checked.
+functional_crop_active <- wa_long %>%
+  filter(FUNCTIONAL_CLASS %in% active_functional_classes) %>%
+  group_by(FUNCTIONAL_CLASS, CROP_GROUP) %>%
   mutate(PAIR_TOTAL = sum(EPEST_HIGH_KG)) %>%
   ungroup() %>%
   filter(PAIR_TOTAL > 0) %>%
-  group_by(Year, TYPE, CROP_GROUP) %>%
+  group_by(Year, FUNCTIONAL_CLASS, CROP_GROUP) %>%
   summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
 
-crop_shared <- SharedData$new(type_crop_active, ~paste(Year, TYPE, CROP_GROUP), group = "crop_portal")
+crop_shared <- SharedData$new(functional_crop_active, ~paste(Year, FUNCTIONAL_CLASS, CROP_GROUP), group = "crop_portal")
 ```
 
 ```{r}
@@ -270,19 +280,19 @@ htmltools::div(
   bscols(
     widths = c(3, 9),
     list(
-      filter_checkbox("type_crop", "Type", crop_shared, ~TYPE, inline = TRUE),
+      filter_checkbox("func_crop", "Functional class", crop_shared, ~FUNCTIONAL_CLASS, inline = TRUE),
       filter_select("crop_sel", "Crop group", crop_shared, ~CROP_GROUP, multiple = TRUE),
       filter_slider("year_crop", "Year", crop_shared, ~Year, step = 1, sep = "", width = "100%")
     ),
     plot_ly(crop_shared, x = ~Year, y = ~EPEST_HIGH_KG, color = ~CROP_GROUP,
-            colors = crop_group_colors, linetype = ~TYPE,
+            colors = crop_group_colors, linetype = ~FUNCTIONAL_CLASS,
             type = "scatter", mode = "lines+markers", height = 600,
             line = list(width = 2), marker = list(size = 5),
             hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
       layout(
         yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
         xaxis = list(title = "Year"),
-        legend = list(title = list(text = "Crop group / type"), font = list(size = 9))
+        legend = list(title = list(text = "Crop group / functional class"), font = list(size = 9))
       )
   )
 )
@@ -297,7 +307,7 @@ Row {data-height=400}
 datatable(
   crop_shared,
   extensions = "Scroller",
-  colnames = c("Year", "Type", "Crop group", "EPest-high (kg)"),
+  colnames = c("Year", "Functional class", "Crop group", "EPest-high (kg)"),
   options = list(deferRender = TRUE, scrollY = 260, scroller = TRUE, dom = "ftip"),
   rownames = FALSE
 ) %>%
@@ -313,11 +323,11 @@ Row {data-height=700}
 ### Explore by compound
 
 Each line is one compound (color and hover label identify it). Narrow the
-Compound filter (or the Type/Class filters) to a handful of active
-ingredients for the clearest view.
+Compound filter (or the Functional class/Chemical class filters) to a
+handful of active ingredients for the clearest view.
 
 ```{r portal-compound-setup}
-compound_shared <- SharedData$new(annual_by_compound, ~paste(Year, TYPE, CLASS, Compound), group = "compound_portal")
+compound_shared <- SharedData$new(annual_by_compound, ~paste(Year, FUNCTIONAL_CLASS, CHEMICAL_CLASS, Compound), group = "compound_portal")
 ```
 
 ```{r}
@@ -326,13 +336,13 @@ htmltools::div(
   bscols(
     widths = c(3, 9),
     list(
-      filter_checkbox("type_cmp", "Type", compound_shared, ~TYPE, inline = TRUE),
-      filter_select("class_cmp", "Class", compound_shared, ~CLASS, multiple = TRUE),
+      filter_checkbox("func_cmp", "Functional class", compound_shared, ~FUNCTIONAL_CLASS, inline = TRUE),
+      filter_select("class_cmp", "Chemical class", compound_shared, ~CHEMICAL_CLASS, multiple = TRUE),
       filter_select("compound_sel", "Compound", compound_shared, ~Compound, multiple = TRUE),
       filter_slider("year_cmp", "Year", compound_shared, ~Year, step = 1, sep = "", width = "100%")
     ),
     plot_ly(compound_shared, x = ~Year, y = ~EPEST_HIGH_KG, color = ~Compound,
-            text = ~paste0(TYPE, " / ", CLASS), height = 600,
+            text = ~paste0(FUNCTIONAL_CLASS, " / ", CHEMICAL_CLASS), height = 600,
             type = "scatter", mode = "lines+markers",
             line = list(width = 1.5), marker = list(size = 4),
             hovertemplate = "%{fullData.name} (%{text}), %{x}: %{y:,.0f} kg<extra></extra>") %>%
@@ -354,7 +364,7 @@ Row {data-height=400}
 datatable(
   compound_shared,
   extensions = "Scroller",
-  colnames = c("Year", "Type", "Class", "Compound", "EPest-high (kg)"),
+  colnames = c("Year", "Functional class", "Chemical class", "Compound", "EPest-high (kg)"),
   options = list(deferRender = TRUE, scrollY = 260, scroller = TRUE, dom = "ftip"),
   rownames = FALSE
 ) %>%
@@ -367,17 +377,17 @@ Static Plots
 Row {data-height=500}
 -----------------------------------------------------------------------
 
-### Overall annual use by type
+### Overall annual use by functional class
 
 ```{r static-type-trend, fig.width=10, fig.height=5}
-ggplot(annual_by_type, aes(x = Year, y = EPEST_HIGH_KG, color = TYPE)) +
+ggplot(annual_by_functional, aes(x = Year, y = EPEST_HIGH_KG, color = FUNCTIONAL_CLASS)) +
   geom_line(linewidth = 1) +
   geom_point(size = 1.8) +
-  scale_color_manual(values = type_colors, name = "Type") +
+  scale_color_manual(values = functional_colors, name = "Functional class") +
   scale_y_continuous(labels = comma) +
   scale_x_continuous(breaks = seq(first_year, latest_year, by = 2)) +
   labs(
-    title = paste0(state_name, ": Annual pesticide use by type, ", first_year, "-", latest_year),
+    title = paste0(state_name, ": Annual pesticide use by functional class, ", first_year, "-", latest_year),
     subtitle = "USGS EPest-high estimates, summed across all reported crop groups",
     x = NULL, y = "Mass applied (kg)"
   ) +
@@ -393,16 +403,16 @@ ggplot(annual_by_type, aes(x = Year, y = EPEST_HIGH_KG, color = TYPE)) +
 
 ```{r static-top-compounds, fig.width=10, fig.height=5}
 top_compounds <- annual_by_compound %>%
-  group_by(TYPE, CLASS, Compound) %>%
+  group_by(FUNCTIONAL_CLASS, CHEMICAL_CLASS, Compound) %>%
   summarize(TOTAL_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
   arrange(desc(TOTAL_KG)) %>%
   slice(1:20) %>%
   mutate(Compound = fct_reorder(Compound, TOTAL_KG))
 
-ggplot(top_compounds, aes(x = Compound, y = TOTAL_KG, fill = TYPE)) +
+ggplot(top_compounds, aes(x = Compound, y = TOTAL_KG, fill = FUNCTIONAL_CLASS)) +
   geom_col() +
   coord_flip() +
-  scale_fill_manual(values = type_colors, name = "Type") +
+  scale_fill_manual(values = functional_colors, name = "Functional class") +
   scale_y_continuous(labels = comma) +
   labs(
     title = paste0("Top 20 compounds by cumulative mass applied, ", first_year, "-", latest_year),
@@ -418,14 +428,14 @@ Row {data-height=650}
 ### Annual use by crop group
 
 ```{r static-crop-area, fig.width=10, fig.height=7}
-ggplot(annual_by_type_crop, aes(x = Year, y = EPEST_HIGH_KG, fill = CROP_GROUP)) +
+ggplot(annual_by_functional_crop, aes(x = Year, y = EPEST_HIGH_KG, fill = CROP_GROUP)) +
   geom_area(position = "stack") +
-  facet_wrap(~TYPE, ncol = 2, scales = "free_y") +
+  facet_wrap(~FUNCTIONAL_CLASS, ncol = 2, scales = "free_y") +
   scale_fill_manual(values = crop_group_colors, name = "Crop group") +
   scale_y_continuous(labels = comma) +
   scale_x_continuous(breaks = seq(first_year, latest_year, by = 6)) +
   labs(
-    title = "Annual use by crop group, faceted by type",
+    title = "Annual use by crop group, faceted by functional class",
     subtitle = "Stacked EPest-high estimates; crop group order fixed by total 1992-2018 mass",
     x = NULL, y = "Mass applied (kg)"
   ) +
@@ -445,11 +455,11 @@ Row {data-height=650}
 
 ```{r static-heatmap, fig.width=10, fig.height=7}
 kg_breaks <- c(0, 10, 100, 1000, 10000, 100000, 1000000)
-kg_breaks <- kg_breaks[kg_breaks <= max(annual_by_type_crop$EPEST_HIGH_KG)]
+kg_breaks <- kg_breaks[kg_breaks <= max(annual_by_functional_crop$EPEST_HIGH_KG)]
 
-ggplot(annual_by_type_crop, aes(x = Year, y = CROP_GROUP, fill = log1p(EPEST_HIGH_KG))) +
+ggplot(annual_by_functional_crop, aes(x = Year, y = CROP_GROUP, fill = log1p(EPEST_HIGH_KG))) +
   geom_tile(color = "white", linewidth = 0.3) +
-  facet_wrap(~TYPE, ncol = 2) +
+  facet_wrap(~FUNCTIONAL_CLASS, ncol = 2) +
   scale_fill_gradientn(colors = seq_blue, name = "kg",
                         breaks = log1p(kg_breaks), labels = comma(kg_breaks)) +
   scale_x_continuous(breaks = seq(first_year, latest_year, by = 6), expand = c(0, 0)) +
@@ -488,19 +498,60 @@ This dashboard covers **`r state_name` (FIPS `r state_fips`)** only,
 filtered to the `r nrow(classification)` compounds classified in
 `data/pesticide_classification.csv` (see the table below). Every compound
 reported for `r state_name` in the source file is classified; none are
-dropped as "unclassifiable" — the classification's own `Other/Unclassified`
-class is reserved for the small number of miscellaneous compounds (a few
-adjuvants, a molluscicide, a nitrogen stabilizer) that don't belong to any
-recognized pesticide class.
+dropped as "unclassifiable" — the classification's own `Other` bucket is
+reserved for compounds outside the named families below (a few adjuvants,
+a molluscicide, a nitrogen stabilizer, and — for Chemical Class
+specifically — most modern chemistries not covered by the requested
+taxonomy; see below).
 
-**Two grouping columns.** `TYPE` is the broad functional category
-(Insecticide, Herbicide, Fungicide, Fumigant, Plant Growth Regulator,
-Biological, Other) used for the headline charts on the Overview and Static
-Plots pages. `CLASS` is the specific chemical family (organophosphate,
-pyrethrin/pyrethroid, triazine, DMI fungicide, ...) used for filtering on the
-Interactive Portal and Compound Explorer pages — there are too many
-classes to plot as simultaneous colored series, so they're a filter
-dimension rather than a chart aesthetic.
+**Two grouping columns, verified compound-by-compound.** USGS's own
+metadata for these data releases (Identification/Entity-Attribute
+Information sections) documents only the file's structural columns
+(compound name, year, FIPS codes, crop-group amounts) — it does not
+publish a compound-level chemical/functional classification crosswalk.
+Both columns below were therefore built and checked one compound at a time
+against pesticide chemistry/mode-of-action references, not derived from a
+USGS-supplied table:
+
+* **`FUNCTIONAL_CLASS`** — what the compound is *used for*: Insecticide,
+  Herbicide/algicide, Fungicide, Fumigant, Rodenticide, Disinfectant/Broad
+  Spectrum for Water Sanitation, Other Bactericides, Insect Repellent,
+  Antifouling agent, Nematicides, Acaricides, Plant Growth Regulator
+  (an addition beyond the base list, since ~19 compounds in this data are
+  distinctly plant growth regulators rather than crop-protection products),
+  or Other. Used for the headline charts on the Overview and Static Plots
+  pages (only categories with recorded `r state_name` use are plotted;
+  Rodenticide, Disinfectant, and Antifouling have zero compounds in this
+  agricultural-use dataset).
+* **`CHEMICAL_CLASS`** — the compound's structural/chemical family:
+  Organochlorine compound, Organophosphorous compound, N-methyl carbamates
+  (AChE inhibitor), Pyrethrins/Pyrethroids, Dipyridyl compound,
+  Chlorophenoxy compound, Triazines, Thiocarbamates, Organo-metallic
+  compound, Inorganic compounds, Microbial, Dithiocarbamates, or Other.
+  This is a fairly classical taxonomy that predates several chemistries
+  now in wide use (sulfonylurea and other ALS-inhibiting herbicides, DMI
+  and SDHI and strobilurin fungicides, chloroacetanilide and dinitroaniline
+  herbicides, neonicotinoid and diamide insecticides, and more) — those
+  compounds correctly land in "Other" rather than being forced into an
+  ill-fitting named family. `r nrow(classification %>% filter(CHEMICAL_CLASS == "Other"))`
+  of `r nrow(classification)` compounds (`r round(100*nrow(classification %>% filter(CHEMICAL_CLASS == "Other"))/nrow(classification))`%)
+  fall into "Other" for this reason. Used for filtering on the Interactive
+  Portal and Compound Explorer pages — with most compounds in a single
+  "Other" bucket and the rest split across 12 named families, it isn't a
+  useful simultaneous chart-color dimension either.
+
+Splitting these into two columns (rather than one column doing both jobs,
+as in this dashboard's first version) directly fixes a real distortion: a
+handful of fumigants (metam, metam potassium, dichloropropene,
+chloropicrin) used to share a single "Fumigant" bucket that behaved like a
+chemical class, when fumigants are actually chemically diverse (a
+dithiocarbamate, in metam's case) and are applied at far higher per-acre
+rates than herbicides or insecticides. That made raw-mass comparisons
+across the old classes misleading — Fumigant could dwarf Herbicide in
+total kg even though it covers only a handful of compounds. Functional
+Class still correctly shows fumigants' true (large) total mass; Chemical
+Class now distributes that same mass into the compounds' real chemistry
+instead of an artificial catch-all.
 
 **EPest-high method.** Values are the *EPest-high* estimates described by
 Baker and Stone (2015) and Thelin and Stone (2013): where a Crop Reporting
@@ -526,25 +577,27 @@ above.
   application rates aggregated to the state and crop-group level.
 * A blank cell in the source file (no reported/estimated use for that
   compound-year-crop-group) is treated as zero in this dashboard.
-* Classification into chemical classes is necessarily a simplification —
-  a handful of compounds have real claims to more than one class (e.g.
-  fenoxycarb is a carbamate insect growth regulator; propamocarb is a
-  carbamic-acid-ester fungicide, not grouped with the insecticide/herbicide
-  carbamates). Each compound is assigned to the single class judged most
-  useful for a chemical-class trends view.
+* Classification is necessarily a simplification for compounds with
+  legitimate dual uses — e.g. several compounds registered as both
+  acaricides and general insecticides (abamectin, spiromesifen,
+  spirotetramat) are assigned to whichever use is most commonly the
+  compound's primary registered purpose; fenoxycarb is chemically a
+  carbamate ester but mechanistically an insect growth regulator (not an
+  AChE inhibitor), so it's classified by mechanism rather than by the
+  "carbamate" name.
 
 ### Pesticide classification
 
-`r nrow(classification)` compounds classified into `r n_distinct(classification$CLASS)`
-chemical classes and `r n_distinct(classification$TYPE)` broad types;
-`r n_distinct(wa$Compound)` of those were reported for `r state_name`.
+`r nrow(classification)` compounds classified into `r n_distinct(classification$CHEMICAL_CLASS)`
+chemical classes and `r n_distinct(classification$FUNCTIONAL_CLASS)` functional
+classes; `r n_distinct(wa$Compound)` of those were reported for `r state_name`.
 
 ```{r classification-table}
 classification %>%
-  arrange(TYPE, CLASS, COMPOUND) %>%
-  select(COMPOUND, CLASS, TYPE) %>%
+  arrange(FUNCTIONAL_CLASS, CHEMICAL_CLASS, COMPOUND) %>%
+  select(COMPOUND, CHEMICAL_CLASS, FUNCTIONAL_CLASS) %>%
   datatable(
-    colnames = c("Compound", "Class", "Type"),
+    colnames = c("Compound", "Chemical class", "Functional class"),
     options = list(pageLength = 15, dom = "ftip"),
     rownames = FALSE
   )

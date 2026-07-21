@@ -1,403 +1,403 @@
-COMPOUND,CLASS,ABBREV,TYPE
-1-METHYL CYCLOPROPENE,Plant Growth Regulator,PGR,Plant Growth Regulator
-"2,4-D",Phenoxy,PHX,Herbicide
-"2,4-DB",Phenoxy,PHX,Herbicide
-6-BENZYLADENINE,Plant Growth Regulator,PGR,Plant Growth Regulator
-ABAMECTIN,Avermectin,AVM,Insecticide
-ACEPHATE,Organophosphate,OP,Insecticide
-ACEQUINOCYL,Other Insecticide/Miticide,INS,Insecticide
-ACETAMIPRID,Neonicotinoid,NEO,Insecticide
-ACETOCHLOR,Chloroacetanilide,CAA,Herbicide
-ACIBENZOLAR,Other Fungicide,FUN,Fungicide
-ALACHLOR,Chloroacetanilide,CAA,Herbicide
-ALDICARB,Carbamate,CB,Insecticide
-ALPHA CYPERMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
-ALUMINUM PHOSPHIDE,Fumigant,FUM,Fumigant
-AMETOCTRADIN,Other Fungicide,FUN,Fungicide
-AMINOPYRALID,Other Herbicide,HRB,Herbicide
-AMITRAZ,Other Insecticide/Miticide,INS,Insecticide
-AMITROLE,Other Herbicide,HRB,Herbicide
-AMPELOMYCES QUISQUALIS,Biological/Microbial,BIO,Biological
-ANILAZINE,Other Fungicide,FUN,Fungicide
-ARSENIC ACID,Inorganic/Mineral,INO,Other
-ATRAZINE,Triazine,TRZ,Herbicide
-AUREOBASIDIUM PULLULANS,Biological/Microbial,BIO,Biological
-AVIGLYCINE,Plant Growth Regulator,PGR,Plant Growth Regulator
-AZADIRACHTIN,Other Insecticide/Miticide,INS,Insecticide
-AZINPHOS-METHYL,Organophosphate,OP,Insecticide
-AZOXYSTROBIN,Strobilurin (QoI),QOI,Fungicide
-BACILLUS AMYLOLIQUEFACIEN,Biological/Microbial,BIO,Biological
-BACILLUS FIRMUS,Biological/Microbial,BIO,Biological
-BACILLUS PUMILIS,Biological/Microbial,BIO,Biological
-BACILLUS SUBTILIS,Biological/Microbial,BIO,Biological
-BACILLUS THURINGIENSIS,Biological/Microbial,BIO,Biological
-BARBAN,Carbamate,CB,Herbicide
-BARIUM POLYSULFIDE,Inorganic/Mineral,INO,Other
-BENFLURALIN,Dinitroaniline,DNA,Herbicide
-BENOMYL,Other Fungicide,FUN,Fungicide
-BENSULIDE,Organophosphate,OP,Herbicide
-BENTAZONE,Other Herbicide,HRB,Herbicide
-BENZOVINDIFLUPYR,SDHI,SDH,Fungicide
-BICYCLOPYRONE,Other Herbicide,HRB,Herbicide
-BIFENAZATE,Other Insecticide/Miticide,INS,Insecticide
-BIFENTHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
-BORDEAUX MIXTURE,Inorganic/Mineral,INO,Fungicide
-BOSCALID,SDHI,SDH,Fungicide
-BROMACIL,Other Herbicide,HRB,Herbicide
-BROMOXYNIL,Other Herbicide,HRB,Herbicide
-BUPROFEZIN,Insect Growth Regulator,IGR,Insecticide
-BURKHOLDERIA SPP,Biological/Microbial,BIO,Biological
-BUTYLATE,Thiocarbamate,TC,Herbicide
-CALCIUM CHLORIDE,Inorganic/Mineral,INO,Other
-CALCIUM POLYSULFIDE,Inorganic/Mineral,INO,Fungicide
-CAPTAN,Other Fungicide,FUN,Fungicide
-CARBARYL,Carbamate,CB,Insecticide
-CARBOFURAN,Carbamate,CB,Insecticide
-CARBOXIN,SDHI,SDH,Fungicide
-CARFENTRAZONE-ETHYL,Other Herbicide,HRB,Herbicide
-CHENOPODIUM AMBROSIOIDES,Other Insecticide/Miticide,INS,Insecticide
-CHINOMETHIONAT,Other Insecticide/Miticide,INS,Insecticide
-CHLORAMBEN,Other Herbicide,HRB,Herbicide
-CHLORANTRANILIPROLE,Diamide,DIA,Insecticide
-CHLORETHOXYFOS,Organophosphate,OP,Insecticide
-CHLORIDAZON,Other Herbicide,HRB,Herbicide
-CHLORIMURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-CHLORMEQUAT,Plant Growth Regulator,PGR,Plant Growth Regulator
-CHLOROPICRIN,Fumigant,FUM,Fumigant
-CHLOROTHALONIL,Other Fungicide,FUN,Fungicide
-CHLORPROPHAM,Carbamate,CB,Herbicide
-CHLORPYRIFOS,Organophosphate,OP,Insecticide
-CHLORSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-CHROMOBACTERIUM SUBTSUGAE,Biological/Microbial,BIO,Biological
-CLETHODIM,Other Herbicide,HRB,Herbicide
-CLODINAFOP,Other Herbicide,HRB,Herbicide
-CLOFENTEZINE,Other Insecticide/Miticide,INS,Insecticide
-CLOMAZONE,Other Herbicide,HRB,Herbicide
-CLOPYRALID,Other Herbicide,HRB,Herbicide
-CLOTHIANIDIN,Neonicotinoid,NEO,Insecticide
-CONIOTHYRIUM MINITANS,Biological/Microbial,BIO,Biological
-COPPER,Inorganic/Mineral,INO,Fungicide
-COPPER HYDROXIDE,Inorganic/Mineral,INO,Fungicide
-COPPER OCTANOATE,Inorganic/Mineral,INO,Fungicide
-COPPER OXYCHLORIDE,Inorganic/Mineral,INO,Fungicide
-COPPER OXYCHLORIDE S,Inorganic/Mineral,INO,Fungicide
-COPPER SULFATE,Inorganic/Mineral,INO,Fungicide
-COPPER SULFATE TRIBASIC,Inorganic/Mineral,INO,Fungicide
-CPPU,Plant Growth Regulator,PGR,Plant Growth Regulator
-CRYOLITE,Inorganic/Mineral,INO,Insecticide
-CUPROUS OXIDE,Inorganic/Mineral,INO,Fungicide
-CYANAMIDE,Other/Unclassified,OTH,Plant Growth Regulator
-CYANAZINE,Triazine,TRZ,Herbicide
-CYANTRANILIPROLE,Diamide,DIA,Insecticide
-CYAZOFAMID,Other Fungicide,FUN,Fungicide
-CYCLOATE,Thiocarbamate,TC,Herbicide
-CYDIA POMONELLA,Biological/Microbial,BIO,Biological
-CYFLUFENAMID,Other Fungicide,FUN,Fungicide
-CYFLUMETOFEN,Other Insecticide/Miticide,INS,Insecticide
-CYFLUTHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
-CYHALOTHRIN-GAMMA,Pyrethrin/Pyrethroid,PYR,Insecticide
-CYHALOTHRIN-LAMBDA,Pyrethrin/Pyrethroid,PYR,Insecticide
-CYMOXANIL,Other Fungicide,FUN,Fungicide
-CYPERMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
-CYPROCONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-CYPRODINIL,Other Fungicide,FUN,Fungicide
-CYTOKININ,Plant Growth Regulator,PGR,Plant Growth Regulator
-DALAPON,Other Herbicide,HRB,Herbicide
-DAMINOZIDE,Plant Growth Regulator,PGR,Plant Growth Regulator
-DCPA,Other Herbicide,HRB,Herbicide
-DECAN-1-OL,Plant Growth Regulator,PGR,Plant Growth Regulator
-DELTAMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
-DEMETON,Organophosphate,OP,Insecticide
-DESMEDIPHAM,Carbamate,CB,Herbicide
-DIALLATE,Thiocarbamate,TC,Herbicide
-DIAZINON,Organophosphate,OP,Insecticide
-DICAMBA,Other Herbicide,HRB,Herbicide
-DICHLOBENIL,Other Herbicide,HRB,Herbicide
-DICHLOROPROPENE,Fumigant,FUM,Fumigant
-DICHLORPROP,Phenoxy,PHX,Herbicide
-DICLOFOP,Other Herbicide,HRB,Herbicide
-DICLORAN,Other Fungicide,FUN,Fungicide
-DICOFOL,Organochlorine,OC,Insecticide
-DICROTOPHOS,Organophosphate,OP,Insecticide
-DIENOCHLOR,Organochlorine,OC,Insecticide
-DIETHATYL,Chloroacetanilide,CAA,Herbicide
-DIFENOCONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-DIFENZOQUAT,Other Herbicide,HRB,Herbicide
-DIFLUBENZURON,Insect Growth Regulator,IGR,Insecticide
-DIFLUFENZOPYR,Other Herbicide,HRB,Herbicide
-DIMETHENAMID,Chloroacetanilide,CAA,Herbicide
-DIMETHENAMID & DIMETHENAMID-P,Chloroacetanilide,CAA,Herbicide
-DIMETHENAMID-P,Chloroacetanilide,CAA,Herbicide
-DIMETHOATE,Organophosphate,OP,Insecticide
-DIMETHOMORPH,Other Fungicide,FUN,Fungicide
-DINOTEFURAN,Neonicotinoid,NEO,Insecticide
-DIQUAT,Bipyridylium,BIP,Herbicide
-DISULFOTON,Organophosphate,OP,Insecticide
-DIURON,Other Herbicide,HRB,Herbicide
-DNOC,Other Herbicide,HRB,Herbicide
-DODINE,Other Fungicide,FUN,Fungicide
-EMAMECTIN,Avermectin,AVM,Insecticide
-ENDOSULFAN,Organochlorine,OC,Insecticide
-ENDOTHAL,Other Herbicide,HRB,Herbicide
-EPTC,Thiocarbamate,TC,Herbicide
-ESFENVALERATE,Pyrethrin/Pyrethroid,PYR,Insecticide
-ETHALFLURALIN,Dinitroaniline,DNA,Herbicide
-ETHEPHON,Plant Growth Regulator,PGR,Plant Growth Regulator
-ETHION,Organophosphate,OP,Insecticide
-ETHOFUMESATE,Other Herbicide,HRB,Herbicide
-ETHOPROPHOS,Organophosphate,OP,Insecticide
-ETOXAZOLE,Other Insecticide/Miticide,INS,Insecticide
-ETRIDIAZOLE,Other Fungicide,FUN,Fungicide
-FAMOXADONE,Strobilurin (QoI),QOI,Fungicide
-FENAMIDONE,Strobilurin (QoI),QOI,Fungicide
-FENAMIPHOS,Organophosphate,OP,Insecticide
-FENARIMOL,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-FENAZAQUIN,Other Insecticide/Miticide,INS,Insecticide
-FENBUCONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-FENBUTATIN OXIDE,Other Insecticide/Miticide,INS,Insecticide
-FENHEXAMID,Other Fungicide,FUN,Fungicide
-FENOXAPROP,Other Herbicide,HRB,Herbicide
-FENOXYCARB,Carbamate,CB,Insecticide
-FENPROPATHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
-FENPYROXIMATE,Other Insecticide/Miticide,INS,Insecticide
-FENTIN,Other Fungicide,FUN,Fungicide
-FENVALERATE,Pyrethrin/Pyrethroid,PYR,Insecticide
-FERBAM,Dithiocarbamate,DTC,Fungicide
-FIPRONIL,Phenylpyrazole,PHP,Insecticide
-FLAZASULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-FLONICAMID,Other Insecticide/Miticide,INS,Insecticide
-FLORASULAM,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-FLUAZIFOP,Other Herbicide,HRB,Herbicide
-FLUAZINAM,Other Fungicide,FUN,Fungicide
-FLUBENDIAMIDE,Diamide,DIA,Insecticide
-FLUCARBAZONE,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-FLUCYTHRINATE,Pyrethrin/Pyrethroid,PYR,Insecticide
-FLUDIOXONIL,Other Fungicide,FUN,Fungicide
-FLUFENACET,Chloroacetanilide,CAA,Herbicide
-FLUMETSULAM,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-FLUMIOXAZIN,Other Herbicide,HRB,Herbicide
-FLUOMETURON,Other Herbicide,HRB,Herbicide
-FLUOPICOLIDE,Other Fungicide,FUN,Fungicide
-FLUOPYRAM,SDHI,SDH,Fungicide
-FLUOXASTROBIN,Strobilurin (QoI),QOI,Fungicide
-FLUPYRADIFURONE,Neonicotinoid,NEO,Insecticide
-FLURIDONE,Other Herbicide,HRB,Herbicide
-FLUROXYPYR,Other Herbicide,HRB,Herbicide
-FLUTHIACET-METHYL,Other Herbicide,HRB,Herbicide
-FLUTOLANIL,SDHI,SDH,Fungicide
-FLUTRIAFOL,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-FLUXAPYROXAD,SDHI,SDH,Fungicide
-FOMESAFEN,Other Herbicide,HRB,Herbicide
-FONOFOS,Organophosphate,OP,Insecticide
-FORAMSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-FORMETANATE,Carbamate,CB,Insecticide
-FOSAMINE,Other Herbicide,HRB,Herbicide
-FOSETYL,Other Fungicide,FUN,Fungicide
-GAMMA AMINOBUTYRIC ACID,Plant Growth Regulator,PGR,Plant Growth Regulator
-GARLIC JUICE,Other Insecticide/Miticide,INS,Insecticide
-GIBBERELLIC ACID,Plant Growth Regulator,PGR,Plant Growth Regulator
-GLUFOSINATE,Glycine/Phosphonate,GLY,Herbicide
-GLYPHOSATE,Glycine/Phosphonate,GLY,Herbicide
-HALAUXIFEN,Other Herbicide,HRB,Herbicide
-HALOSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-HARPIN PROTEIN,Biological/Microbial,BIO,Biological
-HEXAZINONE,Triazine,TRZ,Herbicide
-HEXYTHIAZOX,Other Insecticide/Miticide,INS,Insecticide
-HYDRATED LIME,Inorganic/Mineral,INO,Fungicide
-HYDROGEN PEROXIDE,Inorganic/Mineral,INO,Fungicide
-HYDROXYPROPANOIC ACID,Other/Unclassified,OTH,Other
-HYMEXAZOL,Other Fungicide,FUN,Fungicide
-IBA,Plant Growth Regulator,PGR,Plant Growth Regulator
-IMAZALIL,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-IMAZAMETHABENZ,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-IMAZAMOX,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-IMAZAPIC,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-IMAZAPYR,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-IMAZETHAPYR,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-IMIDACLOPRID,Neonicotinoid,NEO,Insecticide
-INDAZIFLAM,Other Herbicide,HRB,Herbicide
-INDOXACARB,Other Insecticide/Miticide,INS,Insecticide
-IPCONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-IPRODIONE,Other Fungicide,FUN,Fungicide
-ISARIA FUMOSOROSEA,Biological/Microbial,BIO,Biological
-ISOXABEN,Other Herbicide,HRB,Herbicide
-ISOXAFLUTOLE,Other Herbicide,HRB,Herbicide
-KAOLIN CLAY,Inorganic/Mineral,INO,Other
-KASUGAMYCIN,Other Fungicide,FUN,Fungicide
-KRESOXIM-METHYL,Strobilurin (QoI),QOI,Fungicide
-L-GLUTAMIC ACID,Plant Growth Regulator,PGR,Plant Growth Regulator
-LACTOFEN,Other Herbicide,HRB,Herbicide
-LINDANE,Organochlorine,OC,Insecticide
-LINURON,Other Herbicide,HRB,Herbicide
-MALATHION,Organophosphate,OP,Insecticide
-MALEIC HYDRAZIDE,Plant Growth Regulator,PGR,Plant Growth Regulator
-MANCOZEB,Dithiocarbamate,DTC,Fungicide
-MANDIPROPAMID,Other Fungicide,FUN,Fungicide
-MANEB,Dithiocarbamate,DTC,Fungicide
-MCPA,Phenoxy,PHX,Herbicide
-MCPB,Phenoxy,PHX,Herbicide
-MECOPROP,Phenoxy,PHX,Herbicide
-MEFENOXAM,Other Fungicide,FUN,Fungicide
-MESOSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-MESOTRIONE,Other Herbicide,HRB,Herbicide
-METALAXYL,Other Fungicide,FUN,Fungicide
-METALDEHYDE,Other/Unclassified,OTH,Other
-METAM,Fumigant,FUM,Fumigant
-METAM POTASSIUM,Fumigant,FUM,Fumigant
-METCONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-METHAMIDOPHOS,Organophosphate,OP,Insecticide
-METHIDATHION,Organophosphate,OP,Insecticide
-METHOMYL,Carbamate,CB,Insecticide
-METHOXYCHLOR,Organochlorine,OC,Insecticide
-METHOXYFENOZIDE,Insect Growth Regulator,IGR,Insecticide
-METHYL BROMIDE,Fumigant,FUM,Fumigant
-METHYL ISOTHIOCYANATE,Fumigant,FUM,Fumigant
-METHYL PARATHION,Organophosphate,OP,Insecticide
-METIRAM,Dithiocarbamate,DTC,Fungicide
-METOLACHLOR,Chloroacetanilide,CAA,Herbicide
-METOLACHLOR & METOLACHLOR-S,Chloroacetanilide,CAA,Herbicide
-METOLACHLOR-S,Chloroacetanilide,CAA,Herbicide
-METRAFENONE,Other Fungicide,FUN,Fungicide
-METRIBUZIN,Triazine,TRZ,Herbicide
-METSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-MEVINPHOS,Organophosphate,OP,Insecticide
-MONOCROTOPHOS,Organophosphate,OP,Insecticide
-MSMA,Inorganic/Mineral,INO,Herbicide
-MYCLOBUTANIL,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-MYROTHECIUM VERRUCARIA,Biological/Microbial,BIO,Biological
-NALED,Organophosphate,OP,Insecticide
-NAPHTHYLACETAMIDE,Plant Growth Regulator,PGR,Plant Growth Regulator
-NAPHTHYLACETIC ACID,Plant Growth Regulator,PGR,Plant Growth Regulator
-NAPROPAMIDE,Other Herbicide,HRB,Herbicide
-NAPTALAM,Other Herbicide,HRB,Herbicide
-NEEM OIL,Other Insecticide/Miticide,INS,Insecticide
-NICOSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-NORFLURAZON,Other Herbicide,HRB,Herbicide
-NOVALURON,Insect Growth Regulator,IGR,Insecticide
-ORYZALIN,Dinitroaniline,DNA,Herbicide
-OXAMYL,Carbamate,CB,Insecticide
-OXATHIAPIPROLIN,Other Fungicide,FUN,Fungicide
-OXYDEMETON-METHYL,Organophosphate,OP,Insecticide
-OXYFLUORFEN,Other Herbicide,HRB,Herbicide
-OXYTETRACYCLINE,Other Fungicide,FUN,Fungicide
-PAECILOMYCES LILACINUS,Biological/Microbial,BIO,Biological
-PARAQUAT,Bipyridylium,BIP,Herbicide
-PARATHION,Organophosphate,OP,Insecticide
-PEBULATE,Thiocarbamate,TC,Herbicide
-PELARGONIC ACID,Other Herbicide,HRB,Herbicide
-PENDIMETHALIN,Dinitroaniline,DNA,Herbicide
-PENTHIOPYRAD,SDHI,SDH,Fungicide
-PERMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
-PETROLEUM DISTILLATE,Other Insecticide/Miticide,INS,Insecticide
-PETROLEUM OIL,Other Insecticide/Miticide,INS,Insecticide
-PHENMEDIPHAM,Carbamate,CB,Herbicide
-PHORATE,Organophosphate,OP,Insecticide
-PHOSMET,Organophosphate,OP,Insecticide
-PHOSPHAMIDON,Organophosphate,OP,Insecticide
-PHOSPHORIC ACID,Inorganic/Mineral,INO,Other
-PICLORAM,Other Herbicide,HRB,Herbicide
-PICOXYSTROBIN,Strobilurin (QoI),QOI,Fungicide
-PINOLENE,Other/Unclassified,OTH,Other
-PINOXADEN,Other Herbicide,HRB,Herbicide
-PIPERONYL BUTOXIDE,Other Insecticide/Miticide,INS,Insecticide
-PIRIMICARB,Carbamate,CB,Insecticide
-POLYOXORIM,Other Fungicide,FUN,Fungicide
-POTASSIUM BICARBONATE,Inorganic/Mineral,INO,Fungicide
-POTASSIUM OLEATE,Other Insecticide/Miticide,INS,Insecticide
-POTASSIUM SILICATE,Inorganic/Mineral,INO,Other
-PROHEXADIONE,Plant Growth Regulator,PGR,Plant Growth Regulator
-PROHYDROJASMON,Plant Growth Regulator,PGR,Plant Growth Regulator
-PROMETON,Triazine,TRZ,Herbicide
-PROMETRYN,Triazine,TRZ,Herbicide
-PROPACHLOR,Chloroacetanilide,CAA,Herbicide
-PROPAMOCARB HCL,Other Fungicide,FUN,Fungicide
-PROPARGITE,Other Insecticide/Miticide,INS,Insecticide
-PROPICONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-PROPOXYCARBAZONE,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-PROPYZAMIDE,Other Herbicide,HRB,Herbicide
-PROSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-PROTHIOCONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-PSEUDOMONAS FLUORESCENS,Biological/Microbial,BIO,Biological
-PYMETROZINE,Other Insecticide/Miticide,INS,Insecticide
-PYRACLOSTROBIN,Strobilurin (QoI),QOI,Fungicide
-PYRAFLUFEN ETHYL,Other Herbicide,HRB,Herbicide
-PYRASULFOTOLE,Other Herbicide,HRB,Herbicide
-PYRETHRINS,Pyrethrin/Pyrethroid,PYR,Insecticide
-PYRIDABEN,Other Insecticide/Miticide,INS,Insecticide
-PYRIDATE,Other Herbicide,HRB,Herbicide
-PYRIMETHANIL,Other Fungicide,FUN,Fungicide
-PYRIPROXYFEN,Insect Growth Regulator,IGR,Insecticide
-PYROXASULFONE,Other Herbicide,HRB,Herbicide
-PYROXSULAM,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-QUINCLORAC,Other Herbicide,HRB,Herbicide
-QUINOXYFEN,Other Fungicide,FUN,Fungicide
-QUINTOZENE,Other Fungicide,FUN,Fungicide
-QUIZALOFOP,Other Herbicide,HRB,Herbicide
-REYNOUTRIA SACHALINENSIS,Biological/Microbial,BIO,Biological
-RIMSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-ROTENONE,Other Insecticide/Miticide,INS,Insecticide
-RYANODINE,Diamide,DIA,Insecticide
-SAFLUFENACIL,Other Herbicide,HRB,Herbicide
-SEDAXANE,SDHI,SDH,Fungicide
-SETHOXYDIM,Other Herbicide,HRB,Herbicide
-SIMAZINE,Triazine,TRZ,Herbicide
-SODIUM CHLORATE,Inorganic/Mineral,INO,Herbicide
-SODIUM METABORATE,Inorganic/Mineral,INO,Herbicide
-SPINETORAM,Spinosyn,SPN,Insecticide
-SPINOSYN,Spinosyn,SPN,Insecticide
-SPIRODICLOFEN,Other Insecticide/Miticide,INS,Insecticide
-SPIROMESIFEN,Other Insecticide/Miticide,INS,Insecticide
-SPIROTETRAMAT,Other Insecticide/Miticide,INS,Insecticide
-STEINERNEMA CARPOCAP,Biological/Microbial,BIO,Biological
-STREPTOMYCES LYDICUS,Biological/Microbial,BIO,Biological
-STREPTOMYCIN,Other Fungicide,FUN,Fungicide
-SUCROSE OCTANOATE,Other Insecticide/Miticide,INS,Insecticide
-SULFCARBAMIDE,Other/Unclassified,OTH,Other
-SULFENTRAZONE,Other Herbicide,HRB,Herbicide
-SULFOMETURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-SULFOSATE,Glycine/Phosphonate,GLY,Herbicide
-SULFOSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-SULFOXAFLOR,Neonicotinoid,NEO,Insecticide
-SULFUR,Inorganic/Mineral,INO,Fungicide
-SULFURIC ACID,Inorganic/Mineral,INO,Other
-TEBUCONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-TEBUFENOZIDE,Insect Growth Regulator,IGR,Insecticide
-TEBUPIRIMPHOS,Organophosphate,OP,Insecticide
-TEBUTHIURON,Other Herbicide,HRB,Herbicide
-TEFLUTHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
-TEMBOTRIONE,Other Herbicide,HRB,Herbicide
-TERBACIL,Other Herbicide,HRB,Herbicide
-TERBUFOS,Organophosphate,OP,Insecticide
-TERBUTRYN,Triazine,TRZ,Herbicide
-TETRACONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-TETRAOXOSULFATE,Inorganic/Mineral,INO,Other
-THIABENDAZOLE,Other Fungicide,FUN,Fungicide
-THIACLOPRID,Neonicotinoid,NEO,Insecticide
-THIAMETHOXAM,Neonicotinoid,NEO,Insecticide
-THIENCARBAZONE-METHYL,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-THIFENSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-THIOBENCARB,Thiocarbamate,TC,Herbicide
-THIOPHANATE-METHYL,Other Fungicide,FUN,Fungicide
-THIRAM,Dithiocarbamate,DTC,Fungicide
-TOLFENPYRAD,Other Insecticide/Miticide,INS,Insecticide
-TOPRAMEZONE,Other Herbicide,HRB,Herbicide
-TRALKOXYDIM,Other Herbicide,HRB,Herbicide
-TRI-ALLATE,Thiocarbamate,TC,Herbicide
-TRIADIMEFON,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-TRIASULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-TRIBENURON METHYL,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-TRIBUFOS,Organophosphate,OP,Herbicide
-TRICHLORFON,Organophosphate,OP,Insecticide
-TRICLOPYR,Other Herbicide,HRB,Herbicide
-TRIFLOXYSTROBIN,Strobilurin (QoI),QOI,Fungicide
-TRIFLUMIZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-TRIFLURALIN,Dinitroaniline,DNA,Herbicide
-TRIFLUSULFURON,ALS-Inhibitor (Sulfonylurea & Related),ALS,Herbicide
-TRIFORINE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-TRITICONAZOLE,DMI Fungicide (Triazole/Imidazole),DMI,Fungicide
-VERNOLATE,Thiocarbamate,TC,Herbicide
-VINCLOZOLIN,Other Fungicide,FUN,Fungicide
-ZETA-CYPERMETHRIN,Pyrethrin/Pyrethroid,PYR,Insecticide
-ZINC,Inorganic/Mineral,INO,Other
-ZIRAM,Dithiocarbamate,DTC,Fungicide
-ZOXAMIDE,Other Fungicide,FUN,Fungicide
+COMPOUND,CHEMICAL_CLASS,CHEM_ABBREV,FUNCTIONAL_CLASS
+1-METHYL CYCLOPROPENE,Other,OTH,Plant Growth Regulator
+"2,4-D",Chlorophenoxy compound,CPX,Herbicide/algicide
+"2,4-DB",Chlorophenoxy compound,CPX,Herbicide/algicide
+6-BENZYLADENINE,Other,OTH,Plant Growth Regulator
+ABAMECTIN,Other,OTH,Insecticide
+ACEPHATE,Organophosphorous compound,OP,Insecticide
+ACEQUINOCYL,Other,OTH,Acaricide
+ACETAMIPRID,Other,OTH,Insecticide
+ACETOCHLOR,Other,OTH,Herbicide/algicide
+ACIBENZOLAR,Other,OTH,Fungicide
+ALACHLOR,Other,OTH,Herbicide/algicide
+ALDICARB,N-methyl carbamates (AChE inhibitor),CB,Insecticide
+ALPHA CYPERMETHRIN,Pyrethrins/Pyrethroids,PYR,Insecticide
+ALUMINUM PHOSPHIDE,Inorganic compounds,INO,Fumigant
+AMETOCTRADIN,Other,OTH,Fungicide
+AMINOPYRALID,Other,OTH,Herbicide/algicide
+AMITRAZ,Other,OTH,Acaricide
+AMITROLE,Other,OTH,Herbicide/algicide
+AMPELOMYCES QUISQUALIS,Microbial,MIC,Fungicide
+ANILAZINE,Other,OTH,Fungicide
+ARSENIC ACID,Inorganic compounds,INO,Other
+ATRAZINE,Triazines,TRZ,Herbicide/algicide
+AUREOBASIDIUM PULLULANS,Microbial,MIC,Other Bactericides
+AVIGLYCINE,Other,OTH,Plant Growth Regulator
+AZADIRACHTIN,Other,OTH,Insecticide
+AZINPHOS-METHYL,Organophosphorous compound,OP,Insecticide
+AZOXYSTROBIN,Other,OTH,Fungicide
+BACILLUS AMYLOLIQUEFACIEN,Microbial,MIC,Fungicide
+BACILLUS FIRMUS,Microbial,MIC,Nematicides
+BACILLUS PUMILIS,Microbial,MIC,Fungicide
+BACILLUS SUBTILIS,Microbial,MIC,Fungicide
+BACILLUS THURINGIENSIS,Microbial,MIC,Insecticide
+BARBAN,Other,OTH,Herbicide/algicide
+BARIUM POLYSULFIDE,Inorganic compounds,INO,Fungicide
+BENFLURALIN,Other,OTH,Herbicide/algicide
+BENOMYL,Other,OTH,Fungicide
+BENSULIDE,Organophosphorous compound,OP,Herbicide/algicide
+BENTAZONE,Other,OTH,Herbicide/algicide
+BENZOVINDIFLUPYR,Other,OTH,Fungicide
+BICYCLOPYRONE,Other,OTH,Herbicide/algicide
+BIFENAZATE,Other,OTH,Acaricide
+BIFENTHRIN,Pyrethrins/Pyrethroids,PYR,Insecticide
+BORDEAUX MIXTURE,Inorganic compounds,INO,Fungicide
+BOSCALID,Other,OTH,Fungicide
+BROMACIL,Other,OTH,Herbicide/algicide
+BROMOXYNIL,Other,OTH,Herbicide/algicide
+BUPROFEZIN,Other,OTH,Insect Growth Regulator
+BURKHOLDERIA SPP,Microbial,MIC,Insecticide
+BUTYLATE,Thiocarbamates,TC,Herbicide/algicide
+CALCIUM CHLORIDE,Inorganic compounds,INO,Other
+CALCIUM POLYSULFIDE,Inorganic compounds,INO,Fungicide
+CAPTAN,Other,OTH,Fungicide
+CARBARYL,N-methyl carbamates (AChE inhibitor),CB,Insecticide
+CARBOFURAN,N-methyl carbamates (AChE inhibitor),CB,Insecticide
+CARBOXIN,Other,OTH,Fungicide
+CARFENTRAZONE-ETHYL,Other,OTH,Herbicide/algicide
+CHENOPODIUM AMBROSIOIDES,Other,OTH,Insecticide
+CHINOMETHIONAT,Other,OTH,Acaricide
+CHLORAMBEN,Other,OTH,Herbicide/algicide
+CHLORANTRANILIPROLE,Other,OTH,Insecticide
+CHLORETHOXYFOS,Organophosphorous compound,OP,Insecticide
+CHLORIDAZON,Other,OTH,Herbicide/algicide
+CHLORIMURON,Other,OTH,Herbicide/algicide
+CHLORMEQUAT,Other,OTH,Plant Growth Regulator
+CHLOROPICRIN,Organochlorine compound,OC,Fumigant
+CHLOROTHALONIL,Other,OTH,Fungicide
+CHLORPROPHAM,Other,OTH,Herbicide/algicide
+CHLORPYRIFOS,Organophosphorous compound,OP,Insecticide
+CHLORSULFURON,Other,OTH,Herbicide/algicide
+CHROMOBACTERIUM SUBTSUGAE,Microbial,MIC,Insecticide
+CLETHODIM,Other,OTH,Herbicide/algicide
+CLODINAFOP,Other,OTH,Herbicide/algicide
+CLOFENTEZINE,Other,OTH,Acaricide
+CLOMAZONE,Other,OTH,Herbicide/algicide
+CLOPYRALID,Other,OTH,Herbicide/algicide
+CLOTHIANIDIN,Other,OTH,Insecticide
+CONIOTHYRIUM MINITANS,Microbial,MIC,Fungicide
+COPPER,Inorganic compounds,INO,Fungicide
+COPPER HYDROXIDE,Inorganic compounds,INO,Fungicide
+COPPER OCTANOATE,Organo-metallic compound,OGM,Fungicide
+COPPER OXYCHLORIDE,Inorganic compounds,INO,Fungicide
+COPPER OXYCHLORIDE S,Inorganic compounds,INO,Fungicide
+COPPER SULFATE,Inorganic compounds,INO,Fungicide
+COPPER SULFATE TRIBASIC,Inorganic compounds,INO,Fungicide
+CPPU,Other,OTH,Plant Growth Regulator
+CRYOLITE,Inorganic compounds,INO,Insecticide
+CUPROUS OXIDE,Inorganic compounds,INO,Fungicide
+CYANAMIDE,Other,OTH,Plant Growth Regulator
+CYANAZINE,Triazines,TRZ,Herbicide/algicide
+CYANTRANILIPROLE,Other,OTH,Insecticide
+CYAZOFAMID,Other,OTH,Fungicide
+CYCLOATE,Thiocarbamates,TC,Herbicide/algicide
+CYDIA POMONELLA,Microbial,MIC,Insecticide
+CYFLUFENAMID,Other,OTH,Fungicide
+CYFLUMETOFEN,Other,OTH,Acaricide
+CYFLUTHRIN,Pyrethrins/Pyrethroids,PYR,Insecticide
+CYHALOTHRIN-GAMMA,Pyrethrins/Pyrethroids,PYR,Insecticide
+CYHALOTHRIN-LAMBDA,Pyrethrins/Pyrethroids,PYR,Insecticide
+CYMOXANIL,Other,OTH,Fungicide
+CYPERMETHRIN,Pyrethrins/Pyrethroids,PYR,Insecticide
+CYPROCONAZOLE,Other,OTH,Fungicide
+CYPRODINIL,Other,OTH,Fungicide
+CYTOKININ,Other,OTH,Plant Growth Regulator
+DALAPON,Other,OTH,Herbicide/algicide
+DAMINOZIDE,Other,OTH,Plant Growth Regulator
+DCPA,Other,OTH,Herbicide/algicide
+DECAN-1-OL,Other,OTH,Plant Growth Regulator
+DELTAMETHRIN,Pyrethrins/Pyrethroids,PYR,Insecticide
+DEMETON,Organophosphorous compound,OP,Insecticide
+DESMEDIPHAM,Other,OTH,Herbicide/algicide
+DIALLATE,Thiocarbamates,TC,Herbicide/algicide
+DIAZINON,Organophosphorous compound,OP,Insecticide
+DICAMBA,Other,OTH,Herbicide/algicide
+DICHLOBENIL,Other,OTH,Herbicide/algicide
+DICHLOROPROPENE,Organochlorine compound,OC,Fumigant
+DICHLORPROP,Chlorophenoxy compound,CPX,Herbicide/algicide
+DICLOFOP,Other,OTH,Herbicide/algicide
+DICLORAN,Other,OTH,Fungicide
+DICOFOL,Organochlorine compound,OC,Acaricide
+DICROTOPHOS,Organophosphorous compound,OP,Insecticide
+DIENOCHLOR,Organochlorine compound,OC,Acaricide
+DIETHATYL,Other,OTH,Herbicide/algicide
+DIFENOCONAZOLE,Other,OTH,Fungicide
+DIFENZOQUAT,Other,OTH,Herbicide/algicide
+DIFLUBENZURON,Other,OTH,Insect Growth Regulator
+DIFLUFENZOPYR,Other,OTH,Herbicide/algicide
+DIMETHENAMID,Other,OTH,Herbicide/algicide
+DIMETHENAMID & DIMETHENAMID-P,Other,OTH,Herbicide/algicide
+DIMETHENAMID-P,Other,OTH,Herbicide/algicide
+DIMETHOATE,Organophosphorous compound,OP,Insecticide
+DIMETHOMORPH,Other,OTH,Fungicide
+DINOTEFURAN,Other,OTH,Insecticide
+DIQUAT,Dipyridyl compound,DIP,Herbicide/algicide
+DISULFOTON,Organophosphorous compound,OP,Insecticide
+DIURON,Other,OTH,Herbicide/algicide
+DNOC,Other,OTH,Herbicide/algicide
+DODINE,Other,OTH,Fungicide
+EMAMECTIN,Other,OTH,Insecticide
+ENDOSULFAN,Organochlorine compound,OC,Insecticide
+ENDOTHAL,Other,OTH,Herbicide/algicide
+EPTC,Thiocarbamates,TC,Herbicide/algicide
+ESFENVALERATE,Pyrethrins/Pyrethroids,PYR,Insecticide
+ETHALFLURALIN,Other,OTH,Herbicide/algicide
+ETHEPHON,Other,OTH,Plant Growth Regulator
+ETHION,Organophosphorous compound,OP,Insecticide
+ETHOFUMESATE,Other,OTH,Herbicide/algicide
+ETHOPROPHOS,Organophosphorous compound,OP,Insecticide
+ETOXAZOLE,Other,OTH,Acaricide
+ETRIDIAZOLE,Other,OTH,Fungicide
+FAMOXADONE,Other,OTH,Fungicide
+FENAMIDONE,Other,OTH,Fungicide
+FENAMIPHOS,Organophosphorous compound,OP,Insecticide
+FENARIMOL,Other,OTH,Fungicide
+FENAZAQUIN,Other,OTH,Acaricide
+FENBUCONAZOLE,Other,OTH,Fungicide
+FENBUTATIN OXIDE,Organo-metallic compound,OGM,Acaricide
+FENHEXAMID,Other,OTH,Fungicide
+FENOXAPROP,Other,OTH,Herbicide/algicide
+FENOXYCARB,Other,OTH,Insect Growth Regulator
+FENPROPATHRIN,Pyrethrins/Pyrethroids,PYR,Insecticide
+FENPYROXIMATE,Other,OTH,Acaricide
+FENTIN,Organo-metallic compound,OGM,Fungicide
+FENVALERATE,Pyrethrins/Pyrethroids,PYR,Insecticide
+FERBAM,Dithiocarbamates,DTC,Fungicide
+FIPRONIL,Other,OTH,Insecticide
+FLAZASULFURON,Other,OTH,Herbicide/algicide
+FLONICAMID,Other,OTH,Insecticide
+FLORASULAM,Other,OTH,Herbicide/algicide
+FLUAZIFOP,Other,OTH,Herbicide/algicide
+FLUAZINAM,Other,OTH,Fungicide
+FLUBENDIAMIDE,Other,OTH,Insecticide
+FLUCARBAZONE,Other,OTH,Herbicide/algicide
+FLUCYTHRINATE,Pyrethrins/Pyrethroids,PYR,Insecticide
+FLUDIOXONIL,Other,OTH,Fungicide
+FLUFENACET,Other,OTH,Herbicide/algicide
+FLUMETSULAM,Other,OTH,Herbicide/algicide
+FLUMIOXAZIN,Other,OTH,Herbicide/algicide
+FLUOMETURON,Other,OTH,Herbicide/algicide
+FLUOPICOLIDE,Other,OTH,Fungicide
+FLUOPYRAM,Other,OTH,Fungicide
+FLUOXASTROBIN,Other,OTH,Fungicide
+FLUPYRADIFURONE,Other,OTH,Insecticide
+FLURIDONE,Other,OTH,Herbicide/algicide
+FLUROXYPYR,Other,OTH,Herbicide/algicide
+FLUTHIACET-METHYL,Other,OTH,Herbicide/algicide
+FLUTOLANIL,Other,OTH,Fungicide
+FLUTRIAFOL,Other,OTH,Fungicide
+FLUXAPYROXAD,Other,OTH,Fungicide
+FOMESAFEN,Other,OTH,Herbicide/algicide
+FONOFOS,Organophosphorous compound,OP,Insecticide
+FORAMSULFURON,Other,OTH,Herbicide/algicide
+FORMETANATE,N-methyl carbamates (AChE inhibitor),CB,Acaricide
+FOSAMINE,Other,OTH,Herbicide/algicide
+FOSETYL,Other,OTH,Fungicide
+GAMMA AMINOBUTYRIC ACID,Other,OTH,Plant Growth Regulator
+GARLIC JUICE,Other,OTH,Insect Repellent
+GIBBERELLIC ACID,Other,OTH,Plant Growth Regulator
+GLUFOSINATE,Other,OTH,Herbicide/algicide
+GLYPHOSATE,Other,OTH,Herbicide/algicide
+HALAUXIFEN,Other,OTH,Herbicide/algicide
+HALOSULFURON,Other,OTH,Herbicide/algicide
+HARPIN PROTEIN,Microbial,MIC,Fungicide
+HEXAZINONE,Triazines,TRZ,Herbicide/algicide
+HEXYTHIAZOX,Other,OTH,Acaricide
+HYDRATED LIME,Inorganic compounds,INO,Fungicide
+HYDROGEN PEROXIDE,Inorganic compounds,INO,Fungicide
+HYDROXYPROPANOIC ACID,Other,OTH,Other
+HYMEXAZOL,Other,OTH,Fungicide
+IBA,Other,OTH,Plant Growth Regulator
+IMAZALIL,Other,OTH,Fungicide
+IMAZAMETHABENZ,Other,OTH,Herbicide/algicide
+IMAZAMOX,Other,OTH,Herbicide/algicide
+IMAZAPIC,Other,OTH,Herbicide/algicide
+IMAZAPYR,Other,OTH,Herbicide/algicide
+IMAZETHAPYR,Other,OTH,Herbicide/algicide
+IMIDACLOPRID,Other,OTH,Insecticide
+INDAZIFLAM,Other,OTH,Herbicide/algicide
+INDOXACARB,Other,OTH,Insecticide
+IPCONAZOLE,Other,OTH,Fungicide
+IPRODIONE,Other,OTH,Fungicide
+ISARIA FUMOSOROSEA,Microbial,MIC,Insecticide
+ISOXABEN,Other,OTH,Herbicide/algicide
+ISOXAFLUTOLE,Other,OTH,Herbicide/algicide
+KAOLIN CLAY,Inorganic compounds,INO,Insect Repellent
+KASUGAMYCIN,Other,OTH,Other Bactericides
+KRESOXIM-METHYL,Other,OTH,Fungicide
+L-GLUTAMIC ACID,Other,OTH,Plant Growth Regulator
+LACTOFEN,Other,OTH,Herbicide/algicide
+LINDANE,Organochlorine compound,OC,Insecticide
+LINURON,Other,OTH,Herbicide/algicide
+MALATHION,Organophosphorous compound,OP,Insecticide
+MALEIC HYDRAZIDE,Other,OTH,Plant Growth Regulator
+MANCOZEB,Dithiocarbamates,DTC,Fungicide
+MANDIPROPAMID,Other,OTH,Fungicide
+MANEB,Dithiocarbamates,DTC,Fungicide
+MCPA,Chlorophenoxy compound,CPX,Herbicide/algicide
+MCPB,Chlorophenoxy compound,CPX,Herbicide/algicide
+MECOPROP,Chlorophenoxy compound,CPX,Herbicide/algicide
+MEFENOXAM,Other,OTH,Fungicide
+MESOSULFURON,Other,OTH,Herbicide/algicide
+MESOTRIONE,Other,OTH,Herbicide/algicide
+METALAXYL,Other,OTH,Fungicide
+METALDEHYDE,Other,OTH,Other
+METAM,Dithiocarbamates,DTC,Fumigant
+METAM POTASSIUM,Dithiocarbamates,DTC,Fumigant
+METCONAZOLE,Other,OTH,Fungicide
+METHAMIDOPHOS,Organophosphorous compound,OP,Insecticide
+METHIDATHION,Organophosphorous compound,OP,Insecticide
+METHOMYL,N-methyl carbamates (AChE inhibitor),CB,Insecticide
+METHOXYCHLOR,Organochlorine compound,OC,Insecticide
+METHOXYFENOZIDE,Other,OTH,Insect Growth Regulator
+METHYL BROMIDE,Other,OTH,Fumigant
+METHYL ISOTHIOCYANATE,Other,OTH,Fumigant
+METHYL PARATHION,Organophosphorous compound,OP,Insecticide
+METIRAM,Dithiocarbamates,DTC,Fungicide
+METOLACHLOR,Other,OTH,Herbicide/algicide
+METOLACHLOR & METOLACHLOR-S,Other,OTH,Herbicide/algicide
+METOLACHLOR-S,Other,OTH,Herbicide/algicide
+METRAFENONE,Other,OTH,Fungicide
+METRIBUZIN,Triazines,TRZ,Herbicide/algicide
+METSULFURON,Other,OTH,Herbicide/algicide
+MEVINPHOS,Organophosphorous compound,OP,Insecticide
+MONOCROTOPHOS,Organophosphorous compound,OP,Insecticide
+MSMA,Organo-metallic compound,OGM,Herbicide/algicide
+MYCLOBUTANIL,Other,OTH,Fungicide
+MYROTHECIUM VERRUCARIA,Microbial,MIC,Nematicides
+NALED,Organophosphorous compound,OP,Insecticide
+NAPHTHYLACETAMIDE,Other,OTH,Plant Growth Regulator
+NAPHTHYLACETIC ACID,Other,OTH,Plant Growth Regulator
+NAPROPAMIDE,Other,OTH,Herbicide/algicide
+NAPTALAM,Other,OTH,Herbicide/algicide
+NEEM OIL,Other,OTH,Insecticide
+NICOSULFURON,Other,OTH,Herbicide/algicide
+NORFLURAZON,Other,OTH,Herbicide/algicide
+NOVALURON,Other,OTH,Insect Growth Regulator
+ORYZALIN,Other,OTH,Herbicide/algicide
+OXAMYL,N-methyl carbamates (AChE inhibitor),CB,Insecticide
+OXATHIAPIPROLIN,Other,OTH,Fungicide
+OXYDEMETON-METHYL,Organophosphorous compound,OP,Insecticide
+OXYFLUORFEN,Other,OTH,Herbicide/algicide
+OXYTETRACYCLINE,Other,OTH,Other Bactericides
+PAECILOMYCES LILACINUS,Microbial,MIC,Nematicides
+PARAQUAT,Dipyridyl compound,DIP,Herbicide/algicide
+PARATHION,Organophosphorous compound,OP,Insecticide
+PEBULATE,Thiocarbamates,TC,Herbicide/algicide
+PELARGONIC ACID,Other,OTH,Herbicide/algicide
+PENDIMETHALIN,Other,OTH,Herbicide/algicide
+PENTHIOPYRAD,Other,OTH,Fungicide
+PERMETHRIN,Pyrethrins/Pyrethroids,PYR,Insecticide
+PETROLEUM DISTILLATE,Other,OTH,Insecticide
+PETROLEUM OIL,Other,OTH,Insecticide
+PHENMEDIPHAM,Other,OTH,Herbicide/algicide
+PHORATE,Organophosphorous compound,OP,Insecticide
+PHOSMET,Organophosphorous compound,OP,Insecticide
+PHOSPHAMIDON,Organophosphorous compound,OP,Insecticide
+PHOSPHORIC ACID,Inorganic compounds,INO,Other
+PICLORAM,Other,OTH,Herbicide/algicide
+PICOXYSTROBIN,Other,OTH,Fungicide
+PINOLENE,Other,OTH,Other
+PINOXADEN,Other,OTH,Herbicide/algicide
+PIPERONYL BUTOXIDE,Other,OTH,Other
+PIRIMICARB,N-methyl carbamates (AChE inhibitor),CB,Insecticide
+POLYOXORIM,Other,OTH,Fungicide
+POTASSIUM BICARBONATE,Inorganic compounds,INO,Fungicide
+POTASSIUM OLEATE,Other,OTH,Insecticide
+POTASSIUM SILICATE,Inorganic compounds,INO,Other
+PROHEXADIONE,Other,OTH,Plant Growth Regulator
+PROHYDROJASMON,Other,OTH,Plant Growth Regulator
+PROMETON,Triazines,TRZ,Herbicide/algicide
+PROMETRYN,Triazines,TRZ,Herbicide/algicide
+PROPACHLOR,Other,OTH,Herbicide/algicide
+PROPAMOCARB HCL,Other,OTH,Fungicide
+PROPARGITE,Other,OTH,Acaricide
+PROPICONAZOLE,Other,OTH,Fungicide
+PROPOXYCARBAZONE,Other,OTH,Herbicide/algicide
+PROPYZAMIDE,Other,OTH,Herbicide/algicide
+PROSULFURON,Other,OTH,Herbicide/algicide
+PROTHIOCONAZOLE,Other,OTH,Fungicide
+PSEUDOMONAS FLUORESCENS,Microbial,MIC,Fungicide
+PYMETROZINE,Other,OTH,Insecticide
+PYRACLOSTROBIN,Other,OTH,Fungicide
+PYRAFLUFEN ETHYL,Other,OTH,Herbicide/algicide
+PYRASULFOTOLE,Other,OTH,Herbicide/algicide
+PYRETHRINS,Pyrethrins/Pyrethroids,PYR,Insecticide
+PYRIDABEN,Other,OTH,Acaricide
+PYRIDATE,Other,OTH,Herbicide/algicide
+PYRIMETHANIL,Other,OTH,Fungicide
+PYRIPROXYFEN,Other,OTH,Insect Growth Regulator
+PYROXASULFONE,Other,OTH,Herbicide/algicide
+PYROXSULAM,Other,OTH,Herbicide/algicide
+QUINCLORAC,Other,OTH,Herbicide/algicide
+QUINOXYFEN,Other,OTH,Fungicide
+QUINTOZENE,Other,OTH,Fungicide
+QUIZALOFOP,Other,OTH,Herbicide/algicide
+REYNOUTRIA SACHALINENSIS,Microbial,MIC,Fungicide
+RIMSULFURON,Other,OTH,Herbicide/algicide
+ROTENONE,Other,OTH,Insecticide
+RYANODINE,Other,OTH,Insecticide
+SAFLUFENACIL,Other,OTH,Herbicide/algicide
+SEDAXANE,Other,OTH,Fungicide
+SETHOXYDIM,Other,OTH,Herbicide/algicide
+SIMAZINE,Triazines,TRZ,Herbicide/algicide
+SODIUM CHLORATE,Inorganic compounds,INO,Herbicide/algicide
+SODIUM METABORATE,Inorganic compounds,INO,Herbicide/algicide
+SPINETORAM,Other,OTH,Insecticide
+SPINOSYN,Other,OTH,Insecticide
+SPIRODICLOFEN,Other,OTH,Acaricide
+SPIROMESIFEN,Other,OTH,Insecticide
+SPIROTETRAMAT,Other,OTH,Insecticide
+STEINERNEMA CARPOCAP,Microbial,MIC,Insecticide
+STREPTOMYCES LYDICUS,Microbial,MIC,Fungicide
+STREPTOMYCIN,Other,OTH,Other Bactericides
+SUCROSE OCTANOATE,Other,OTH,Insecticide
+SULFCARBAMIDE,Other,OTH,Other
+SULFENTRAZONE,Other,OTH,Herbicide/algicide
+SULFOMETURON,Other,OTH,Herbicide/algicide
+SULFOSATE,Other,OTH,Herbicide/algicide
+SULFOSULFURON,Other,OTH,Herbicide/algicide
+SULFOXAFLOR,Other,OTH,Insecticide
+SULFUR,Inorganic compounds,INO,Fungicide
+SULFURIC ACID,Inorganic compounds,INO,Other
+TEBUCONAZOLE,Other,OTH,Fungicide
+TEBUFENOZIDE,Other,OTH,Insect Growth Regulator
+TEBUPIRIMPHOS,Organophosphorous compound,OP,Insecticide
+TEBUTHIURON,Other,OTH,Herbicide/algicide
+TEFLUTHRIN,Pyrethrins/Pyrethroids,PYR,Insecticide
+TEMBOTRIONE,Other,OTH,Herbicide/algicide
+TERBACIL,Other,OTH,Herbicide/algicide
+TERBUFOS,Organophosphorous compound,OP,Insecticide
+TERBUTRYN,Triazines,TRZ,Herbicide/algicide
+TETRACONAZOLE,Other,OTH,Fungicide
+TETRAOXOSULFATE,Inorganic compounds,INO,Other
+THIABENDAZOLE,Other,OTH,Fungicide
+THIACLOPRID,Other,OTH,Insecticide
+THIAMETHOXAM,Other,OTH,Insecticide
+THIENCARBAZONE-METHYL,Other,OTH,Herbicide/algicide
+THIFENSULFURON,Other,OTH,Herbicide/algicide
+THIOBENCARB,Thiocarbamates,TC,Herbicide/algicide
+THIOPHANATE-METHYL,Other,OTH,Fungicide
+THIRAM,Dithiocarbamates,DTC,Fungicide
+TOLFENPYRAD,Other,OTH,Insecticide
+TOPRAMEZONE,Other,OTH,Herbicide/algicide
+TRALKOXYDIM,Other,OTH,Herbicide/algicide
+TRI-ALLATE,Thiocarbamates,TC,Herbicide/algicide
+TRIADIMEFON,Other,OTH,Fungicide
+TRIASULFURON,Other,OTH,Herbicide/algicide
+TRIBENURON METHYL,Other,OTH,Herbicide/algicide
+TRIBUFOS,Organophosphorous compound,OP,Herbicide/algicide
+TRICHLORFON,Organophosphorous compound,OP,Insecticide
+TRICLOPYR,Other,OTH,Herbicide/algicide
+TRIFLOXYSTROBIN,Other,OTH,Fungicide
+TRIFLUMIZOLE,Other,OTH,Fungicide
+TRIFLURALIN,Other,OTH,Herbicide/algicide
+TRIFLUSULFURON,Other,OTH,Herbicide/algicide
+TRIFORINE,Other,OTH,Fungicide
+TRITICONAZOLE,Other,OTH,Fungicide
+VERNOLATE,Thiocarbamates,TC,Herbicide/algicide
+VINCLOZOLIN,Other,OTH,Fungicide
+ZETA-CYPERMETHRIN,Pyrethrins/Pyrethroids,PYR,Insecticide
+ZINC,Inorganic compounds,INO,Other
+ZIRAM,Dithiocarbamates,DTC,Fungicide
+ZOXAMIDE,Other,OTH,Fungicide
