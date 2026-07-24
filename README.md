@@ -70,8 +70,11 @@ Four chapters:
 1. **`pestuse.Rmd` → `pestuse.pdf` / `pestuse.md`** — Yakima County
    top-pesticide ranking (2012-2016). Lists rank and EPest-high mass
    applied for the 80 most common pesticides in Yakima County, by 1-year,
-   3-year average, and 5-year average. This chapter is county-specific and
-   has no direct equivalent in the other state folders.
+   3-year average, and 5-year average. Oregon and Idaho each have their
+   own equivalent single-county chapter (Marion and Bingham County,
+   respectively — see below); this original Washington version is kept
+   as-is, including its older 2012-2016 window and base-R code style,
+   rather than rewritten to match.
 2. **`wa_pesticide_class_trends.Rmd` → `wa_pesticide_class_trends.html`** —
    interactive dashboard (flexdashboard) of statewide pesticide use by
    chemical class and functional class, 1992-2018, overall and by USGS
@@ -105,25 +108,50 @@ Four chapters:
 
 ## Oregon (`oregon/`)
 
-Three chapters, the state-parameterized ones from Washington (no
-Yakima-style single-county chapter — see "Scope" below):
+Four chapters:
 
-1. **`or_pesticide_class_trends.Rmd` → `or_pesticide_class_trends.html`**
+1. **`or_marion_pestuse.Rmd` → `or_marion_pestuse.pdf` / `.md`** — Marion
+   County top-pesticide ranking (2014-2018), Oregon's Yakima-equivalent
+   chapter. Marion County anchors the northern Willamette Valley and is
+   Oregon's largest and most diversified agricultural county by
+   production value, nationally recognized for nursery stock, berries
+   (including marionberries, its namesake cultivar), hazelnuts, and
+   vegetable/grass seed crops. Structured like Washington's Yakima
+   chapter (single-county top-80 ranking by 1yr/3yr-avg/5yr-avg) but
+   built with this repo's current tooling (readr/dplyr, the shared
+   `pesticide_classification.csv`, and the 2014-2018 window used
+   everywhere else in this repo, rather than Yakima chapter's original
+   2012-2016 window).
+2. **`or_pesticide_class_trends.Rmd` → `or_pesticide_class_trends.html`**
    — same dashboard as Washington Chapter 2, FIPS 41.
-2. **`or_statewide_top_pesticides.Rmd` → `or_statewide_top_pesticides.pdf`**
+3. **`or_statewide_top_pesticides.Rmd` → `or_statewide_top_pesticides.pdf`**
    — same ranking as Washington Chapter 3, FIPS 41 (no Yakima comparison
    column, since that was Washington-specific).
-3. **`or_county_pesticide_use.Rmd` → `or_county_pesticide_use.html`** —
+4. **`or_county_pesticide_use.Rmd` → `or_county_pesticide_use.html`** —
    same county-level dashboard as Washington Chapter 4, FIPS 41 (36 of 36
    Oregon counties reported use in the 2014-2018 window).
 
 ## Idaho (`idaho/`)
 
-Same three chapters as Oregon, FIPS 16:
-`id_pesticide_class_trends.Rmd` / `.html`,
-`id_statewide_top_pesticides.Rmd` / `.pdf`, and
-`id_county_pesticide_use.Rmd` / `.html` (44 of 44 Idaho counties reported
-use in the 2014-2018 window).
+Four chapters:
+
+1. **`id_bingham_pestuse.Rmd` → `id_bingham_pestuse.pdf` / `.md`** —
+   Bingham County top-pesticide ranking (2014-2018), Idaho's
+   Yakima-equivalent chapter. Bingham County sits on the Snake River
+   Plain and is Idaho's leading potato-producing county (Idaho grows
+   roughly a third of the US potato crop), also producing wheat, barley,
+   and sugar beets under irrigation; it is also Idaho's highest-use
+   county by total estimated pesticide mass in this repo's county-level
+   data, so the pick satisfies both an agronomic-identity and a raw-use
+   criterion at once. Same structure and tooling as the Oregon chapter
+   above.
+2. **`id_pesticide_class_trends.Rmd` → `id_pesticide_class_trends.html`**
+   — same dashboard as Washington Chapter 2, FIPS 16.
+3. **`id_statewide_top_pesticides.Rmd` → `id_statewide_top_pesticides.pdf`**
+   — same ranking as Washington Chapter 3, FIPS 16.
+4. **`id_county_pesticide_use.Rmd` → `id_county_pesticide_use.html`** —
+   same county-level dashboard as Washington Chapter 4, FIPS 16 (44 of 44
+   Idaho counties reported use in the 2014-2018 window).
 
 ## Pacific Northwest (`pacific_northwest/`)
 
@@ -157,13 +185,16 @@ rows for Alaska (FIPS 02) in every year, 1992-2019. USGS's Pesticide
 National Synthesis Project does not cover Alaska or Hawaii — this isn't a
 gap in how these reports were built, there's no source data to report on.
 
-## Scope note (why Oregon/Idaho only have 3 of Washington's 4 chapters)
+## Scope note (single-county chapters vs. state-parameterized chapters)
 
-Washington's Chapter 1 (Yakima County) is anchored to one specific county
-chosen for its own reasons, not a "change the FIPS code" template like
-Chapters 2-4 are — there's no obviously equivalent county to pick for
-Oregon or Idaho. Chapters 2-4 are fully state-parameterized (set
-`state_fips`/`state_name` at the top of the file) and were reused as-is.
+Each state's Chapter 1 is anchored to one specific, nationally-recognized
+agricultural county rather than being a "change the FIPS code" template
+like the other chapters are: Yakima (WA), Marion (OR), and Bingham (ID)
+were each chosen for that state's own agricultural identity, not
+necessarily because it's the single highest-use county by raw pesticide
+mass (Yakima and Marion are not; Bingham is). The other chapters are
+fully state-parameterized (set `state_fips`/`state_name`/`county_fips` at
+the top of the file) and reused as-is across states.
 
 ## Rendering any chapter
 
