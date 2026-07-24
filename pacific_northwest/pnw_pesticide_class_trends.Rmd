@@ -36,7 +36,7 @@ crop_cols <- c("Corn", "Soybeans", "Wheat", "Cotton", "Vegetables_and_fruit",
 # ---- Palette (validated categorical order; see dataviz skill) ---------
 cat_hex <- c("#2a78d6", "#eb6834", "#1baf7a", "#eda100",
               "#e87ba4", "#008300", "#4a3aa7", "#e34948",
-              "#8c564b", "#c25aab")
+              "#8c564b", "#c25aab", "#5b6b8c", "#b8860b")
 muted_grey <- "#898781"
 
 # FUNCTIONAL_CLASS is the broad, use-based grouping used for headline
@@ -119,6 +119,23 @@ functional_totals <- pnw_long %>%
   arrange(match(FUNCTIONAL_CLASS, functional_levels))
 active_functional_classes <- as.character(functional_totals$FUNCTIONAL_CLASS)
 
+# Same idea for CHEMICAL_CLASS, but ordered by mass (descending) rather
+# than a fixed order -- unlike FUNCTIONAL_CLASS's 7-ish intuitive
+# categories, there's no natural reading order for 13 chemical families,
+# so ranking by total mass at least puts the most consequential classes
+# first in the legend. "Other" always gets the neutral grey regardless of
+# its rank, matching the FUNCTIONAL_CLASS convention.
+chemical_totals <- pnw_long %>%
+  group_by(CHEMICAL_CLASS) %>%
+  summarize(TOTAL_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  filter(TOTAL_KG > 0) %>%
+  arrange(desc(TOTAL_KG))
+active_chemical_classes <- as.character(chemical_totals$CHEMICAL_CLASS)
+named_chemical_classes <- setdiff(active_chemical_classes, "Other")
+chemical_colors <- setNames(cat_hex[seq_along(named_chemical_classes)], named_chemical_classes)
+if ("Other" %in% active_chemical_classes) chemical_colors <- c(chemical_colors, Other = muted_grey)
+chemical_colors <- chemical_colors[active_chemical_classes]
+
 year_range <- range(pnw_long$Year)
 latest_year <- max(pnw_long$Year)
 first_year <- min(pnw_long$Year)
@@ -127,6 +144,12 @@ first_year <- min(pnw_long$Year)
 annual_by_functional <- pnw_long %>%
   group_by(Year, FUNCTIONAL_CLASS) %>%
   summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop")
+
+annual_by_chemical <- pnw_long %>%
+  filter(CHEMICAL_CLASS %in% active_chemical_classes) %>%
+  group_by(Year, CHEMICAL_CLASS) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  mutate(CHEMICAL_CLASS = factor(CHEMICAL_CLASS, levels = active_chemical_classes))
 
 annual_by_functional_crop <- pnw_long %>%
   filter(FUNCTIONAL_CLASS %in% active_functional_classes) %>%
@@ -259,6 +282,24 @@ plot_ly(annual_by_functional, x = ~Year, y = ~EPEST_HIGH_KG, color = ~FUNCTIONAL
     yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
     xaxis = list(title = "Year", dtick = 2),
     legend = list(title = list(text = "Functional class"), orientation = "h", y = -0.2),
+    hovermode = "x unified"
+  )
+```
+
+Row {data-height=430}
+-----------------------------------------------------------------------
+
+### Annual use by chemical class, `r first_year`-`r latest_year`
+
+```{r}
+plot_ly(annual_by_chemical, x = ~Year, y = ~EPEST_HIGH_KG, color = ~CHEMICAL_CLASS,
+        colors = chemical_colors, type = "scatter", mode = "lines+markers",
+        line = list(width = 2), marker = list(size = 5),
+        hovertemplate = "%{x}: %{y:,.0f} kg<extra>%{fullData.name}</extra>") %>%
+  layout(
+    yaxis = list(title = "EPest-high estimate (kg)", rangemode = "tozero", tickformat = ","),
+    xaxis = list(title = "Year", dtick = 2),
+    legend = list(title = list(text = "Chemical class"), orientation = "h", y = -0.3),
     hovermode = "x unified"
   )
 ```
@@ -639,11 +680,14 @@ references:
   and Static Plots pages.
 * **`CHEMICAL_CLASS`** — the compound's structural/chemical family
   (Organophosphorous compound, Pyrethrins/Pyrethroids, Triazines, ...) —
-  used for filtering on the Interactive Portal and Compound Explorer
-  pages. This is a fairly classical taxonomy that predates several
-  chemistries now in wide use, so most compounds land in "Other" rather
-  than an ill-fitting named family; see the Washington pesticide class
-  trends chapter's Methodology page for the full rationale, including how
+  used for the Overview page's "Annual use by chemical class" chart and
+  for filtering on the Interactive Portal and Compound Explorer pages.
+  This is a fairly classical taxonomy that predates several chemistries
+  now in wide use, so most compounds (by *count*) land in "Other" rather
+  than an ill-fitting named family — but by mass, several high-volume
+  classes (dithiocarbamates, organochlorines, inorganics) keep "Other"
+  from dominating the chart; see the Washington pesticide class trends
+  chapter's Methodology page for the full rationale, including how
   this split fixed a real distortion where a handful of chemically diverse
   fumigants used to share one artificial "class" bucket.
 
