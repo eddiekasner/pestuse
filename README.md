@@ -65,17 +65,39 @@ applied, not necessarily more intensive use.
 
 ## Washington (`washington/`)
 
-Four chapters:
+Eight chapters: one single-county top-pesticide ranking chapter for each
+of Washington's five highest pesticide-use counties (by total EPest-high
+mass, summed 2014-2018), plus the three state-parameterized chapters.
 
-1. **`pestuse.Rmd` → `pestuse.pdf` / `pestuse.md`** — Yakima County
-   top-pesticide ranking (2012-2016). Lists rank and EPest-high mass
-   applied for the 80 most common pesticides in Yakima County, by 1-year,
-   3-year average, and 5-year average. Oregon and Idaho each have their
-   own equivalent single-county chapter (Marion and Bingham County,
-   respectively — see below); this original Washington version is kept
-   as-is, including its older 2012-2016 window and base-R code style,
-   rather than rewritten to match.
-2. **`wa_pesticide_class_trends.Rmd` → `wa_pesticide_class_trends.html`** —
+Each single-county chapter (`wa_<county>_pestuse.Rmd` →
+`wa_<county>_pestuse.pdf` / `.md`) lists the rank and best available
+EPest-high estimates for the top 80 pesticides in that county, by 1-year,
+3-year average, and 5-year average, with each compound's chemical class
+(abbreviated, with a key table) and a top-25 bar chart by functional
+class — same format and tooling as the statewide ranking chapter below,
+scoped to one county. Ranked 1-5 by total 2014-2018 pesticide mass:
+
+1. **`wa_grant_pestuse.Rmd`** — Grant County. Columbia Basin Project
+   irrigated agriculture: potatoes, field corn, alfalfa hay, and wheat.
+2. **`wa_benton_pestuse.Rmd`** — Benton County. Tri-Cities area; center of
+   Washington's wine industry (Yakima Valley/Columbia Valley AVAs),
+   tree fruit, and irrigated row crops.
+3. **`wa_franklin_pestuse.Rmd`** — Franklin County. Also Tri-Cities area;
+   irrigated Columbia Basin farmland — potatoes, wheat, alfalfa, and seed
+   crops.
+4. **`wa_adams_pestuse.Rmd`** — Adams County. Columbia Basin wheat
+   country (dryland and irrigated), plus potatoes and other irrigated row
+   crops.
+5. **`wa_yakima_pestuse.Rmd`** — Yakima County. Nationally known as the
+   "Fruit Bowl of the Nation," a major tree-fruit region (apples, pears,
+   cherries) and one of the country's leading hop-growing areas. This
+   replaces the repo's original `pestuse.Rmd` (Yakima, 2012-2016,
+   base-R/pacman code style) with the current tooling and 2014-2018
+   window used everywhere else in this repo.
+
+State-parameterized chapters:
+
+6. **`wa_pesticide_class_trends.Rmd` → `wa_pesticide_class_trends.html`** —
    interactive dashboard (flexdashboard) of statewide pesticide use by
    chemical class and functional class, 1992-2018, overall and by USGS
    crop group. Covers all 402 classified compounds, not just
@@ -86,13 +108,13 @@ Four chapters:
    `CHEMICAL_CLASS` can't be plotted as a legible simultaneous series
    (most compounds fall into its `Other` bucket). 2019 is excluded (see
    caveats below).
-3. **`wa_statewide_top_pesticides.Rmd` → `wa_statewide_top_pesticides.pdf`**
+7. **`wa_statewide_top_pesticides.Rmd` → `wa_statewide_top_pesticides.pdf`**
    — statewide top-80 pesticide ranking, 2014-2018, with each compound's
    chemical class (abbreviated, with a key table) and a comparison to
    Yakima County's own ranking.
-4. **`wa_county_pesticide_use.Rmd` → `wa_county_pesticide_use.html`** —
+8. **`wa_county_pesticide_use.Rmd` → `wa_county_pesticide_use.html`** —
    interactive dashboard (flexdashboard) of the county-level detail behind
-   Chapters 2-3's statewide totals, 2014-2018 (same window as the ranking
+   Chapters 6-7's statewide totals, 2014-2018 (same window as the ranking
    chapter). Overview and Static Plots pages show interactive choropleth
    maps of county totals (offline, via the `maps`/`sf` packages, rendered
    through `plotly::ggplotly()` — every county is labeled by name on the
@@ -108,49 +130,71 @@ Four chapters:
 
 ## Oregon (`oregon/`)
 
-Four chapters:
+Eight chapters, same structure as Washington: one single-county
+top-pesticide ranking chapter (`or_<county>_pestuse.Rmd` → `.pdf` / `.md`)
+for each of Oregon's five highest pesticide-use counties, plus the three
+state-parameterized chapters (FIPS 41). Ranked 1-5 by total 2014-2018
+pesticide mass:
 
-1. **`or_marion_pestuse.Rmd` → `or_marion_pestuse.pdf` / `.md`** — Marion
-   County top-pesticide ranking (2014-2018), Oregon's Yakima-equivalent
-   chapter. Marion County anchors the northern Willamette Valley and is
-   Oregon's largest and most diversified agricultural county by
-   production value, nationally recognized for nursery stock, berries
-   (including marionberries, its namesake cultivar), hazelnuts, and
-   vegetable/grass seed crops. Structured like Washington's Yakima
-   chapter (single-county top-80 ranking by 1yr/3yr-avg/5yr-avg) but
-   built with this repo's current tooling (readr/dplyr, the shared
-   `pesticide_classification.csv`, and the 2014-2018 window used
-   everywhere else in this repo, rather than Yakima chapter's original
-   2012-2016 window).
-2. **`or_pesticide_class_trends.Rmd` → `or_pesticide_class_trends.html`**
-   — same dashboard as Washington Chapter 2, FIPS 41.
-3. **`or_statewide_top_pesticides.Rmd` → `or_statewide_top_pesticides.pdf`**
-   — same ranking as Washington Chapter 3, FIPS 41 (no Yakima comparison
+1. **`or_morrow_pestuse.Rmd`** — Morrow County. Columbia Basin/Columbia
+   Plateau irrigated agriculture in north-central Oregon, around
+   Boardman: potatoes, wheat, and alfalfa under large-scale center-pivot
+   irrigation, plus significant food-processing activity.
+2. **`or_umatilla_pestuse.Rmd`** — Umatilla County. Adjoins Morrow; a
+   major wheat producer and irrigated farming area near Hermiston —
+   potatoes, onions, and watermelons.
+3. **`or_malheur_pestuse.Rmd`** — Malheur County. Treasure Valley; a
+   leading onion-growing region, plus potatoes and sugar beets under
+   irrigation from the Owyhee and Snake River systems.
+4. **`or_hoodriver_pestuse.Rmd`** — Hood River County. Hood River Valley;
+   nationally known for pear and apple orchards.
+5. **`or_klamath_pestuse.Rmd`** — Klamath County. Klamath Basin; irrigated
+   potatoes, alfalfa hay, and grain, in a region long associated with
+   disputes over irrigation water allocation.
+
+State-parameterized chapters:
+
+6. **`or_pesticide_class_trends.Rmd` → `or_pesticide_class_trends.html`**
+   — same dashboard as Washington Chapter 6, FIPS 41.
+7. **`or_statewide_top_pesticides.Rmd` → `or_statewide_top_pesticides.pdf`**
+   — same ranking as Washington Chapter 7, FIPS 41 (no Yakima comparison
    column, since that was Washington-specific).
-4. **`or_county_pesticide_use.Rmd` → `or_county_pesticide_use.html`** —
-   same county-level dashboard as Washington Chapter 4, FIPS 41 (36 of 36
+8. **`or_county_pesticide_use.Rmd` → `or_county_pesticide_use.html`** —
+   same county-level dashboard as Washington Chapter 8, FIPS 41 (36 of 36
    Oregon counties reported use in the 2014-2018 window).
 
 ## Idaho (`idaho/`)
 
-Four chapters:
+Eight chapters, same structure again: one single-county top-pesticide
+ranking chapter (`id_<county>_pestuse.Rmd` → `.pdf` / `.md`) for each of
+Idaho's five highest pesticide-use counties, plus the three
+state-parameterized chapters (FIPS 16). Ranked 1-5 by total 2014-2018
+pesticide mass:
 
-1. **`id_bingham_pestuse.Rmd` → `id_bingham_pestuse.pdf` / `.md`** —
-   Bingham County top-pesticide ranking (2014-2018), Idaho's
-   Yakima-equivalent chapter. Bingham County sits on the Snake River
-   Plain and is Idaho's leading potato-producing county (Idaho grows
-   roughly a third of the US potato crop), also producing wheat, barley,
-   and sugar beets under irrigation; it is also Idaho's highest-use
-   county by total estimated pesticide mass in this repo's county-level
-   data, so the pick satisfies both an agronomic-identity and a raw-use
-   criterion at once. Same structure and tooling as the Oregon chapter
-   above.
-2. **`id_pesticide_class_trends.Rmd` → `id_pesticide_class_trends.html`**
-   — same dashboard as Washington Chapter 2, FIPS 16.
-3. **`id_statewide_top_pesticides.Rmd` → `id_statewide_top_pesticides.pdf`**
-   — same ranking as Washington Chapter 3, FIPS 16.
-4. **`id_county_pesticide_use.Rmd` → `id_county_pesticide_use.html`** —
-   same county-level dashboard as Washington Chapter 4, FIPS 16 (44 of 44
+1. **`id_bingham_pestuse.Rmd`** — Bingham County. Sits on Idaho's Snake
+   River Plain and is the state's leading potato-producing county (Idaho
+   grows roughly a third of the US potato crop), also growing wheat,
+   barley, and sugar beets under irrigation.
+2. **`id_power_pestuse.Rmd`** — Power County. Snake River Plain near
+   American Falls; irrigated potatoes, wheat, alfalfa, and sugar beets.
+3. **`id_madison_pestuse.Rmd`** — Madison County. Eastern Idaho near
+   Rexburg; known for seed potato production alongside grain and dairy
+   farming.
+4. **`id_jefferson_pestuse.Rmd`** — Jefferson County. Eastern Idaho near
+   Rigby; irrigated potatoes, wheat, and barley alongside dairy
+   operations.
+5. **`id_minidoka_pestuse.Rmd`** — Minidoka County. Magic Valley near
+   Rupert; irrigated potatoes, sugar beets, and beans alongside dairy
+   operations.
+
+State-parameterized chapters:
+
+6. **`id_pesticide_class_trends.Rmd` → `id_pesticide_class_trends.html`**
+   — same dashboard as Washington Chapter 6, FIPS 16.
+7. **`id_statewide_top_pesticides.Rmd` → `id_statewide_top_pesticides.pdf`**
+   — same ranking as Washington Chapter 7, FIPS 16.
+8. **`id_county_pesticide_use.Rmd` → `id_county_pesticide_use.html`** —
+   same county-level dashboard as Washington Chapter 8, FIPS 16 (44 of 44
    Idaho counties reported use in the 2014-2018 window).
 
 ## Pacific Northwest (`pacific_northwest/`)
@@ -160,7 +204,7 @@ and Idaho summed together, plus genuine state-vs-state comparisons that no
 single-state chapter can show on its own.
 
 1. **`pnw_pesticide_class_trends.Rmd` → `pnw_pesticide_class_trends.html`**
-   — same dashboard as each state's Chapter 2, but combining all three
+   — same dashboard as each state's pesticide class trends chapter, but combining all three
    states (FIPS 53/41/16). Overview, Interactive Portal, Compound Explorer,
    and most of Static Plots show WA+OR+ID **summed together**. A dedicated
    **State Comparison** page adds `STATE` as a third chart dimension (only
@@ -187,14 +231,17 @@ gap in how these reports were built, there's no source data to report on.
 
 ## Scope note (single-county chapters vs. state-parameterized chapters)
 
-Each state's Chapter 1 is anchored to one specific, nationally-recognized
-agricultural county rather than being a "change the FIPS code" template
-like the other chapters are: Yakima (WA), Marion (OR), and Bingham (ID)
-were each chosen for that state's own agricultural identity, not
-necessarily because it's the single highest-use county by raw pesticide
-mass (Yakima and Marion are not; Bingham is). The other chapters are
-fully state-parameterized (set `state_fips`/`state_name`/`county_fips` at
-the top of the file) and reused as-is across states.
+Each state's five single-county chapters cover that state's five highest
+pesticide-use counties by total EPest-high mass applied, summed
+2014-2018 — a consistent, reproducible, data-driven selection rather than
+a hand-picked "iconic" county per state. (An earlier version of this repo
+picked one county per state for agricultural identity instead — Yakima,
+Marion, and Bingham — rather than ranking by use; that approach is no
+longer used, though Yakima and Bingham both happen to also be their
+state's actual #5 and #1 highest-use counties, so they're still covered.)
+The remaining three chapters per state are fully state-parameterized (set
+`state_fips`/`state_name` at the top of the file, and `county_fips` for
+the single-county chapters) and reused as-is across states.
 
 ## Rendering any chapter
 

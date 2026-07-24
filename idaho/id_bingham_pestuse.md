@@ -79,11 +79,11 @@ read_year <- function(yr) {
     filter(STATE_FIPS_CODE == state_fips, COUNTY_FIPS_CODE == county_fips)
 }
 
-bingham_raw <- bind_rows(lapply(window_years, read_year))
+county_raw <- bind_rows(lapply(window_years, read_year))
 
 classification <- read_csv("../data/pesticide_classification.csv", col_types = cols())
 
-bingham_yearly <- bingham_raw %>%
+county_yearly <- county_raw %>%
   group_by(COMPOUND, YEAR) %>%
   summarize(EPEST_LOW_KG = sum(EPEST_LOW_KG, na.rm = TRUE),
             EPEST_HIGH_KG = sum(EPEST_HIGH_KG, na.rm = TRUE), .groups = "drop")
@@ -116,7 +116,7 @@ compute_windows <- function(yearly) {
   list(one = one, three = three, five = five)
 }
 
-bingham_w <- compute_windows(bingham_yearly)
+county_w <- compute_windows(county_yearly)
 
 top_n <- 80
 
@@ -124,12 +124,12 @@ top_n <- 80
 # appear in all three windows at once, since it displays 1/3/5-yr figures
 # side by side for the same compound; the appendix tables below do not
 # use this joined version.
-bingham_ranked <- bingham_w$one %>%
-  inner_join(bingham_w$three, by = "COMPOUND") %>%
-  inner_join(bingham_w$five, by = "COMPOUND") %>%
+county_ranked <- county_w$one %>%
+  inner_join(county_w$three, by = "COMPOUND") %>%
+  inner_join(county_w$five, by = "COMPOUND") %>%
   mutate(across(where(is.numeric) & !starts_with("RANK"), ~round(.x)))
 
-bingham_top <- bingham_ranked %>%
+county_top <- county_ranked %>%
   arrange(RANK_1YR) %>%
   slice(1:top_n) %>%
   left_join(classification, by = "COMPOUND") %>%
@@ -142,22 +142,15 @@ bingham_top <- bingham_ranked %>%
 
 # Summary
 
-Bingham County sits at the heart of Idaho's Snake River Plain and is the
-state's leading potato-producing county — Idaho itself grows roughly a
-third of the United States' potato crop, and the "Famous Idaho Potato"
-identity is centered on counties like Bingham. The county also produces
-substantial wheat, barley, and sugar beets under irrigation, playing a
-role in Idaho agriculture comparable to Yakima County's for Washington's
-tree-fruit and hop industries in the companion Washington chapter of this
-repository. Bingham is also Idaho's highest-use county by total estimated
-pesticide mass applied of any window in this repository's county-level
-data, making it an unambiguous choice on both agronomic-identity and
-raw-use grounds.
+Bingham County ranks **#1 of Idaho's 44 counties** by total
+estimated agricultural pesticide mass applied (EPest-high method, summed
+2014-2018), making it one of ID's five highest pesticide-use
+counties. Bingham County sits on Idaho's Snake River Plain and is the state's leading potato-producing county, also growing wheat, barley, and sugar beets under irrigation.
 
 Table \@ref(tab:merged-tables) lists the rank and best available estimates
 of mass applied (kg) for the top `r top_n` agricultural pesticides in
-**`r county_name`, Idaho** during `r recent_year`, as reported by [USGS
-Estimated Annual Agricultural Pesticide
+**Bingham County, Idaho** during `r recent_year`, as reported by
+[USGS Estimated Annual Agricultural Pesticide
 Use](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/) data. The
 table also includes rank by 3-year average
 (`r paste(range(tail(window_years,3)), collapse="-")`) and 5-year average
@@ -214,7 +207,7 @@ kable(classification %>% distinct(CHEM_ABBREV, CHEMICAL_CLASS) %>% arrange(CHEMI
 # whole table into one atomic latex box that cannot break across pages,
 # which silently drops every row past the page boundary for tables this
 # long instead of erroring.
-display <- bingham_top %>% select(-CHEMICAL_CLASS, -FUNCTIONAL_CLASS)
+display <- county_top %>% select(-CHEMICAL_CLASS, -FUNCTIONAL_CLASS)
 names(display) <- c("Rank", "Compound", "Class", "EPest-high 1yr",
                      "EPest-high 3yr avg", "EPest-high 5yr avg")
 
@@ -224,11 +217,11 @@ kable(display, "latex", booktabs = T, digits = 0, longtable = TRUE,
                         "classification key table above)")) %>%
   kable_styling(latex_options = c("striped", "repeat_header", "HOLD_position"), font_size = 8)
 
-write.csv(bingham_top, "bingham.pesticide.use.2014-2018.csv", row.names = FALSE)
+write.csv(county_top, "bingham.pesticide.use.2014-2018.csv", row.names = FALSE)
 ```
 
 ```{r top-chart, include=T, fig.cap="Top 25 compounds in Bingham County by EPest-high mass applied, most recent year, colored by pesticide functional class."}
-top_chart <- bingham_top %>%
+top_chart <- county_top %>%
   slice(1:25) %>%
   mutate(COMPOUND = forcats::fct_reorder(COMPOUND, EPEST_HIGH_KG_1YR))
 
@@ -247,7 +240,7 @@ ggplot(top_chart, aes(x = COMPOUND, y = EPEST_HIGH_KG_1YR, fill = FUNCTIONAL_CLA
 # Appendices
 
 ```{r table-1yr, include=T}
-kable(head(bingham_w$one %>% arrange(RANK_1YR) %>%
+kable(head(county_w$one %>% arrange(RANK_1YR) %>%
              select(RANK_1YR, COMPOUND, EPEST_LOW_KG_1YR, EPEST_HIGH_KG_1YR), n = 50),
       "latex", booktabs = T, digits = 0,
       caption = paste0("Top 50 ", county_name, " Estimates, Range (EPest-low and EPest-high), 1-Yr, ", recent_year)) %>%
@@ -255,7 +248,7 @@ kable(head(bingham_w$one %>% arrange(RANK_1YR) %>%
 ```
 
 ```{r table-3yr, include=T}
-kable(head(bingham_w$three %>% arrange(RANK_3YR) %>%
+kable(head(county_w$three %>% arrange(RANK_3YR) %>%
              select(RANK_3YR, COMPOUND, EPEST_LOW_KG_3YR_AVG, EPEST_HIGH_KG_3YR_AVG), n = 50),
       "latex", booktabs = T, digits = 0,
       caption = paste0("Top 50 ", county_name, " Estimates, Range (EPest-low and EPest-high), 3-Yr Avg, ",
@@ -264,10 +257,11 @@ kable(head(bingham_w$three %>% arrange(RANK_3YR) %>%
 ```
 
 ```{r table-5yr, include=T}
-kable(head(bingham_w$five %>% arrange(RANK_5YR) %>%
+kable(head(county_w$five %>% arrange(RANK_5YR) %>%
              select(RANK_5YR, COMPOUND, EPEST_LOW_KG_5YR_AVG, EPEST_HIGH_KG_5YR_AVG), n = 50),
       "latex", booktabs = T, digits = 0,
       caption = paste0("Top 50 ", county_name, " Estimates, Range (EPest-low and EPest-high), 5-Yr Avg, ",
                         paste(range(window_years), collapse="-"))) %>%
   kable_styling(latex_options = c("striped", "scale_down"))
 ```
+

@@ -1,0 +1,81 @@
+"RANK_1YR","COMPOUND","CHEMICAL_CLASS","CHEM_ABBREV","FUNCTIONAL_CLASS","EPEST_HIGH_KG_1YR","EPEST_HIGH_KG_3YR_AVG","EPEST_HIGH_KG_5YR_AVG"
+1,"BACILLUS AMYLOLIQUEFACIEN","Microbial","MIC","Fungicide",464275,159527,159527
+2,"CHLOROPICRIN","Organochlorine compound","OC","Fumigant",383043,156179,108250
+3,"METAM","Dithiocarbamates","DTC","Fumigant",296851,474428,372053
+4,"GLYPHOSATE","Other","OTH","Herbicide/algicide",54825,37175,34543
+5,"DICHLOROPROPENE","Organochlorine compound","OC","Fumigant",39603,41840,127575
+6,"BURKHOLDERIA SPP","Microbial","MIC","Insecticide",31926,32923,32923
+7,"METAM POTASSIUM","Dithiocarbamates","DTC","Fumigant",14577,152884,118572
+8,"METHOMYL","N-methyl carbamates (AChE inhibitor)","CB","Insecticide",14163,14830,14428
+9,"PENDIMETHALIN","Other","OTH","Herbicide/algicide",11321,11147,10655
+10,"TRIFLURALIN","Other","OTH","Herbicide/algicide",9988,8606,12235
+11,"SULFURIC ACID","Inorganic compounds","INO","Other",7628,18102,20198
+12,"ATRAZINE","Triazines","TRZ","Herbicide/algicide",6178,8383,6736
+13,"MANCOZEB","Dithiocarbamates","DTC","Fungicide",4998,4426,3703
+14,"2,4-D","Chlorophenoxy compound","CPX","Herbicide/algicide",4921,6923,5411
+15,"BROMOXYNIL","Other","OTH","Herbicide/algicide",4607,5184,4860
+16,"ETHOFUMESATE","Other","OTH","Herbicide/algicide",4178,5837,4597
+17,"METOLACHLOR & METOLACHLOR-S","Other","OTH","Herbicide/algicide",3946,4705,5629
+18,"ETHOPROPHOS","Organophosphorous compound","OP","Insecticide",3921,2168,1307
+19,"EPTC","Thiocarbamates","TC","Herbicide/algicide",3663,4500,5387
+20,"MALATHION","Organophosphorous compound","OP","Insecticide",3448,4671,3854
+21,"METOLACHLOR-S","Other","OTH","Herbicide/algicide",3382,3416,3900
+22,"DIMETHENAMID & DIMETHENAMID-P","Other","OTH","Herbicide/algicide",3169,4662,3443
+23,"DIMETHENAMID-P","Other","OTH","Herbicide/algicide",3169,2373,2069
+24,"SULFUR","Inorganic compounds","INO","Fungicide",2787,3874,3444
+25,"MCPA","Chlorophenoxy compound","CPX","Herbicide/algicide",2474,4849,4266
+26,"CHLOROTHALONIL","Other","OTH","Fungicide",2418,8314,6984
+27,"CLETHODIM","Other","OTH","Herbicide/algicide",2021,2099,1825
+28,"BOSCALID","Other","OTH","Fungicide",1979,1429,1378
+29,"CHLORPYRIFOS","Organophosphorous compound","OP","Insecticide",1910,2311,2878
+30,"FLUFENACET","Other","OTH","Herbicide/algicide",1814,1315,1325
+31,"THIOPHANATE-METHYL","Other","OTH","Fungicide",1733,2441,1634
+32,"METRIBUZIN","Triazines","TRZ","Herbicide/algicide",1477,955,1145
+33,"OXYFLUORFEN","Other","OTH","Herbicide/algicide",1348,1522,1268
+34,"ETHALFLURALIN","Other","OTH","Herbicide/algicide",1341,2160,2059
+35,"PARAQUAT","Dipyridyl compound","DIP","Herbicide/algicide",1302,991,998
+36,"PYRACLOSTROBIN","Other","OTH","Fungicide",1285,1509,1380
+37,"COPPER HYDROXIDE","Inorganic compounds","INO","Fungicide",1127,2861,2835
+38,"DIURON","Other","OTH","Herbicide/algicide",996,2372,3239
+39,"DICAMBA","Other","OTH","Herbicide/algicide",904,2030,1714
+40,"SPIROTETRAMAT","Other","OTH","Insecticide",890,813,730
+41,"PENTHIOPYRAD","Other","OTH","Fungicide",787,798,590
+42,"IMIDACLOPRID","Other","OTH","Insecticide",770,673,731
+43,"IPRODIONE","Other","OTH","Fungicide",738,2167,2291
+44,"OXAMYL","N-methyl carbamates (AChE inhibitor)","CB","Insecticide",722,462,3209
+45,"SPINETORAM","Other","OTH","Insecticide",702,582,508
+46,"ACETOCHLOR","Other","OTH","Herbicide/algicide",695,1439,1671
+47,"COPPER OXYCHLORIDE","Inorganic compounds","INO","Fungicide",672,349,843
+48,"TERBACIL","Other","OTH","Herbicide/algicide",670,670,466
+49,"DIMETHOATE","Organophosphorous compound","OP","Insecticide",636,840,1098
+50,"AZOXYSTROBIN","Other","OTH","Fungicide",591,636,531
+51,"MEFENOXAM","Other","OTH","Fungicide",570,891,832
+52,"METOLACHLOR","Other","OTH","Herbicide/algicide",564,1289,1730
+53,"PROPICONAZOLE","Other","OTH","Fungicide",542,773,750
+54,"CLOPYRALID","Other","OTH","Herbicide/algicide",520,545,647
+55,"BENTAZONE","Other","OTH","Herbicide/algicide",461,311,483
+56,"DIMETHOMORPH","Other","OTH","Fungicide",394,645,653
+57,"FENAMIDONE","Other","OTH","Fungicide",348,348,348
+58,"MESOTRIONE","Other","OTH","Herbicide/algicide",328,282,264
+59,"DIQUAT","Dipyridyl compound","DIP","Herbicide/algicide",316,250,242
+60,"CYHALOTHRIN-LAMBDA","Pyrethrins/Pyrethroids","PYR","Insecticide",301,229,236
+61,"HEXYTHIAZOX","Other","OTH","Acaricide",282,737,676
+62,"AMETOCTRADIN","Other","OTH","Fungicide",268,475,475
+63,"ALPHA CYPERMETHRIN","Pyrethrins/Pyrethroids","PYR","Insecticide",257,136,136
+64,"SPINOSYN","Other","OTH","Insecticide",246,98,394
+65,"DICLORAN","Other","OTH","Fungicide",246,354,642
+66,"PYMETROZINE","Other","OTH","Insecticide",217,122,98
+67,"FLUROXYPYR","Other","OTH","Herbicide/algicide",209,1010,706
+68,"FLUMIOXAZIN","Other","OTH","Herbicide/algicide",209,77,55
+69,"BIFENTHRIN","Pyrethrins/Pyrethroids","PYR","Insecticide",204,194,197
+70,"FLUOPYRAM","Other","OTH","Fungicide",194,102,78
+71,"DIFLUFENZOPYR","Other","OTH","Herbicide/algicide",182,88,147
+72,"FLUXAPYROXAD","Other","OTH","Fungicide",173,384,251
+73,"SULFENTRAZONE","Other","OTH","Herbicide/algicide",172,85,79
+74,"PYRIMETHANIL","Other","OTH","Fungicide",169,233,283
+75,"PINOXADEN","Other","OTH","Herbicide/algicide",167,73,70
+76,"DIFENOCONAZOLE","Other","OTH","Fungicide",164,155,137
+77,"IMAZETHAPYR","Other","OTH","Herbicide/algicide",164,172,137
+78,"TETRACONAZOLE","Other","OTH","Fungicide",163,106,72
+79,"ABAMECTIN","Other","OTH","Insecticide",162,111,77
+80,"HEXAZINONE","Triazines","TRZ","Herbicide/algicide",138,920,729

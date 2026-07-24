@@ -1,7 +1,7 @@
 ---
 title: |
   | Estimated Annual Agricultural Pesticide Use
-  | Bingham County, Idaho 2014-2018
+  | Madison County, Idaho 2014-2018
 date: '`r format(Sys.Date(), "%d %B %Y")`'
 output:
   bookdown::pdf_document2:
@@ -36,8 +36,8 @@ invisible(lapply(required_pkgs, function(pkg) library(pkg, character.only = TRUE
 
 ```{r constants}
 state_fips  <- "16"
-county_fips <- "011"
-county_name <- "Bingham County"
+county_fips <- "065"
+county_name <- "Madison County"
 # 2019 is excluded: the county-level file available at the time of writing
 # is a partial/preliminary release covering only 69 compounds nationwide
 # (vs. ~400-410 in every other year, 1992-2018), so anchoring the "most
@@ -60,7 +60,7 @@ functional_colors <- setNames(c(cat_hex[1:10], muted_grey), functional_levels)
 
 ```{r upload.and.clean.data, include=F}
 
-## Read 2014-2018 county-level estimates (Bingham County, ID subset only)
+## Read 2014-2018 county-level estimates (Madison County, ID subset only)
 ## from ../estimates/EPest.county.estimates.<year>.txt
 
 read_year <- function(yr) {
@@ -142,14 +142,14 @@ county_top <- county_ranked %>%
 
 # Summary
 
-Bingham County ranks **#1 of Idaho's 44 counties** by total
+Madison County ranks **#3 of Idaho's 44 counties** by total
 estimated agricultural pesticide mass applied (EPest-high method, summed
 2014-2018), making it one of ID's five highest pesticide-use
-counties. Bingham County sits on Idaho's Snake River Plain and is the state's leading potato-producing county, also growing wheat, barley, and sugar beets under irrigation.
+counties. Madison County, in eastern Idaho near Rexburg, is known for seed potato production alongside grain and dairy farming.
 
 Table \@ref(tab:merged-tables) lists the rank and best available estimates
 of mass applied (kg) for the top `r top_n` agricultural pesticides in
-**Bingham County, Idaho** during `r recent_year`, as reported by
+**Madison County, Idaho** during `r recent_year`, as reported by
 [USGS Estimated Annual Agricultural Pesticide
 Use](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/) data. The
 table also includes rank by 3-year average
@@ -217,10 +217,10 @@ kable(display, "latex", booktabs = T, digits = 0, longtable = TRUE,
                         "classification key table above)")) %>%
   kable_styling(latex_options = c("striped", "repeat_header", "HOLD_position"), font_size = 8)
 
-write.csv(county_top, "bingham.pesticide.use.2014-2018.csv", row.names = FALSE)
+write.csv(county_top, "madison.pesticide.use.2014-2018.csv", row.names = FALSE)
 ```
 
-```{r top-chart, include=T, fig.cap="Top 25 compounds in Bingham County by EPest-high mass applied, most recent year, colored by pesticide functional class."}
+```{r top-chart, include=T, fig.cap="Top 25 compounds in Madison County by EPest-high mass applied, most recent year, colored by pesticide functional class."}
 top_chart <- county_top %>%
   slice(1:25) %>%
   mutate(COMPOUND = forcats::fct_reorder(COMPOUND, EPEST_HIGH_KG_1YR))

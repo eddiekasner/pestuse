@@ -1,7 +1,7 @@
 ---
 title: |
   | Estimated Annual Agricultural Pesticide Use
-  | Marion County, Oregon 2014-2018
+  | Klamath County, Oregon 2014-2018
 date: '`r format(Sys.Date(), "%d %B %Y")`'
 output:
   bookdown::pdf_document2:
@@ -36,8 +36,8 @@ invisible(lapply(required_pkgs, function(pkg) library(pkg, character.only = TRUE
 
 ```{r constants}
 state_fips  <- "41"
-county_fips <- "047"
-county_name <- "Marion County"
+county_fips <- "035"
+county_name <- "Klamath County"
 # 2019 is excluded: the county-level file available at the time of writing
 # is a partial/preliminary release covering only 69 compounds nationwide
 # (vs. ~400-410 in every other year, 1992-2018), so anchoring the "most
@@ -60,7 +60,7 @@ functional_colors <- setNames(c(cat_hex[1:10], muted_grey), functional_levels)
 
 ```{r upload.and.clean.data, include=F}
 
-## Read 2014-2018 county-level estimates (Marion County, OR subset only)
+## Read 2014-2018 county-level estimates (Klamath County, OR subset only)
 ## from ../estimates/EPest.county.estimates.<year>.txt
 
 read_year <- function(yr) {
@@ -79,11 +79,11 @@ read_year <- function(yr) {
     filter(STATE_FIPS_CODE == state_fips, COUNTY_FIPS_CODE == county_fips)
 }
 
-marion_raw <- bind_rows(lapply(window_years, read_year))
+county_raw <- bind_rows(lapply(window_years, read_year))
 
 classification <- read_csv("../data/pesticide_classification.csv", col_types = cols())
 
-marion_yearly <- marion_raw %>%
+county_yearly <- county_raw %>%
   group_by(COMPOUND, YEAR) %>%
   summarize(EPEST_LOW_KG = sum(EPEST_LOW_KG, na.rm = TRUE),
             EPEST_HIGH_KG = sum(EPEST_HIGH_KG, na.rm = TRUE), .groups = "drop")
@@ -116,7 +116,7 @@ compute_windows <- function(yearly) {
   list(one = one, three = three, five = five)
 }
 
-marion_w <- compute_windows(marion_yearly)
+county_w <- compute_windows(county_yearly)
 
 top_n <- 80
 
@@ -124,12 +124,12 @@ top_n <- 80
 # appear in all three windows at once, since it displays 1/3/5-yr figures
 # side by side for the same compound; the appendix tables below do not
 # use this joined version.
-marion_ranked <- marion_w$one %>%
-  inner_join(marion_w$three, by = "COMPOUND") %>%
-  inner_join(marion_w$five, by = "COMPOUND") %>%
+county_ranked <- county_w$one %>%
+  inner_join(county_w$three, by = "COMPOUND") %>%
+  inner_join(county_w$five, by = "COMPOUND") %>%
   mutate(across(where(is.numeric) & !starts_with("RANK"), ~round(.x)))
 
-marion_top <- marion_ranked %>%
+county_top <- county_ranked %>%
   arrange(RANK_1YR) %>%
   slice(1:top_n) %>%
   left_join(classification, by = "COMPOUND") %>%
@@ -142,19 +142,15 @@ marion_top <- marion_ranked %>%
 
 # Summary
 
-Marion County is Oregon's largest and most diversified agricultural
-county by production value, anchoring the northern Willamette Valley.
-It is nationally recognized for nursery stock, berries (particularly
-blackberries, marionberries — its namesake cultivar — and other
-caneberries), hazelnuts, and vegetable and grass seed crops, playing a
-role in Oregon agriculture comparable to Yakima County's for Washington's
-tree-fruit and hop industries in the companion Washington chapter of this
-repository.
+Klamath County ranks **#5 of Oregon's 36 counties** by total
+estimated agricultural pesticide mass applied (EPest-high method, summed
+2014-2018), making it one of OR's five highest pesticide-use
+counties. Klamath County, in the Klamath Basin, grows irrigated potatoes, alfalfa hay, and grain in a region long associated with disputes over irrigation water allocation.
 
 Table \@ref(tab:merged-tables) lists the rank and best available estimates
 of mass applied (kg) for the top `r top_n` agricultural pesticides in
-**`r county_name`, Oregon** during `r recent_year`, as reported by [USGS
-Estimated Annual Agricultural Pesticide
+**Klamath County, Oregon** during `r recent_year`, as reported by
+[USGS Estimated Annual Agricultural Pesticide
 Use](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/) data. The
 table also includes rank by 3-year average
 (`r paste(range(tail(window_years,3)), collapse="-")`) and 5-year average
@@ -211,7 +207,7 @@ kable(classification %>% distinct(CHEM_ABBREV, CHEMICAL_CLASS) %>% arrange(CHEMI
 # whole table into one atomic latex box that cannot break across pages,
 # which silently drops every row past the page boundary for tables this
 # long instead of erroring.
-display <- marion_top %>% select(-CHEMICAL_CLASS, -FUNCTIONAL_CLASS)
+display <- county_top %>% select(-CHEMICAL_CLASS, -FUNCTIONAL_CLASS)
 names(display) <- c("Rank", "Compound", "Class", "EPest-high 1yr",
                      "EPest-high 3yr avg", "EPest-high 5yr avg")
 
@@ -221,11 +217,11 @@ kable(display, "latex", booktabs = T, digits = 0, longtable = TRUE,
                         "classification key table above)")) %>%
   kable_styling(latex_options = c("striped", "repeat_header", "HOLD_position"), font_size = 8)
 
-write.csv(marion_top, "marion.pesticide.use.2014-2018.csv", row.names = FALSE)
+write.csv(county_top, "klamath.pesticide.use.2014-2018.csv", row.names = FALSE)
 ```
 
-```{r top-chart, include=T, fig.cap="Top 25 compounds in Marion County by EPest-high mass applied, most recent year, colored by pesticide functional class."}
-top_chart <- marion_top %>%
+```{r top-chart, include=T, fig.cap="Top 25 compounds in Klamath County by EPest-high mass applied, most recent year, colored by pesticide functional class."}
+top_chart <- county_top %>%
   slice(1:25) %>%
   mutate(COMPOUND = forcats::fct_reorder(COMPOUND, EPEST_HIGH_KG_1YR))
 
@@ -244,7 +240,7 @@ ggplot(top_chart, aes(x = COMPOUND, y = EPEST_HIGH_KG_1YR, fill = FUNCTIONAL_CLA
 # Appendices
 
 ```{r table-1yr, include=T}
-kable(head(marion_w$one %>% arrange(RANK_1YR) %>%
+kable(head(county_w$one %>% arrange(RANK_1YR) %>%
              select(RANK_1YR, COMPOUND, EPEST_LOW_KG_1YR, EPEST_HIGH_KG_1YR), n = 50),
       "latex", booktabs = T, digits = 0,
       caption = paste0("Top 50 ", county_name, " Estimates, Range (EPest-low and EPest-high), 1-Yr, ", recent_year)) %>%
@@ -252,7 +248,7 @@ kable(head(marion_w$one %>% arrange(RANK_1YR) %>%
 ```
 
 ```{r table-3yr, include=T}
-kable(head(marion_w$three %>% arrange(RANK_3YR) %>%
+kable(head(county_w$three %>% arrange(RANK_3YR) %>%
              select(RANK_3YR, COMPOUND, EPEST_LOW_KG_3YR_AVG, EPEST_HIGH_KG_3YR_AVG), n = 50),
       "latex", booktabs = T, digits = 0,
       caption = paste0("Top 50 ", county_name, " Estimates, Range (EPest-low and EPest-high), 3-Yr Avg, ",
@@ -261,10 +257,11 @@ kable(head(marion_w$three %>% arrange(RANK_3YR) %>%
 ```
 
 ```{r table-5yr, include=T}
-kable(head(marion_w$five %>% arrange(RANK_5YR) %>%
+kable(head(county_w$five %>% arrange(RANK_5YR) %>%
              select(RANK_5YR, COMPOUND, EPEST_LOW_KG_5YR_AVG, EPEST_HIGH_KG_5YR_AVG), n = 50),
       "latex", booktabs = T, digits = 0,
       caption = paste0("Top 50 ", county_name, " Estimates, Range (EPest-low and EPest-high), 5-Yr Avg, ",
                         paste(range(window_years), collapse="-"))) %>%
   kable_styling(latex_options = c("striped", "scale_down"))
 ```
+

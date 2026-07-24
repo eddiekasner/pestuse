@@ -1,7 +1,7 @@
 ---
 title: |
   | Estimated Annual Agricultural Pesticide Use
-  | Bingham County, Idaho 2014-2018
+  | Malheur County, Oregon 2014-2018
 date: '`r format(Sys.Date(), "%d %B %Y")`'
 output:
   bookdown::pdf_document2:
@@ -35,9 +35,9 @@ invisible(lapply(required_pkgs, function(pkg) library(pkg, character.only = TRUE
 ```
 
 ```{r constants}
-state_fips  <- "16"
-county_fips <- "011"
-county_name <- "Bingham County"
+state_fips  <- "41"
+county_fips <- "045"
+county_name <- "Malheur County"
 # 2019 is excluded: the county-level file available at the time of writing
 # is a partial/preliminary release covering only 69 compounds nationwide
 # (vs. ~400-410 in every other year, 1992-2018), so anchoring the "most
@@ -60,7 +60,7 @@ functional_colors <- setNames(c(cat_hex[1:10], muted_grey), functional_levels)
 
 ```{r upload.and.clean.data, include=F}
 
-## Read 2014-2018 county-level estimates (Bingham County, ID subset only)
+## Read 2014-2018 county-level estimates (Malheur County, OR subset only)
 ## from ../estimates/EPest.county.estimates.<year>.txt
 
 read_year <- function(yr) {
@@ -142,14 +142,14 @@ county_top <- county_ranked %>%
 
 # Summary
 
-Bingham County ranks **#1 of Idaho's 44 counties** by total
+Malheur County ranks **#3 of Oregon's 36 counties** by total
 estimated agricultural pesticide mass applied (EPest-high method, summed
-2014-2018), making it one of ID's five highest pesticide-use
-counties. Bingham County sits on Idaho's Snake River Plain and is the state's leading potato-producing county, also growing wheat, barley, and sugar beets under irrigation.
+2014-2018), making it one of OR's five highest pesticide-use
+counties. Malheur County, in Oregon's Treasure Valley, is a leading onion-growing region, also producing potatoes and sugar beets under irrigation from the Owyhee and Snake River systems.
 
 Table \@ref(tab:merged-tables) lists the rank and best available estimates
 of mass applied (kg) for the top `r top_n` agricultural pesticides in
-**Bingham County, Idaho** during `r recent_year`, as reported by
+**Malheur County, Oregon** during `r recent_year`, as reported by
 [USGS Estimated Annual Agricultural Pesticide
 Use](https://water.usgs.gov/nawqa/pnsp/usage/maps/county-level/) data. The
 table also includes rank by 3-year average
@@ -212,15 +212,15 @@ names(display) <- c("Rank", "Compound", "Class", "EPest-high 1yr",
                      "EPest-high 3yr avg", "EPest-high 5yr avg")
 
 kable(display, "latex", booktabs = T, digits = 0, longtable = TRUE,
-      caption = paste0("Top ", top_n, " EPest-high Estimates, ", county_name, ", ID, 1-Yr (", recent_year,
+      caption = paste0("Top ", top_n, " EPest-high Estimates, ", county_name, ", OR, 1-Yr (", recent_year,
                         "), 3-Yr Avg, 5-Yr Avg, with Chemical Class (abbreviated; see the ",
                         "classification key table above)")) %>%
   kable_styling(latex_options = c("striped", "repeat_header", "HOLD_position"), font_size = 8)
 
-write.csv(county_top, "bingham.pesticide.use.2014-2018.csv", row.names = FALSE)
+write.csv(county_top, "malheur.pesticide.use.2014-2018.csv", row.names = FALSE)
 ```
 
-```{r top-chart, include=T, fig.cap="Top 25 compounds in Bingham County by EPest-high mass applied, most recent year, colored by pesticide functional class."}
+```{r top-chart, include=T, fig.cap="Top 25 compounds in Malheur County by EPest-high mass applied, most recent year, colored by pesticide functional class."}
 top_chart <- county_top %>%
   slice(1:25) %>%
   mutate(COMPOUND = forcats::fct_reorder(COMPOUND, EPEST_HIGH_KG_1YR))
