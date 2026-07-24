@@ -90,16 +90,18 @@ Four chapters:
 4. **`wa_county_pesticide_use.Rmd` → `wa_county_pesticide_use.html`** —
    interactive dashboard (flexdashboard) of the county-level detail behind
    Chapters 2-3's statewide totals, 2014-2018 (same window as the ranking
-   chapter). Overview and Static Plots pages show choropleth maps of county
-   totals (offline, via the `maps`/`sf` packages) plus a top-10/top-15
-   county bar chart; County Ranking mirrors the statewide ranking chapter's
-   1yr/3yr-avg/5yr-avg format but for all 39 Washington counties; County
-   Explorer and Compound Explorer are crosstalk portals for browsing by
-   county, functional class, chemical class, and compound. USGS's own
-   documentation cautions that these county-level figures are intended to
-   be aggregated into state totals rather than read as precise
-   county-by-county figures — the Overview and Methodology pages repeat
-   this caveat prominently.
+   chapter). Overview and Static Plots pages show interactive choropleth
+   maps of county totals (offline, via the `maps`/`sf` packages, rendered
+   through `plotly::ggplotly()` — every county is labeled by name on the
+   map itself, with hover tooltips for exact values and full zoom/pan)
+   plus a top-10/top-15 county bar chart; County Ranking mirrors the
+   statewide ranking chapter's 1yr/3yr-avg/5yr-avg format but for all 39
+   Washington counties; County Explorer and Compound Explorer are
+   crosstalk portals for browsing by county, functional class, chemical
+   class, and compound. USGS's own documentation cautions that these
+   county-level figures are intended to be aggregated into state totals
+   rather than read as precise county-by-county figures — the Overview and
+   Methodology pages repeat this caveat prominently.
 
 ## Oregon (`oregon/`)
 

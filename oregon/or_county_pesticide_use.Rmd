@@ -44,6 +44,34 @@ functional_levels <- c("Herbicide/algicide", "Fungicide", "Insecticide",
                         "Nematicides", "Insect Repellent", "Other")
 functional_colors <- setNames(c(cat_hex[1:10], muted_grey), functional_levels)
 seq_blue <- c("#cde2fb", "#9ec5f4", "#5598e7", "#2a78d6", "#184f95")
+
+# ggplotly() drops ggplot2's labs(subtitle=...), and its own auto-converted
+# title collides with a manually added one at the top margin -- so the
+# source ggplot is built with no title/subtitle at all (see the map
+# chunks below) and both are added here as two plotly annotations instead,
+# with vertical spacing under full control.
+add_map_title <- function(p, title, subtitle) {
+  p %>% layout(
+    margin = list(t = 70),
+    annotations = list(
+      list(text = title, x = 0, y = 1.14, xref = "paper", yref = "paper",
+           xanchor = "left", yanchor = "top", showarrow = FALSE,
+           font = list(size = 15, color = "#1a1a1a")),
+      list(text = subtitle, x = 0, y = 1.05, xref = "paper", yref = "paper",
+           xanchor = "left", yanchor = "top", showarrow = FALSE,
+           font = list(size = 11, color = "#666666"))
+    )
+  )
+}
+
+# The always-on county-name labels (geom_text) become a single "text" mode
+# trace sitting on top of every polygon trace -- without this, hovering
+# near a label picks up that trace instead of the county polygon beneath
+# it, showing just the bare name instead of the value tooltip.
+disable_label_hover <- function(p) {
+  text_trace <- which(sapply(p$x$data, function(tr) identical(tr$mode, "text")))
+  style(p, hoverinfo = "skip", traces = text_trace)
+}
 ```
 
 ```{r load-data}
@@ -84,6 +112,15 @@ fips_lookup <- county.fips %>%
 
 state_map <- st_as_sf(map("county", region = tolower(state_name), plot = FALSE, fill = TRUE)) %>%
   rename(polyname = ID)
+
+# Interactive maps (ggplotly) need point coordinates for the always-on
+# county-name labels. st_centroid's s2 (spherical) engine chokes on a few
+# degenerate vertices in the "maps" package polygons, and geodesic accuracy
+# isn't needed for placing a text label, so s2 is switched off for this.
+sf::sf_use_s2(FALSE)
+map_centroids <- suppressWarnings(st_coordinates(st_centroid(state_map)))
+state_map <- state_map %>%
+  mutate(LABEL_LON = map_centroids[, "X"], LABEL_LAT = map_centroids[, "Y"])
 
 county_long <- county_raw %>%
   inner_join(classification, by = c("COMPOUND" = "COMPOUND")) %>%
@@ -223,17 +260,23 @@ Row {data-height=600}
 
 ```{r static-map-overview, fig.width=8, fig.height=6.5}
 map_data_latest <- state_map %>%
-  left_join(annual_by_county %>% filter(YEAR == recent_year), by = "polyname")
+  left_join(annual_by_county %>% filter(YEAR == recent_year), by = "polyname") %>%
+  mutate(TOOLTIP = ifelse(is.na(EPEST_HIGH_KG), paste0(COUNTY_NAME, ": no recorded use"),
+                           paste0(COUNTY_NAME, ": ", comma(round(EPEST_HIGH_KG)), " kg")))
 
-ggplot(map_data_latest) +
-  geom_sf(aes(fill = EPEST_HIGH_KG), color = "white", linewidth = 0.2) +
+p_map_latest <- ggplot(map_data_latest) +
+  geom_sf(aes(fill = EPEST_HIGH_KG, text = TOOLTIP), color = "white", linewidth = 0.2) +
+  geom_text(aes(x = LABEL_LON, y = LABEL_LAT, label = COUNTY_NAME), size = 2, color = "black") +
   scale_fill_gradientn(colors = seq_blue, name = "kg", trans = "log1p",
                         breaks = scales::breaks_log(n = 5),
                         labels = comma, na.value = "grey90") +
-  labs(title = paste0(state_name, " county totals, ", recent_year),
-       subtitle = "All classified compounds, EPest-high; grey = no recorded use") +
   theme_void(base_size = 12) +
-  theme(plot.title = element_text(face = "bold"), legend.position = "right")
+  theme(legend.position = "right")
+
+ggplotly(p_map_latest, tooltip = "text", height = 550) %>%
+  disable_label_hover() %>%
+  add_map_title(paste0(state_name, " county totals, ", recent_year),
+                "All classified compounds, EPest-high; grey = no recorded use")
 ```
 
 ### Top 10 counties, `r recent_year`
@@ -453,17 +496,23 @@ Row {data-height=600}
 
 ```{r static-map-first, fig.width=8, fig.height=6.5}
 map_data_first <- state_map %>%
-  left_join(annual_by_county %>% filter(YEAR == first(window_years)), by = "polyname")
+  left_join(annual_by_county %>% filter(YEAR == first(window_years)), by = "polyname") %>%
+  mutate(TOOLTIP = ifelse(is.na(EPEST_HIGH_KG), paste0(COUNTY_NAME, ": no recorded use"),
+                           paste0(COUNTY_NAME, ": ", comma(round(EPEST_HIGH_KG)), " kg")))
 
-ggplot(map_data_first) +
-  geom_sf(aes(fill = EPEST_HIGH_KG), color = "white", linewidth = 0.2) +
+p_map_first <- ggplot(map_data_first) +
+  geom_sf(aes(fill = EPEST_HIGH_KG, text = TOOLTIP), color = "white", linewidth = 0.2) +
+  geom_text(aes(x = LABEL_LON, y = LABEL_LAT, label = COUNTY_NAME), size = 2, color = "black") +
   scale_fill_gradientn(colors = seq_blue, name = "kg", trans = "log1p",
                         breaks = scales::breaks_log(n = 5),
                         labels = comma, na.value = "grey90") +
-  labs(title = paste0(state_name, " county totals, ", first(window_years)),
-       subtitle = "All classified compounds, EPest-high; grey = no recorded use") +
   theme_void(base_size = 12) +
-  theme(plot.title = element_text(face = "bold"), legend.position = "right")
+  theme(legend.position = "right")
+
+ggplotly(p_map_first, tooltip = "text", height = 550) %>%
+  disable_label_hover() %>%
+  add_map_title(paste0(state_name, " county totals, ", first(window_years)),
+                "All classified compounds, EPest-high; grey = no recorded use")
 ```
 
 ### Change in county totals, `r first(window_years)`-`r recent_year`
@@ -476,17 +525,25 @@ change_data <- annual_by_county %>%
   mutate(PCT_CHANGE = 100 * (.data[[paste0("Y", recent_year)]] - .data[[paste0("Y", first(window_years))]]) /
            .data[[paste0("Y", first(window_years))]])
 
-map_data_change <- state_map %>% left_join(change_data, by = "polyname")
+map_data_change <- state_map %>%
+  left_join(change_data, by = "polyname") %>%
+  mutate(TOOLTIP = ifelse(is.na(PCT_CHANGE) | is.infinite(PCT_CHANGE),
+                           paste0(COUNTY_NAME, ": no use in one or both years"),
+                           paste0(COUNTY_NAME, ": ", ifelse(PCT_CHANGE >= 0, "+", ""), comma(round(PCT_CHANGE)), "%")))
 
 lim <- max(abs(map_data_change$PCT_CHANGE), na.rm = TRUE)
-ggplot(map_data_change) +
-  geom_sf(aes(fill = PCT_CHANGE), color = "white", linewidth = 0.2) +
+p_map_change <- ggplot(map_data_change) +
+  geom_sf(aes(fill = PCT_CHANGE, text = TOOLTIP), color = "white", linewidth = 0.2) +
+  geom_text(aes(x = LABEL_LON, y = LABEL_LAT, label = COUNTY_NAME), size = 2, color = "black") +
   scale_fill_gradient2(low = "#2a78d6", mid = "#f0efec", high = "#e34948", midpoint = 0,
                         limits = c(-lim, lim), name = "% change", labels = comma, na.value = "grey90") +
-  labs(title = paste0("Change in county totals, ", first(window_years), " to ", recent_year),
-       subtitle = "Percent change, EPest-high; grey = no use in one or both years") +
   theme_void(base_size = 12) +
-  theme(plot.title = element_text(face = "bold"), legend.position = "right")
+  theme(legend.position = "right")
+
+ggplotly(p_map_change, tooltip = "text", height = 550) %>%
+  disable_label_hover() %>%
+  add_map_title(paste0("Change in county totals, ", first(window_years), " to ", recent_year),
+                "Percent change, EPest-high; grey = no use in one or both years")
 ```
 
 Row {data-height=500}
