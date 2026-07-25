@@ -463,6 +463,42 @@ ggplot(top_compounds, aes(x = Compound, y = TOTAL_KG, fill = FUNCTIONAL_CLASS)) 
   theme(legend.position = "bottom", panel.grid.minor = element_blank(), plot.title = element_text(face = "bold"))
 ```
 
+Row {data-height=500}
+-----------------------------------------------------------------------
+
+### Annual use of organophosphate & N-methyl carbamate pesticides
+
+```{r static-cholinesterase-classes, fig.width=10, fig.height=5}
+# WA's Cholinesterase Monitoring rule (WAC 296-307-148) covers agricultural
+# handlers of toxicity category I/II organophosphate or N-methyl-carbamate
+# pesticides specifically -- not thiocarbamates or dithiocarbamates, which
+# are chemically distinct (herbicide/fungicide families) and aren't
+# cholinesterase inhibitors.
+cholinesterase_classes <- c("Organophosphorous compound", "N-methyl carbamates (AChE inhibitor)")
+
+annual_cholinesterase <- annual_by_chemical %>%
+  filter(CHEMICAL_CLASS %in% cholinesterase_classes) %>%
+  mutate(CHEMICAL_CLASS = factor(CHEMICAL_CLASS, levels = cholinesterase_classes))
+
+ggplot(annual_cholinesterase, aes(x = Year, y = EPEST_HIGH_KG, color = CHEMICAL_CLASS)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.8) +
+  scale_color_manual(values = chemical_colors[cholinesterase_classes], name = "Chemical class") +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(first_year, latest_year, by = 2)) +
+  labs(
+    title = paste0(state_name, ": Annual use of organophosphate & N-methyl carbamate pesticides, ", first_year, "-", latest_year),
+    subtitle = "Both classes are subject to WA's Cholinesterase Monitoring rule (WAC 296-307-148) for agricultural pesticide handlers",
+    x = NULL, y = "Mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+
 Row {data-height=650}
 -----------------------------------------------------------------------
 
@@ -583,6 +619,27 @@ USGS-supplied table:
   still legible as a simultaneous multi-series color even though "Other"
   is the single largest named category. `CHEMICAL_CLASS` is also used for
   filtering on the Interactive Portal and Compound Explorer pages.
+
+**Why organophosphates and N-methyl carbamates get their own chart.**
+The Static Plots page's "Annual use of organophosphate & N-methyl
+carbamate pesticides" chart isolates just these two classes because both
+inhibit cholinesterase (an enzyme that regulates the neurotransmitter
+acetylcholine) by the same mechanism, and both are singled out together
+by Washington's Cholinesterase Monitoring rule, [WAC
+296-307-148](https://app.leg.wa.gov/wac/default.aspx?cite=296-307#:~:text=Part%20J%2D1,Cholinesterase%20Monitoring):
+employers of agricultural handlers who work 30+ hours in any 30-day
+period with toxicity category I or II compounds in either class must
+provide baseline and periodic cholinesterase blood testing, investigate
+significant drops, and meet several related recordkeeping and training
+requirements. (Washington L&I's [state cost-reimbursement subsidy for
+this monitoring](https://www.lni.wa.gov/safety-health/_docs/ChEQA_2006.pdf)
+ended December 31, 2025 — the monitoring *requirement* itself did not.
+This dashboard's data end in 2018, so the chart shows the historical use
+trend that the rule responds to, not any change since reimbursement
+ended.) Thiocarbamates and dithiocarbamates are chemically distinct
+(herbicide and fungicide families, respectively) and are not
+cholinesterase inhibitors, so they're excluded from this chart even
+though "carbamate" appears in all three names.
 
 Splitting these into two columns (rather than one column doing both jobs,
 as in this dashboard's first version) directly fixes a real distortion: a
