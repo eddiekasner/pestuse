@@ -1,7 +1,7 @@
 # pestuse
 
 Analyses of USGS Pesticide National Synthesis Project agricultural
-pesticide use estimates for Washington, Oregon, and Idaho — statewide
+pesticide use estimates for Washington, Oregon, and Idaho: statewide
 trends, county-by-county rankings, and interactive dashboards.
 
 > **Check for updates to the source data.** Please carefully review the
