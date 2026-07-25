@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>pestuse — USGS Pesticide Use Analyses (WA / OR / ID)</title>
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #ffffff;
+    --fg: #1a1a1a;
+    --muted: #666666;
+    --border: #e2e2e2;
+    --card-bg: #f7f7f7;
+    --link: #1a5fb4;
+    --tag-interactive-bg: #e6f0ff;
+    --tag-interactive-fg: #1a4d99;
+    --tag-pdf-bg: #f0e6ff;
+    --tag-pdf-fg: #5a3a99;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #14161a;
+      --fg: #e8e8e8;
+      --muted: #a0a0a0;
+      --border: #2c2f36;
+      --card-bg: #1c1f26;
+      --link: #6fa8ff;
+      --tag-interactive-bg: #123055;
+      --tag-interactive-fg: #a9caff;
+      --tag-pdf-bg: #2c1f4a;
+      --tag-pdf-fg: #d3b8ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 2rem 1.25rem 4rem;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+  }
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+  }
+  h1 {
+    font-size: 1.6rem;
+    margin-bottom: 0.25rem;
+  }
+  p.lede {
+    color: var(--muted);
+    margin-top: 0;
+    max-width: 65ch;
+  }
+  .note {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  section.state {
+    margin-bottom: 2.25rem;
+  }
+  section.state h2 {
+    font-size: 1.15rem;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.4rem;
+    margin-bottom: 0.75rem;
+  }
+  ul.chapters {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    gap: 0.5rem;
+  }
+  ul.chapters li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    padding: 0.55rem 0.8rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    flex-wrap: wrap;
+  }
+  ul.chapters a {
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 500;
+  }
+  ul.chapters a:hover {
+    text-decoration: underline;
+  }
+  .tag {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    margin-left: auto;
+  }
+  .tag.interactive {
+    background: var(--tag-interactive-bg);
+    color: var(--tag-interactive-fg);
+  }
+  .tag.pdf {
+    background: var(--tag-pdf-bg);
+    color: var(--tag-pdf-fg);
+  }
+  footer {
+    color: var(--muted);
+    font-size: 0.85rem;
+    margin-top: 3rem;
+  }
+  footer a { color: var(--link); }
+</style>
+</head>
+<body>
+<main>
+  <h1>pestuse</h1>
+  <p class="lede">
+    USGS Pesticide National Synthesis Project agricultural pesticide use
+    estimates for Washington, Oregon, and Idaho — statewide trends,
+    county-by-county rankings, and interactive dashboards.
+  </p>
+  <div class="note">
+    <strong>Interactive</strong> pages are large (13&ndash;32&nbsp;MB, fully
+    self-contained) and can take a few seconds to load. <strong>PDF</strong>
+    chapters open in your browser's built-in PDF viewer. See the
+    <a href="https://github.com/eddiekasner/pestuse#readme">README</a> for
+    full methodology, caveats, and data sources.
+  </div>
+
+  <section class="state">
+    <h2>Washington</h2>
+    <ul class="chapters">
+      <li><a href="washington/wa_grant_pestuse.pdf">Grant County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="washington/wa_benton_pestuse.pdf">Benton County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="washington/wa_franklin_pestuse.pdf">Franklin County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="washington/wa_adams_pestuse.pdf">Adams County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="washington/wa_yakima_pestuse.pdf">Yakima County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="washington/wa_pesticide_class_trends.html">Pesticide Class Trends (statewide)</a><span class="tag interactive">Interactive</span></li>
+      <li><a href="washington/wa_statewide_top_pesticides.pdf">Statewide Top Pesticides</a><span class="tag pdf">PDF</span></li>
+      <li><a href="washington/wa_county_pesticide_use.html">County Pesticide Use</a><span class="tag interactive">Interactive</span></li>
+    </ul>
+  </section>
+
+  <section class="state">
+    <h2>Oregon</h2>
+    <ul class="chapters">
+      <li><a href="oregon/or_morrow_pestuse.pdf">Morrow County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="oregon/or_umatilla_pestuse.pdf">Umatilla County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="oregon/or_malheur_pestuse.pdf">Malheur County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="oregon/or_hoodriver_pestuse.pdf">Hood River County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="oregon/or_klamath_pestuse.pdf">Klamath County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="oregon/or_pesticide_class_trends.html">Pesticide Class Trends (statewide)</a><span class="tag interactive">Interactive</span></li>
+      <li><a href="oregon/or_statewide_top_pesticides.pdf">Statewide Top Pesticides</a><span class="tag pdf">PDF</span></li>
+      <li><a href="oregon/or_county_pesticide_use.html">County Pesticide Use</a><span class="tag interactive">Interactive</span></li>
+    </ul>
+  </section>
+
+  <section class="state">
+    <h2>Idaho</h2>
+    <ul class="chapters">
+      <li><a href="idaho/id_bingham_pestuse.pdf">Bingham County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="idaho/id_power_pestuse.pdf">Power County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="idaho/id_madison_pestuse.pdf">Madison County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="idaho/id_jefferson_pestuse.pdf">Jefferson County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="idaho/id_minidoka_pestuse.pdf">Minidoka County</a><span class="tag pdf">PDF</span></li>
+      <li><a href="idaho/id_pesticide_class_trends.html">Pesticide Class Trends (statewide)</a><span class="tag interactive">Interactive</span></li>
+      <li><a href="idaho/id_statewide_top_pesticides.pdf">Statewide Top Pesticides</a><span class="tag pdf">PDF</span></li>
+      <li><a href="idaho/id_county_pesticide_use.html">County Pesticide Use</a><span class="tag interactive">Interactive</span></li>
+    </ul>
+  </section>
+
+  <section class="state">
+    <h2>Pacific Northwest</h2>
+    <ul class="chapters">
+      <li><a href="pacific_northwest/pnw_pesticide_class_trends.html">Pesticide Class Trends (regional)</a><span class="tag interactive">Interactive</span></li>
+      <li><a href="pacific_northwest/pnw_regional_top_pesticides.pdf">Regional Top Pesticides</a><span class="tag pdf">PDF</span></li>
+    </ul>
+  </section>
+
+  <footer>
+    Data: USGS Pesticide National Synthesis Project. See the
+    <a href="https://github.com/eddiekasner/pestuse#readme">repository README</a>
+    for methodology, caveats, and source citations.
+  </footer>
+</main>
+</body>
+</html>
