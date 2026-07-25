@@ -32,50 +32,39 @@ every report via relative paths (`../estimates/...`, `../data/...`).
 This repo has 7 interactive dashboards (flexdashboard + plotly — county
 choropleth maps, filterable tables, trend charts). GitHub doesn't render
 `.html` files inline by default, so clicking one in the GitHub file
-browser normally just downloads it. Two ways around that, easiest first:
-
-**Right now, no setup:** open any dashboard through
-[githack.com](https://raw.githack.com), a free CDN that serves a GitHub
-file with the correct type so your browser renders it instead of
-downloading it. Just the link, nothing to configure:
+browser normally just downloads it. This repo is published via **GitHub
+Pages** instead, so every dashboard has a permanent, first-party URL:
 
 | Dashboard | Link |
 |---|---|
-| Washington — Pesticide Class Trends | [open](https://raw.githack.com/eddiekasner/pestuse/master/washington/wa_pesticide_class_trends.html) |
-| Washington — County Pesticide Use | [open](https://raw.githack.com/eddiekasner/pestuse/master/washington/wa_county_pesticide_use.html) |
-| Oregon — Pesticide Class Trends | [open](https://raw.githack.com/eddiekasner/pestuse/master/oregon/or_pesticide_class_trends.html) |
-| Oregon — County Pesticide Use | [open](https://raw.githack.com/eddiekasner/pestuse/master/oregon/or_county_pesticide_use.html) |
-| Idaho — Pesticide Class Trends | [open](https://raw.githack.com/eddiekasner/pestuse/master/idaho/id_pesticide_class_trends.html) |
-| Idaho — County Pesticide Use | [open](https://raw.githack.com/eddiekasner/pestuse/master/idaho/id_county_pesticide_use.html) |
-| Pacific Northwest — Pesticide Class Trends | [open](https://raw.githack.com/eddiekasner/pestuse/master/pacific_northwest/pnw_pesticide_class_trends.html) |
+| Washington — Pesticide Class Trends | [open](https://eddiekasner.github.io/pestuse/washington/wa_pesticide_class_trends.html) |
+| Washington — County Pesticide Use | [open](https://eddiekasner.github.io/pestuse/washington/wa_county_pesticide_use.html) |
+| Oregon — Pesticide Class Trends | [open](https://eddiekasner.github.io/pestuse/oregon/or_pesticide_class_trends.html) |
+| Oregon — County Pesticide Use | [open](https://eddiekasner.github.io/pestuse/oregon/or_county_pesticide_use.html) |
+| Idaho — Pesticide Class Trends | [open](https://eddiekasner.github.io/pestuse/idaho/id_pesticide_class_trends.html) |
+| Idaho — County Pesticide Use | [open](https://eddiekasner.github.io/pestuse/idaho/id_county_pesticide_use.html) |
+| Pacific Northwest — Pesticide Class Trends | [open](https://eddiekasner.github.io/pestuse/pacific_northwest/pnw_pesticide_class_trends.html) |
 
 These files are large (13-32 MB — every chart's data is embedded so the
 page works fully offline once loaded), so give each one a few seconds to
 load, especially on a slow connection.
 
-There's also an [`index.html`](index.html) at the repo root linking to
-all of the above, plus every PDF chapter, in one place. (PDFs don't have
-this problem in the first place — GitHub already previews those inline
-when you click them.)
+There's also a landing page at
+**[eddiekasner.github.io/pestuse](https://eddiekasner.github.io/pestuse/)**
+(built from [`index.html`](index.html)) linking to all of the above, plus
+every PDF chapter, in one place. (PDFs don't have this problem in the
+first place — GitHub already previews those inline when you click them.)
 
 <details>
-<summary><strong>Want a permanent, first-party URL instead? Set up GitHub Pages (one-time, ~1 minute)</strong></summary>
+<summary>How this is hosted</summary>
 
-The githack links above always work, but they depend on a third-party
-proxy. For a URL on GitHub's own domain:
-
-1. On GitHub, go to **Settings → Pages** for this repository.
-2. Under **Build and deployment → Source**, choose **Deploy from a
-   branch**.
-3. Under **Branch**, choose `master` and folder `/ (root)`, then **Save**.
-4. After a minute, the dashboards are live at (for example):
-   `https://eddiekasner.github.io/pestuse/washington/wa_pesticide_class_trends.html`
-   — and `https://eddiekasner.github.io/pestuse/` serves `index.html` as
-   a landing page.
-
-This is a one-time setting on GitHub's website — it can't be done from
-within this repo's files or from a coding session, since it requires
-repository-admin access to the Settings tab.
+GitHub Pages is configured to deploy from the `master` branch, root
+folder. A `.nojekyll` file at the repo root tells Pages to serve every
+file as a static asset instead of running its default Jekyll build —
+without it, Jekyll tries to parse each `.Rmd` file's YAML front matter as
+a page (since it starts with `---`) and fails on the `date:` field, which
+is an unevaluated R expression, not a real date; that failure used to
+abort the entire site build.
 
 </details>
 
