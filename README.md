@@ -159,6 +159,17 @@ mass, summed 2014-2018), plus three state-parameterized chapters.
 | 7 | Statewide Top Pesticides | `wa_statewide_top_pesticides` | PDF |
 | 8 | County Pesticide Use | `wa_county_pesticide_use` | Interactive |
 
+> **Cholinesterase monitoring context.** Washington's Cholinesterase
+> Monitoring rule ([WAC
+> 296-307-148](https://app.leg.wa.gov/wac/default.aspx?cite=296-307#:~:text=Part%20J%2D1,Cholinesterase%20Monitoring))
+> requires medical monitoring for agricultural handlers of organophosphate
+> and N-methyl-carbamate pesticides — see **[Annual use of organophosphate
+> & N-methyl carbamate pesticides, 1992-2018](https://eddiekasner.github.io/pestuse/washington/wa_pesticide_class_trends.html#static-plots)**
+> (Static Plots page of the Pesticide Class Trends dashboard) for the
+> historical use trend behind that rule. Washington L&I's cost-reimbursement
+> subsidy for this monitoring ended December 31, 2025; the monitoring
+> requirement itself did not.
+
 <details>
 <summary>More about each chapter</summary>
 
