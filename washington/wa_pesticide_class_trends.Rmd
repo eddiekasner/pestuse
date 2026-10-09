@@ -568,6 +568,55 @@ ggplot(annual_glyphosate, aes(x = Year, y = EPEST_HIGH_KG)) +
   )
 ```
 
+Row {data-height=550}
+-----------------------------------------------------------------------
+
+### Annual herbicide use by compound
+
+```{r static-herbicide-compounds, fig.width=10, fig.height=5.5}
+# Glyphosate, paraquat, and diquat (charted individually above) are three
+# of 133 distinct herbicide active ingredients with recorded WA use --
+# this chart puts them back in context against the rest of the
+# Herbicide/algicide functional class, stacked by compound instead of
+# shown as one flat combined line.
+herbicide_totals <- annual_by_compound %>%
+  filter(FUNCTIONAL_CLASS == "Herbicide/algicide") %>%
+  group_by(Compound) %>%
+  summarize(TOTAL_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  filter(TOTAL_KG > 0) %>%
+  arrange(desc(TOTAL_KG))
+
+top_herbicides <- head(herbicide_totals$Compound, 8)
+herbicide_levels <- c(top_herbicides, "Other herbicides")
+
+annual_herbicide <- annual_by_compound %>%
+  filter(FUNCTIONAL_CLASS == "Herbicide/algicide") %>%
+  mutate(Compound = if_else(Compound %in% top_herbicides, Compound, "Other herbicides")) %>%
+  group_by(Year, Compound) %>%
+  summarize(EPEST_HIGH_KG = sum(EPEST_HIGH_KG), .groups = "drop") %>%
+  mutate(Compound = factor(Compound, levels = herbicide_levels))
+
+herbicide_colors <- setNames(c(cat_hex[seq_along(top_herbicides)], muted_grey), herbicide_levels)
+
+ggplot(annual_herbicide, aes(x = Year, y = EPEST_HIGH_KG, fill = Compound)) +
+  geom_area(position = "stack") +
+  scale_fill_manual(values = herbicide_colors, name = "Compound") +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(first_year, latest_year, by = 2)) +
+  guides(fill = guide_legend(nrow = 3, byrow = TRUE)) +
+  labs(
+    title = paste0(state_name, ": Annual herbicide use by compound, ", first_year, "-", latest_year),
+    subtitle = "Top 8 herbicide active ingredients by total mass, plus all others combined",
+    x = NULL, y = "Mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+
 Row {data-height=650}
 -----------------------------------------------------------------------
 
