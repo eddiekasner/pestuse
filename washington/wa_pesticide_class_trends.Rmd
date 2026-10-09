@@ -499,6 +499,75 @@ ggplot(annual_cholinesterase, aes(x = Year, y = EPEST_HIGH_KG, color = CHEMICAL_
   )
 ```
 
+Row {data-height=500}
+-----------------------------------------------------------------------
+
+### Annual use of paraquat & diquat
+
+```{r static-paraquat-diquat, fig.width=10, fig.height=5}
+# Paraquat and diquat are both dipyridylium (bipyridyl) herbicides --
+# chemically similar (CHEMICAL_CLASS "Dipyridyl compound" for both) and
+# frequently discussed together, so plotted on one chart rather than
+# split across the two individual-compound charts below.
+bipyridyl_compounds <- c("PARAQUAT", "DIQUAT")
+
+annual_bipyridyl <- annual_by_compound %>%
+  filter(Compound %in% bipyridyl_compounds) %>%
+  mutate(Compound = factor(Compound, levels = bipyridyl_compounds))
+
+bipyridyl_colors <- setNames(cat_hex[c(2, 7)], bipyridyl_compounds)
+
+ggplot(annual_bipyridyl, aes(x = Year, y = EPEST_HIGH_KG, color = Compound)) +
+  geom_line(linewidth = 1) +
+  geom_point(size = 1.8) +
+  scale_color_manual(values = bipyridyl_colors, name = "Compound",
+                      labels = c(PARAQUAT = "Paraquat", DIQUAT = "Diquat")) +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(first_year, latest_year, by = 2)) +
+  labs(
+    title = paste0(state_name, ": Annual use of paraquat & diquat, ", first_year, "-", latest_year),
+    subtitle = "Both are Dipyridyl-compound herbicides (desiccants/defoliants); EPest-high estimates",
+    x = NULL, y = "Mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    legend.position = "bottom",
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+
+Row {data-height=500}
+-----------------------------------------------------------------------
+
+### Annual use of glyphosate
+
+```{r static-glyphosate, fig.width=10, fig.height=5}
+# Glyphosate is WA's highest-volume herbicide by total EPest-high mass,
+# 1992-2018 (roughly double the #2 herbicide, 2,4-D) -- large enough in
+# scale that it would flatten any other compound plotted alongside it,
+# so it gets its own chart rather than joining the paraquat/diquat one.
+annual_glyphosate <- annual_by_compound %>%
+  filter(Compound == "GLYPHOSATE")
+
+ggplot(annual_glyphosate, aes(x = Year, y = EPEST_HIGH_KG)) +
+  geom_area(fill = functional_colors[["Herbicide/algicide"]], alpha = 0.15) +
+  geom_line(color = functional_colors[["Herbicide/algicide"]], linewidth = 1) +
+  geom_point(color = functional_colors[["Herbicide/algicide"]], size = 1.8) +
+  scale_y_continuous(labels = comma) +
+  scale_x_continuous(breaks = seq(first_year, latest_year, by = 2)) +
+  labs(
+    title = paste0(state_name, ": Annual use of glyphosate, ", first_year, "-", latest_year),
+    subtitle = "WA's highest-volume herbicide by total EPest-high mass, 1992-2018",
+    x = NULL, y = "Mass applied (kg)"
+  ) +
+  theme_minimal(base_size = 12) +
+  theme(
+    panel.grid.minor = element_blank(),
+    plot.title = element_text(face = "bold")
+  )
+```
+
 Row {data-height=650}
 -----------------------------------------------------------------------
 
